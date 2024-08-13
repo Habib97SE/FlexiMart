@@ -13887,6 +13887,7 @@ video#background-video {
   border: 1px solid transparent;
   border-radius: 4px;
   color: #fff;
+  line-height: 1.5  ;
 }
 
 .alert-success {
@@ -13911,4 +13912,54 @@ video#background-video {
   color: #8a6d3b;
   background-color: #fcf8e3;
   border-color: #faebcc;
+}
+
+.new-box:hover {
+  cursor: pointer;
+  color: #31708f;
+}
+
+.new-box {
+  padding: 20px;
+  border: 1px solid #d9edf7;
+  border-radius: 4px;
+  margin-bottom: 20px;
+  background-color: #d9edf7;
+}
+
+.tooltip-container {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  background-color: #ffffff;
+  /* White background */
+  border: 1px solid #ddd;
+  /* Light grey border */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+  /* Light shadow */
+  padding: 50px 30px;
+  border-radius: 4px;
+  z-index: 9999;
+  /* Ensure it appears above other content */
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tooltip-close {
+  background: transparent;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+  color: #000;
+  /* Color of the close button */
+  margin-left: 10px;
+}
+
+@media (min-width: 992px) {
+  .tooltip-container {
+    display: flex;
+    /* Show tooltip */
+  }
 }

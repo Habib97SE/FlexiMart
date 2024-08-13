@@ -18,6 +18,6 @@ public class ResponseHandler {
         map.put("status", statusCode);
         map.put("error", error);
         map.put("data", responseObject);
-        return new ResponseEntity<Object>(map, HttpStatusCode.valueOf(statusCode));
+        return new ResponseEntity<Object>(map, HttpStatusCode.valueOf(200));
     }
 }

@@ -1,20 +1,27 @@
 package org.fleximart.fleximart.v1.entity.user;
 
+import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.PastOrPresent;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import jakarta.validation.constraints.Size;
+import lombok.*;
+import org.fleximart.fleximart.v1.entity.blog.BlogPost;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString(exclude = {"addresses", "blogPosts"})
 @Builder
 public class User {
 
@@ -22,13 +29,36 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "people_id", nullable = false)
-    private People people;
+    @Column(nullable = false)
+    @Size(min = 2, max = 50, message = "firstName should be between 2 and 50 characters")
+    private String firstName;
 
     @Column(nullable = false)
-    @Min(value = 0, message = "WishListId should be positive")
-    private Long wishListId;
+    @Size(min = 2, max = 50, message = "firstName should be between 2 and 50 characters")
+    private String lastName;
+
+    @Column(nullable = true)
+    private String suffix;
+
+    @Column(nullable = true)
+    private String middleName;
+
+    @Column(nullable = false, unique = true)
+    @Email(message = "email should be valid")
+    private String email;
+
+    @Column(nullable = false)
+    private String hashedPassword;
+
+    @Column(nullable = true)
+    private String phoneNumber;
+
+    @Column(nullable = true)
+    private LocalDate dateOfBirth;
+
+    @Column(nullable = false, columnDefinition = "VARCHAR(49) DEFAULT 'USER'")
+    private String role;
+
 
     @Column(nullable = true)
     @PastOrPresent(message = "lastLoginAt should be in the past or present")
@@ -37,16 +67,26 @@ public class User {
     @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT false")
     private Boolean isDeleted;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    private List<Address> addresses;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    private List<BlogPost> blogPosts;
+
     @Column(nullable = false)
     @PastOrPresent(message = "createdAt should be in the past or present")
+    @CreationTimestamp
+    @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime createdAt;
 
-    @ManyToOne
-    @JoinColumn(name = "customer_group_id", nullable = false)
-    private CustomerGroup customerGroup;
+
 
     @Column(nullable = true)
     @PastOrPresent(message = "updatedAt should be in the past or present")
+    @UpdateTimestamp
+    @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime updatedAt;
 
 }

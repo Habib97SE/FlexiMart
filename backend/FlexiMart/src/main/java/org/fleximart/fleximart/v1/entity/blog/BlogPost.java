@@ -1,5 +1,6 @@
 package org.fleximart.fleximart.v1.entity.blog;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.Size;
@@ -7,7 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.fleximart.fleximart.v1.entity.user.Admin;
+import org.fleximart.fleximart.v1.entity.user.User;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -61,7 +62,8 @@ public class BlogPost {
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
-    private Admin admin;
+    @JsonBackReference
+    private User user;
 
     @OneToMany(mappedBy = "blogPost", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Media> media = new ArrayList<>();

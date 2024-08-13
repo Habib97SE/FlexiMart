@@ -1,19 +1,21 @@
 package org.fleximart.fleximart.v1.entity.user;
 
+import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.PastOrPresent;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Entity
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString(exclude = {"user", "addressType"})
 @Builder
 public class Address {
 
@@ -45,21 +47,29 @@ public class Address {
     @Column(nullable = true)
     private String name;
 
-    @ManyToOne
-    @JoinColumn(name = "people_id", nullable = false)
-    private People people;
+    @Column(nullable = true)
+    private String phoneNumber;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    @JsonBackReference
+    private User user;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "address_type_id", nullable = false)
+    @JsonBackReference
     private AddressType addressType;
 
     @Column(nullable = false)
     @PastOrPresent(message = "createdAt should be in the past or present")
+    @CreationTimestamp
+    @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime createdAt;
 
     @Column(nullable = true)
     @PastOrPresent(message = "updatedAt should be in the past or present")
+    @UpdateTimestamp
+    @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime updatedAt;
-
 
 }
