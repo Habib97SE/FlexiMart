@@ -1,19 +1,21 @@
 package org.fleximart.fleximart.v1.entity.product;
 
-
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PastOrPresent;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.Objects;
 
 @Entity
-@Data
+@Getter
+@Setter
+@ToString(exclude = {"product"})
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -53,17 +55,18 @@ public class Inventory {
     @Column(nullable = true)
     private Integer reOrderLevel;
 
+    // Change from Product to ProductVariant
     @ManyToOne
-    @JoinColumn(name = "product_id", nullable = false)
-    private CoreProduct product;
+    @JoinColumn(name = "variant_id", nullable = false)
+    private ProductVariant variant;
 
     @Column(nullable = false)
-    @PastOrPresent(message = "createdAt should be in the past or present")
+    @CreationTimestamp
+    @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime createdAt;
 
     @Column(nullable = true)
-    @PastOrPresent(message = "updatedAt should be in the past or present")
+    @UpdateTimestamp
+    @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime updatedAt;
-
-
 }

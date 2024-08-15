@@ -3,18 +3,19 @@ package org.fleximart.fleximart.v1.entity.user;
 import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.Size;
 import lombok.*;
-import org.fleximart.fleximart.v1.entity.blog.BlogPost;
+import org.fleximart.fleximart.v1.entity.blog.Post;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -71,9 +72,8 @@ public class User {
     @JsonManagedReference
     private List<Address> addresses;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
-    private List<BlogPost> blogPosts;
+    @OneToMany(mappedBy = "author")
+    private Set<Post> posts = new HashSet<>();
 
     @Column(nullable = false)
     @PastOrPresent(message = "createdAt should be in the past or present")

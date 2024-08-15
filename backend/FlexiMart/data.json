@@ -1,0 +1,80 @@
+{
+  "data": [
+    {
+      "id": 1,
+      "name": "g-star jeans",
+      "description": "this is jeans from g-star",
+      "brand": {
+        "id": 1,
+        "name": "ADIDAS",
+        "description": null
+      },
+      "collection": {
+        "id": 1,
+        "name": "clothing",
+        "description": "this is clothing collection"
+      },
+      "modelNumber": "FLKJ34290IF",
+      "productType": {
+        "id": 1,
+        "name": "physical",
+        "description": "product that you can see"
+      },
+      "productVariants": [
+        {
+          "id": 1,
+          "variantGroups": [
+            {
+              "id": 1,
+              "name": "Size",
+              "description": null,
+              "variantOptions": [
+                {
+                  "id": 1,
+                  "value": "32",
+                  "description": null
+                },
+                {
+                  "id": 2,
+                  "value": "33",
+                  "description": null
+                }
+              ]
+            }
+          ],
+          "productMedia": [
+            {
+              "id": 1,
+              "mediaUrl": "https://google.com",
+              "mediaType": "Image",
+              "mediaAlt": "Hello"
+            },
+            {
+              "id": 2,
+              "mediaUrl": "https://google.com",
+              "mediaType": "Image",
+              "mediaAlt": "Hello"
+            },
+            {
+              "id": 3,
+              "mediaUrl": "https://google.com",
+              "mediaType": "Image",
+              "mediaAlt": "Hello"
+            },
+            {
+              "id": 4,
+              "mediaUrl": "https://google.com",
+              "mediaType": "Image",
+              "mediaAlt": "Hello"
+            }
+          ],
+          "sku": "324jjd",
+          "barCode": "32455323"
+        }
+      ]
+    }
+  ],
+  "message": "Products retrieved successfully",
+  "error": false,
+  "status": 200
+}

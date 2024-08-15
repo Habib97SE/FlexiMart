@@ -1,8 +1,11 @@
 package org.fleximart.fleximart.v1.entity.product;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.Size;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.validator.constraints.URL;
 
 import java.time.LocalDateTime;
@@ -38,9 +41,15 @@ public class Brand {
     private String description;
 
     @Column(nullable = false)
+    @PastOrPresent(message = "createdAt should be in the past or present")
+    @CreationTimestamp
+    @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime createdAt;
 
     @Column(nullable = true)
+    @PastOrPresent(message = "updatedAt should be in the past or present")
+    @UpdateTimestamp
+    @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime updatedAt;
 
 

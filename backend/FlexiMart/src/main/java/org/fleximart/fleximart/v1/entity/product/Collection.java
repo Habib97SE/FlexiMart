@@ -7,6 +7,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.validator.constraints.URL;
 
 import java.time.LocalDateTime;
@@ -30,22 +32,16 @@ public class Collection {
     @Size(max = 1000, message = "Description should not exceed 1000 characters")
     private String description;
 
-    @Column(nullable = true)
-    @URL(message = "mainImageUrl should be a valid URL")
-    private String mainImageUrl;
-
-    @Column(nullable = true)
-    private String seoTitle;
-
-    @Column(nullable = true)
-    private String seoDescription;
-
     @Column(nullable = false)
     @PastOrPresent(message = "createdAt should be in the past or present")
+    @CreationTimestamp
+    @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime createdAt;
 
     @Column(nullable = true)
     @PastOrPresent(message = "updatedAt should be in the past or present")
+    @UpdateTimestamp
+    @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime updatedAt;
 
 
