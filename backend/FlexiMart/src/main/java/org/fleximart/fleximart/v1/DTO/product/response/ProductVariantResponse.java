@@ -13,8 +13,9 @@ import java.util.List;
 @Builder
 public class ProductVariantResponse {
     private Long id;
-    private List<VariantGroupResponse> variantGroups;
-    private List<ProductMediaResponse> productMedia;
     private String sku;
     private String barCode;
+    private List<VariantOptionResponse> variantOptions;
+    private List<ProductMediaResponse> productMedia;
+    private InventoryResponse inventory;
 }

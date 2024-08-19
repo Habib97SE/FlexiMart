@@ -1,24 +1,26 @@
 package org.fleximart.fleximart.v1.service.product;
 
+import org.fleximart.fleximart.v1.DTO.product.request.InventoryRequest;
+import org.fleximart.fleximart.v1.DTO.product.request.ProductMediaRequest;
 import org.fleximart.fleximart.v1.DTO.product.request.ProductVariantRequest;
 import org.fleximart.fleximart.v1.DTO.product.request.VariantOptionRequest;
-import org.fleximart.fleximart.v1.DTO.product.response.ProductMediaResponse;
-import org.fleximart.fleximart.v1.DTO.product.response.ProductVariantResponse;
-import org.fleximart.fleximart.v1.DTO.product.response.VariantGroupResponse;
-import org.fleximart.fleximart.v1.DTO.product.response.VariantOptionResponse;
+import org.fleximart.fleximart.v1.DTO.product.response.*;
 import org.fleximart.fleximart.v1.entity.product.*;
-import org.fleximart.fleximart.v1.repository.product.ProductRepository;
-import org.fleximart.fleximart.v1.repository.product.ProductVariantRepository;
-import org.fleximart.fleximart.v1.repository.product.VariantGroupRepository;
-import org.fleximart.fleximart.v1.repository.product.VariantOptionRepository;
+import org.fleximart.fleximart.v1.repository.product.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.fleximart.fleximart.v1.exception.ResourceNotFoundException;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Service class for ProductVariant entity.
+ * Contains methods to fetch, save, update, and delete ProductVariant entities.
+ * Also contains helper methods to create response DTOs.
+ */
 @Service
 public class ProductVariantService {
 
@@ -34,31 +36,55 @@ public class ProductVariantService {
     @Autowired
     private VariantGroupRepository variantGroupRepository;
 
+    @Autowired
+    private InventoryService inventoryService;
+    @Autowired
+    private InventoryRepository inventoryRepository;
+    @Autowired
+    private VariantOptionService variantOptionService;
+
     public ProductVariantService(ProductVariantRepository productVariantRepository,
                                  ProductRepository productRepository,
                                  VariantOptionRepository variantOptionRepository,
-                                 VariantGroupRepository variantGroupRepository) {
+                                 VariantGroupRepository variantGroupRepository,
+                                 InventoryService inventoryService) {
         this.productVariantRepository = productVariantRepository;
         this.productRepository = productRepository;
         this.variantOptionRepository = variantOptionRepository;
         this.variantGroupRepository = variantGroupRepository;
+        this.inventoryService = inventoryService;
     }
 
+    /**
+     * Helper method to create a VariantGroupResponse DTO from a VariantGroup entity.
+     *
+     * @param variantGroup the VariantGroup entity.
+     * @return the VariantGroupResponse DTO.
+     */
     private VariantGroupResponse createVariantGroupResponse(VariantGroup variantGroup) {
-        List<VariantOptionResponse> variantOptionResponses = variantGroup.getVariantOptions().stream()
-                .map(vo -> VariantOptionResponse.builder()
-                        .id(vo.getId())
-                        .value(vo.getValue())
-                        .build())
-                .collect(Collectors.toList());
 
         return VariantGroupResponse.builder()
                 .id(variantGroup.getId())
                 .name(variantGroup.getName())
-                .variantOptions(variantOptionResponses)
                 .build();
     }
 
+    private VariantOptionResponse toVariantOptionResponse(VariantOption variantOption) {
+        System.err.printf("%s : %s\n", variantOption.getId(), variantOption.getValue());
+        return VariantOptionResponse.builder()
+                .id(variantOption.getId())
+                .value(variantOption.getValue())
+                .description(variantOption.getDescription())
+                .variantGroup(createVariantGroupResponse(variantOption.getVariantGroup()))
+                .build();
+    }
+
+    /**
+     * Helper method to create a list of ProductMediaResponse DTOs from a list of ProductMedia entities.
+     *
+     * @param productMedia the list of ProductMedia entities.
+     * @return the list of ProductMediaResponse DTOs.
+     */
     private List<ProductMediaResponse> createProductMediaList(List<ProductMedia> productMedia) {
         return productMedia.stream()
                 .map(pm -> ProductMediaResponse.builder()
@@ -70,24 +96,46 @@ public class ProductVariantService {
                 .collect(Collectors.toList());
     }
 
-    private ProductVariantResponse createProductVariantResponse(ProductVariant productVariant) {
+    /**
+     * Helper method to create a ProductVariantResponse DTO from a ProductVariant entity.
+     *
+     * @param productVariant the ProductVariant entity.
+     * @return the ProductVariantResponse DTO.
+     */
+    public ProductVariantResponse createProductVariantResponse(ProductVariant productVariant) {
         // Find VariantGroups based on the VariantOptions of this ProductVariant
         List<VariantOption> variantOptions = productVariant.getVariantOptions();
         List<VariantGroup> variantGroups = variantGroupRepository.findByVariantOptions(variantOptions);
-
-        List<VariantGroupResponse> variantGroupResponses = variantGroups.stream()
-                .map(this::createVariantGroupResponse)
-                .collect(Collectors.toList());
 
         return ProductVariantResponse.builder()
                 .id(productVariant.getId())
                 .sku(productVariant.getSku())
                 .barCode(productVariant.getBarCode())
-                .variantGroups(variantGroupResponses)
+                .variantOptions(
+                        variantOptions.stream()
+                                .map(this::toVariantOptionResponse)
+                                .collect(Collectors.toList())
+                )
                 .productMedia(createProductMediaList(productVariant.getProductMediaList()))
                 .build();
     }
 
+    public List<ProductVariant> findByProductId(Long productId) {
+        return productVariantRepository.findByProduct_Id(productId);
+    }
+
+    public List<ProductVariantResponse> retrieveAndCreateProductVariantResponse(Long productId) {
+        return findByProductId(productId)
+                .stream()
+                .map(this::createProductVariantResponse)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Fetch all ProductVariant entities and create a list of ProductVariantResponse DTOs.
+     *
+     * @return the list of ProductVariantResponse DTOs.
+     */
     public List<ProductVariantResponse> findAll() {
         return productVariantRepository.findAll()
                 .stream()
@@ -107,77 +155,100 @@ public class ProductVariantService {
      * @param productVariantRequest the DTO containing the product variant and variant options details.
      * @return the saved ProductVariant response DTO.
      */
-    public ProductVariantResponse saveProductVariant(ProductVariantRequest productVariantRequest) {
-        // Fetch the Product entity
-        Product product = productRepository.findById(productVariantRequest.getProductId())
-                .orElseThrow(() -> new ResourceNotFoundException("Product not found with id " + productVariantRequest.getProductId()));
-
-        // Initialize the list to hold the VariantOptions
+    public ProductVariantResponse save(ProductVariantRequest productVariantRequest) {
+        // save variant options into the database
         List<VariantOption> variantOptions = new ArrayList<>();
-
-        // Loop through the variant options in the request, create or fetch them, and add to the list
-        for (VariantOptionRequest optionRequest : productVariantRequest.getVariantOptionRequests()) {
-            VariantOption option = variantOptionRepository.findById(optionRequest.getId()).orElse(null);
-
-            if (option == null) {
-                // If the VariantOption doesn't exist, create a new one
-                option = VariantOption.builder()
-                        .value(optionRequest.getValue())
-                        .description(optionRequest.getDescription())
-                        .variantGroup(VariantGroup.builder().id(optionRequest.getVariantGroupId()).build())
-                        .build();
-                variantOptionRepository.save(option);
-            }
-            variantOptions.add(option);
+        for (VariantOptionRequest variantOptionRequest : productVariantRequest.getVariantOptions()) {
+            variantOptions.add(variantOptionRepository.save(VariantOption.builder()
+                    .value(variantOptionRequest.getValue())
+                    .description(variantOptionRequest.getDescription())
+                    .variantGroup(variantGroupRepository.findById(variantOptionRequest.getVariantGroupId())
+                            .orElseThrow(() -> new ResourceNotFoundException("VariantGroup not found with id " + variantOptionRequest.getVariantGroupId())))
+                    .build()));
         }
 
-        // Build the ProductVariant entity
+        // save the inventory into the database
+        InventoryResponse inventoryResponse = inventoryService.save(productVariantRequest.getInventory());
+
+        // save the product variant into the database
         ProductVariant productVariant = ProductVariant.builder()
-                .product(product)
-                .variantOptions(variantOptions)
+                .product(productRepository.findById(productVariantRequest.getProductId())
+                        .orElseThrow(() -> new ResourceNotFoundException("Product not found with id " + productVariantRequest.getProductId())))
                 .sku(productVariantRequest.getSku())
                 .barCode(productVariantRequest.getBarCode())
+                .variantOptions(variantOptions)
+                .inventory(inventoryResponse.getId())
                 .build();
-
-        // Save the ProductVariant entity
         productVariant = productVariantRepository.save(productVariant);
 
-        // Return the response DTO
-        return createProductVariantResponse(productVariant);
+        // save the product media into the database
+        List<ProductMedia> productMedia = new ArrayList<>();
+        for (ProductMediaRequest productMediaRequest : productVariantRequest.getProductMedia()) {
+            productMedia.add(ProductMedia.builder()
+                    .productVariant(productVariant)
+                    .mediaUrl(productMediaRequest.getMediaUrl())
+                    .mediaType(productMediaRequest.getMediaType())
+                    .altText(productMediaRequest.getMediaAlt())
+                    .build());
+        }
+
+        return ProductVariantResponse.builder()
+                .id(productVariant.getId())
+                .sku(productVariant.getSku())
+                .barCode(productVariant.getBarCode())
+                .variantOptions(
+                        variantOptions.stream()
+                                .map(this::toVariantOptionResponse)
+                                .collect(Collectors.toList())
+                )
+                .productMedia(createProductMediaList(productMedia))
+                .build();
     }
 
+    /**
+     * Update an existing ProductVariant with new details.
+     *
+     * @param id                    the ID of the ProductVariant to update.
+     * @param productVariantRequest the DTO containing the updated product variant and variant options details.
+     * @return the updated ProductVariant response DTO.
+     */
     public ProductVariantResponse update(Long id, ProductVariantRequest productVariantRequest) {
-        // Fetch the ProductVariant entity
         ProductVariant productVariant = productVariantRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("ProductVariant not found with id " + id));
 
-        // Fetch the Product entity
-        Product product = productRepository.findById(productVariantRequest.getProductId())
-                .orElseThrow(() -> new ResourceNotFoundException("Product not found with id " + productVariantRequest.getProductId()));
-
-        // Initialize the list to hold the VariantOptions
         List<VariantOption> variantOptions = new ArrayList<>();
-
-        // Fetch the VariantOptions by their IDs from the request
-        for (VariantOptionRequest variantOptionRequest : productVariantRequest.getVariantOptionRequests()) {
+        for (VariantOptionRequest variantOptionRequest : productVariantRequest.getVariantOptions()) {
             VariantOption variantOption = variantOptionRepository.findById(variantOptionRequest.getId())
                     .orElseThrow(() -> new ResourceNotFoundException("VariantOption not found with id " + variantOptionRequest.getId()));
             variantOptions.add(variantOption);
         }
 
-        // Update the ProductVariant entity
-        productVariant.setProduct(product);
         productVariant.setVariantOptions(variantOptions);
         productVariant.setSku(productVariantRequest.getSku());
         productVariant.setBarCode(productVariantRequest.getBarCode());
-
-        // Save the ProductVariant entity
         productVariant = productVariantRepository.save(productVariant);
 
-        // Return the response DTO
-        return createProductVariantResponse(productVariant);
+
+        return ProductVariantResponse.builder()
+                .id(productVariant.getId())
+                .sku(productVariant.getSku())
+                .barCode(productVariant.getBarCode())
+                .variantOptions(
+                        variantOptions.stream()
+                                .map(this::toVariantOptionResponse)
+                                .collect(Collectors.toList())
+                )
+                .productMedia(createProductMediaList(productVariant.getProductMediaList()))
+                .build();
     }
 
+
+    /**
+     * Delete a ProductVariant entity by ID.
+     *
+     * @param id the ID of the ProductVariant to delete.
+     * @return true if the ProductVariant was deleted, false otherwise.
+     */
     public boolean delete(Long id) {
         if (id < 1) {
             return false;
@@ -191,6 +262,4 @@ public class ProductVariantService {
         productVariantRepository.delete(productVariant);
         return true;
     }
-
-
 }

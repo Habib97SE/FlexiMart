@@ -59,24 +59,7 @@ public class InventoryController {
         );
     }
 
-    @GetMapping("/product/{productId}")
-    public ResponseEntity<Object> findByProductId(@PathVariable Long productId) {
-        InventoryResponse inventories = inventoryService.findByProductId(productId);
-        if (inventories == null) {
-            return ResponseHandler.generateResponse(
-                    "No inventories found",
-                    404,
-                    null,
-                    true
-            );
-        }
-        return ResponseHandler.generateResponse(
-                "Inventories fetched successfully",
-                200,
-                inventories,
-                false
-        );
-    }
+
 
     @PostMapping
     public ResponseEntity<Object> create(@RequestBody InventoryRequest inventoryRequest) {

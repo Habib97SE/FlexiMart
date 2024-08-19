@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
 public class VariantGroupService {
 
     @Autowired
-    private  VariantGroupRepository variantGroupRepository;
+    private VariantGroupRepository variantGroupRepository;
 
     @Autowired
     private VariantOptionRepository variantOptionRepository;
@@ -39,8 +39,9 @@ public class VariantGroupService {
     }
 
     /**
-     * Method to convert a VariantOption object to a VariantOptionResponse object.
-     * @return VariantOptionResponse object containing the details of the VariantOption object.
+     * Get all Variant Groups with their associated Variant Options.
+     *
+     * @return List of VariantGroupResponse.
      */
     public List<VariantGroupResponse> findAll() {
         return variantGroupRepository.findAll()
@@ -49,18 +50,37 @@ public class VariantGroupService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Get a Variant Group by ID.
+     *
+     * @param id the ID of the Variant Group.
+     * @return ResponseEntity with VariantGroupResponse.
+     */
     public ResponseEntity<Object> findById(Long id) {
         VariantGroup variantGroup = variantGroupRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Variant group not found"));
         return ResponseHandler.generateResponse("Variant group retrieved successfully", 200, toVariantGroupResponse(variantGroup), false);
     }
 
+    /**
+     * Save a new Variant Group.
+     *
+     * @param variantGroupRequest the request containing the details for the new Variant Group.
+     * @return ResponseEntity with the saved VariantGroupResponse.
+     */
     public ResponseEntity<Object> save(VariantGroupRequest variantGroupRequest) {
         VariantGroup variantGroup = fromRequest(variantGroupRequest);
-        variantGroupRepository.save(variantGroup);
+        variantGroup = variantGroupRepository.save(variantGroup);
         return ResponseHandler.generateResponse("Variant group created successfully", 201, toVariantGroupResponse(variantGroup), false);
     }
 
+    /**
+     * Update an existing Variant Group.
+     *
+     * @param id                  the ID of the Variant Group to update.
+     * @param variantGroupRequest the request containing the updated details.
+     * @return ResponseEntity with the updated VariantGroupResponse.
+     */
     public ResponseEntity<Object> update(Long id, VariantGroupRequest variantGroupRequest) {
         VariantGroup variantGroup = variantGroupRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Variant group not found"));
@@ -70,6 +90,12 @@ public class VariantGroupService {
         return ResponseHandler.generateResponse("Variant group updated successfully", 200, toVariantGroupResponse(variantGroup), false);
     }
 
+    /**
+     * Delete a Variant Group by ID.
+     *
+     * @param id the ID of the Variant Group to delete.
+     * @return ResponseEntity indicating the result of the deletion.
+     */
     public ResponseEntity<Object> delete(Long id) {
         VariantGroup variantGroup = variantGroupRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Variant group not found"));
@@ -77,6 +103,12 @@ public class VariantGroupService {
         return ResponseHandler.generateResponse("Variant group deleted successfully", 200, null, false);
     }
 
+    /**
+     * Convert a VariantGroupRequest to a VariantGroup entity.
+     *
+     * @param request the request containing details for creating a VariantGroup.
+     * @return the VariantGroup entity.
+     */
     private VariantGroup fromRequest(VariantGroupRequest request) {
         return VariantGroup.builder()
                 .name(request.getName())
@@ -84,6 +116,12 @@ public class VariantGroupService {
                 .build();
     }
 
+    /**
+     * Convert a VariantOption to a VariantOptionResponse.
+     *
+     * @param variantOption the VariantOption to convert.
+     * @return the VariantOptionResponse.
+     */
     private VariantOptionResponse toVariantOptionResponse(VariantOption variantOption) {
         return VariantOptionResponse.builder()
                 .id(variantOption.getId())
@@ -92,14 +130,17 @@ public class VariantGroupService {
                 .build();
     }
 
+    /**
+     * Convert a VariantGroup to a VariantGroupResponse.
+     *
+     * @param variantGroup the VariantGroup to convert.
+     * @return the VariantGroupResponse.
+     */
     private VariantGroupResponse toVariantGroupResponse(VariantGroup variantGroup) {
         return VariantGroupResponse.builder()
                 .id(variantGroup.getId())
                 .name(variantGroup.getName())
                 .description(variantGroup.getDescription())
-                .variantOptions(variantGroup.getVariantOptions().stream()
-                        .map(this::toVariantOptionResponse)
-                        .collect(Collectors.toList()))
                 .build();
     }
 }

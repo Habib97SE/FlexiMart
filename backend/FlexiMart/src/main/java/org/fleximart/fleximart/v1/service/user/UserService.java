@@ -1,11 +1,27 @@
 package org.fleximart.fleximart.v1.service.user;
 
+import org.fleximart.fleximart.v1.DTO.blog.response.MediaResponse;
+import org.fleximart.fleximart.v1.DTO.product.response.ProductResponse;
+import org.fleximart.fleximart.v1.DTO.review.response.ReviewMediaResponse;
+import org.fleximart.fleximart.v1.DTO.review.response.ReviewResponse;
 import org.fleximart.fleximart.v1.DTO.user.request.UserRequest;
 import org.fleximart.fleximart.v1.DTO.user.request.SigninRequest;
 import org.fleximart.fleximart.v1.DTO.user.request.UpdateUserRequest;
+import org.fleximart.fleximart.v1.DTO.user.response.AddressResponse;
+import org.fleximart.fleximart.v1.DTO.user.response.AddressTypeResponse;
 import org.fleximart.fleximart.v1.DTO.user.response.UserResponse;
+import org.fleximart.fleximart.v1.DTO.wishlist.response.WishlistItemResponse;
+import org.fleximart.fleximart.v1.DTO.wishlist.response.WishlistResponse;
+import org.fleximart.fleximart.v1.entity.review.Review;
+import org.fleximart.fleximart.v1.entity.review.ReviewMedia;
+import org.fleximart.fleximart.v1.entity.user.Address;
 import org.fleximart.fleximart.v1.entity.user.User;
+import org.fleximart.fleximart.v1.entity.wishlist.Wishlist;
+import org.fleximart.fleximart.v1.entity.wishlist.WishlistItem;
+import org.fleximart.fleximart.v1.repository.review.ReviewRepository;
+import org.fleximart.fleximart.v1.repository.user.AddressRepository;
 import org.fleximart.fleximart.v1.repository.user.UserRepository;
+import org.fleximart.fleximart.v1.repository.wishlist.WishlistRepository;
 import org.fleximart.fleximart.v1.utils.Encryption;
 import org.fleximart.fleximart.v1.utils.ResponseHandler;
 import org.fleximart.fleximart.v1.utils.UserValidation;
@@ -16,6 +32,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
@@ -23,8 +42,93 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
-    public UserService(UserRepository userRepository) {
+    @Autowired
+    private AddressRepository addressRepository;
+
+    @Autowired
+    private WishlistRepository wishlistRepository;
+
+    @Autowired ReviewRepository reviewRepository;
+
+    public UserService(UserRepository userRepository,
+                       AddressRepository addressRepository,
+                       WishlistRepository wishlistRepository,
+                       ReviewRepository reviewRepository) {
         this.userRepository = userRepository;
+        this.addressRepository = addressRepository;
+        this.wishlistRepository = wishlistRepository;
+        this.reviewRepository = reviewRepository;
+    }
+
+    private ReviewMediaResponse mapToMediaResponse(ReviewMedia reviewMedia) {
+        return ReviewMediaResponse.builder()
+                .id(reviewMedia.getId())
+                .mediaUrl(reviewMedia.getMediaUrl())
+                .mediaType(reviewMedia.getMediaType())
+                .build();
+    }
+
+    private ReviewResponse mapToReviewResponse(Review review) {
+        return ReviewResponse.builder()
+                .id(review.getId())
+                .rating(review.getRating())
+                .comment(review.getComment())
+                .userId(review.getUser().getId())
+                .productId(review.getProduct().getId())
+                .reviewMedia(
+                        review.getReviewMedia().stream()
+                                .map(this::mapToMediaResponse)
+                                .collect(Collectors.toSet())
+                )
+                .isApproved(review.getIsApproved())
+                .isDeleted(review.getIsDeleted())
+                .isPublished(review.getIsPublished())
+                .build();
+    }
+
+    private List<ReviewResponse> createReviewResponseList () {
+        List<ReviewResponse> reviewResponseList = new ArrayList<>();
+        for (Review review : reviewRepository.findAll()) {
+            reviewResponseList.add(mapToReviewResponse(review));
+        }
+        return reviewResponseList;
+    }
+
+    private Set<WishlistItemResponse> mapToWishlistItemResponseList(Set<WishlistItem> wishlistItems) {
+        return wishlistItems.stream().map(wishlistItem -> WishlistItemResponse.builder()
+                .productId(wishlistItem.getProduct().getId())
+                .productName(wishlistItem.getProduct().getName())
+                .build())
+                .collect(Collectors.toSet());
+    }
+
+    private WishlistResponse mapToWishlistResponse(Wishlist wishlist) {
+        return WishlistResponse.builder()
+                .id(wishlist.getId())
+                .items(mapToWishlistItemResponseList(wishlist.getItems()))
+                .build();
+    }
+
+    private AddressResponse mapToAddressResponse(Address address) {
+        return AddressResponse.builder()
+                .id(address.getId())
+                .street(address.getStreet())
+                .streetNumber(address.getStreetNumber())
+                .city(address.getCity())
+                .state(address.getState())
+                .postalCode(address.getPostalCode())
+                .name(address.getName())
+                .country(address.getCountry())
+                .addressType(
+                        AddressTypeResponse.builder()
+                                .id(address.getAddressType().getId())
+                                .icon(address.getAddressType().getIcon())
+                                .name(address.getAddressType().getName())
+                                .description(address.getAddressType().getDescription())
+                                .build()
+                )
+                .houseNumber(address.getHouseNumber())
+                .build();
     }
 
 
@@ -40,6 +144,7 @@ public class UserService {
         return ResponseHandler.generateResponse("All User fetched successfully.", 200, createUserResponseObjectList(userRepository.findAll(specification)), false);
     }
 
+
     /**
      * Create User Response Object from User entity
      *
@@ -47,6 +152,8 @@ public class UserService {
      * @return UserResponse object
      */
     private UserResponse createUserResponseObject(User user) {
+        List<Address> addresses = addressRepository.findByUserId(user.getId());
+        List<AddressResponse> addressResponseList = addresses.stream().map(this::mapToAddressResponse).toList();
         return UserResponse.builder()
                 .id(user.getId())
                 .firstName(user.getFirstName())
@@ -56,6 +163,9 @@ public class UserService {
                 .email(user.getEmail())
                 .phoneNumber(user.getPhoneNumber())
                 .dateOfBirth(String.valueOf(user.getDateOfBirth()))
+                .addresses(addressResponseList)
+                .wishlist(mapToWishlistResponse(Objects.requireNonNull(user.getWishlists().stream().findFirst().orElse(null))))
+                .reviews(createReviewResponseList())
                 .build();
     }
 
@@ -105,8 +215,7 @@ public class UserService {
             return ResponseHandler.generateResponse("Email already exists.", 400, null, true);
         }
 
-        if (!UserValidation.validateUserRequest(userRequest))
-        {
+        if (!UserValidation.validateUserRequest(userRequest)) {
             return ResponseHandler.generateResponse("Invalid user request.", 400, null, true);
         }
 

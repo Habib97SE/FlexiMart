@@ -20,5 +20,4 @@ public class InventoryRequest {
     private String stockStatus;
     private Boolean inventoryTracking;
     private Integer reOrderLevel;
-    private Long productVariantId;
 }

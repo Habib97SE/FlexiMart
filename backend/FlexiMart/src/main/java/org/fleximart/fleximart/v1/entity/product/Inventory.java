@@ -55,11 +55,6 @@ public class Inventory {
     @Column(nullable = true)
     private Integer reOrderLevel;
 
-    // Change from Product to ProductVariant
-    @ManyToOne
-    @JoinColumn(name = "variant_id", nullable = false)
-    private ProductVariant variant;
-
     @Column(nullable = false)
     @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)

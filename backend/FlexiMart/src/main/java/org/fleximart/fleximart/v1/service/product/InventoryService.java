@@ -23,7 +23,8 @@ public class InventoryService {
         this.inventoryRepository = inventoryRepository;
     }
 
-    private InventoryResponse createInventoryResponse(Inventory inventory) {
+    // Method to create InventoryResponse from Inventory
+    public InventoryResponse createInventoryResponse(Inventory inventory) {
         return InventoryResponse.builder()
                 .id(inventory.getId())
                 .price(inventory.getPrice())
@@ -36,10 +37,10 @@ public class InventoryService {
                 .stockStatus(inventory.getStockStatus())
                 .inventoryTracking(inventory.getInventoryTracking())
                 .reOrderLevel(inventory.getReOrderLevel())
-                .productVariantId(inventory.getVariant().getId())
-
                 .build();
     }
+
+
 
     private List<InventoryResponse> createInventoryResponseList(List<Inventory> inventories) {
         return inventories.stream().map(this::createInventoryResponse).collect(Collectors.toList());
@@ -53,9 +54,6 @@ public class InventoryService {
         return createInventoryResponse(Objects.requireNonNull(inventoryRepository.findById(id).orElse(null)));
     }
 
-    public InventoryResponse findByProductId(Long productVariantId) {
-        return createInventoryResponse(inventoryRepository.findByVariant_Id(productVariantId));
-    }
 
     public InventoryResponse save(InventoryRequest inventoryRequest) {
 
@@ -72,7 +70,6 @@ public class InventoryService {
                 .stockStatus(inventoryRequest.getStockStatus())
                 .inventoryTracking(inventoryRequest.getInventoryTracking())
                 .reOrderLevel(inventoryRequest.getReOrderLevel())
-                .variant(ProductVariant.builder().id(inventoryRequest.getProductVariantId()).build())
                 .build();
         return createInventoryResponse(inventoryRepository.save(inventory));
     }
@@ -105,5 +102,8 @@ public class InventoryService {
     }
 
 
+    public Inventory findByInventoryId(Long id) {
+        return inventoryRepository.findById(id).orElse(null);
+    }
 }
 

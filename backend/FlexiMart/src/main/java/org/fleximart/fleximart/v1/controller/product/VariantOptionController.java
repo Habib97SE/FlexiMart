@@ -1,6 +1,7 @@
 package org.fleximart.fleximart.v1.controller.product;
 
 import org.fleximart.fleximart.v1.DTO.product.request.VariantOptionRequest;
+import org.fleximart.fleximart.v1.utils.ResponseHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -29,7 +30,12 @@ public class VariantOptionController {
 
     @PostMapping
     public ResponseEntity<Object> save(@RequestBody VariantOptionRequest variantOptionRequest) {
-        return variantOptionService.save(variantOptionRequest);
+        return ResponseHandler.generateResponse(
+                "Variant option saved successfully",
+                201,
+                variantOptionService.save(variantOptionRequest),
+                false
+        );
     }
 
     @PutMapping("/{id}")

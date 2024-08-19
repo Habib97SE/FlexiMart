@@ -4,10 +4,12 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
+import org.fleximart.fleximart.v1.entity.cart.CartItem;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -17,6 +19,7 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 public class ProductVariant {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -26,7 +29,7 @@ public class ProductVariant {
     @JoinColumn(name = "product_id", nullable = false)
     private Product product;
 
-    // Many-to-one relationship with VariantOptionRepository entity (e.g., Size, Color)
+    // Many-to-many relationship with VariantOption entity (e.g., Size, Color)
     @ManyToMany
     @JoinTable(
             name = "product_variant_option",
@@ -34,6 +37,22 @@ public class ProductVariant {
             inverseJoinColumns = @JoinColumn(name = "variant_option_id")
     )
     private List<VariantOption> variantOptions;
+
+    // Many-to-many relationship with VariantGroup entity
+    @ManyToMany
+    @JoinTable(
+            name = "product_variant_variant_group",
+            joinColumns = @JoinColumn(name = "product_variant_id"),
+            inverseJoinColumns = @JoinColumn(name = "variant_group_id")
+    )
+    private List<VariantGroup> variantGroups;
+
+    @NotNull(message = "Inventory is required")
+    @Column(nullable = false)
+    private Long inventory;
+
+    @OneToMany(mappedBy = "productVariant")
+    private List<CartItem> cartItems = new ArrayList<>();
 
     @NotNull(message = "SKU is required")
     @Size(max = 50, message = "SKU must not exceed 50 characters")
@@ -43,7 +62,6 @@ public class ProductVariant {
     @Size(max = 100, message = "Barcode must not exceed 100 characters")
     @Column(nullable = true, unique = true)
     private String barCode;
-
 
     // List of product media related to this variant
     @OneToMany(mappedBy = "productVariant", cascade = CascadeType.ALL, orphanRemoval = true)

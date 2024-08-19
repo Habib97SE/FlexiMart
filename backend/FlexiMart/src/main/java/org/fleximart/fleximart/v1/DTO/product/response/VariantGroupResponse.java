@@ -14,5 +14,4 @@ public class VariantGroupResponse {
     private Long id;
     private String name;
     private String description;
-    private List<VariantOptionResponse> variantOptions;
 }

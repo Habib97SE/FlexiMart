@@ -11,6 +11,7 @@ import org.fleximart.fleximart.v1.repository.blog.CategpryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -25,7 +26,7 @@ public class CategoryService {
         this.categpryRepository = categpryRepository;
     }
 
-    private List<TagResponse> mapTagsToResponse (Set<Tag> tags) {
+    private List<TagResponse> mapTagsToResponse(Set<Tag> tags) {
         return tags.stream()
                 .map(tag -> TagResponse.builder()
                         .id(tag.getId())
@@ -34,7 +35,7 @@ public class CategoryService {
                 .collect(Collectors.toList());
     }
 
-    private List<PostResponse> mapPostsToResponse (Set<Post> posts) {
+    private List<PostResponse> mapPostsToResponse(Set<Post> posts) {
         return posts.stream()
                 .map(post -> PostResponse.builder()
                         .id(post.getId())
@@ -47,7 +48,7 @@ public class CategoryService {
                 .collect(Collectors.toList());
     }
 
-    private CategoryResponse mapToResponse (Category category) {
+    private CategoryResponse mapToResponse(Category category) {
         return CategoryResponse.builder()
                 .id(category.getId())
                 .name(category.getName())
@@ -59,17 +60,18 @@ public class CategoryService {
                 .build();
     }
 
-    private Category mapToEntity (CategoryRequest categoryRequest) {
+    private Category mapToEntity(CategoryRequest categoryRequest) {
         return Category.builder()
                 .name(categoryRequest.getName())
                 .description(categoryRequest.getDescription())
                 .mainImageUrl(categoryRequest.getMainImageUrl())
                 .mainImageAlt(categoryRequest.getMainImageAlt())
                 .slug(categoryRequest.getSlug())
+                .posts(new HashSet<>())
                 .build();
     }
 
-    public List<CategoryResponse> findAll () {
+    public List<CategoryResponse> findAll() {
         List<Category> categories = categpryRepository.findAll();
         return categories.stream()
                 .map(this::mapToResponse)
@@ -77,27 +79,27 @@ public class CategoryService {
     }
 
 
-    public CategoryResponse findById (Long id) {
+    public CategoryResponse findById(Long id) {
         Category category = categpryRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Category not found."));
         return mapToResponse(category);
     }
 
-    public CategoryResponse save (CategoryRequest categoryRequest) {
+    public CategoryResponse save(CategoryRequest categoryRequest) {
         Category category = mapToEntity(categoryRequest);
         category = categpryRepository.save(category);
         return mapToResponse(category);
     }
 
-    public CategoryResponse update (Long id, CategoryRequest categoryRequest) {
-        Category category = categpryRepository.findById(id)
+    public CategoryResponse update(Long id, CategoryRequest categoryRequest) {
+        categpryRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Category not found."));
-        category = mapToEntity(categoryRequest);
+        Category category = mapToEntity(categoryRequest);
         category = categpryRepository.save(category);
         return mapToResponse(category);
     }
 
-    public boolean delete (Long id) {
+    public boolean delete(Long id) {
         Category category = categpryRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Category not found."));
         categpryRepository.delete(category);

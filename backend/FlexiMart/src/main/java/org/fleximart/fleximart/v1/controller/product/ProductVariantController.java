@@ -1,13 +1,18 @@
 package org.fleximart.fleximart.v1.controller.product;
 
 import org.fleximart.fleximart.v1.DTO.product.request.ProductVariantRequest;
+import org.fleximart.fleximart.v1.DTO.product.request.VariantOptionRequest;
 import org.fleximart.fleximart.v1.DTO.product.response.ProductVariantResponse;
+import org.fleximart.fleximart.v1.DTO.product.response.VariantOptionResponse;
+import org.fleximart.fleximart.v1.entity.product.VariantOption;
 import org.fleximart.fleximart.v1.service.product.ProductVariantService;
+import org.fleximart.fleximart.v1.service.product.VariantOptionService;
 import org.fleximart.fleximart.v1.utils.ResponseHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -15,10 +20,12 @@ import java.util.List;
 public class ProductVariantController {
 
     private final ProductVariantService productVariantService;
+    private final VariantOptionService variantOptionService;
 
     @Autowired
-    public ProductVariantController(ProductVariantService productVariantService) {
+    public ProductVariantController(ProductVariantService productVariantService, VariantOptionService variantOptionService) {
         this.productVariantService = productVariantService;
+        this.variantOptionService = variantOptionService;
     }
 
     @GetMapping
@@ -53,7 +60,7 @@ public class ProductVariantController {
 
     @PostMapping
     public ResponseEntity<Object> save(@RequestBody ProductVariantRequest productVariantRequest) {
-        ProductVariantResponse productVariantResponse = productVariantService.saveProductVariant(productVariantRequest);
+        ProductVariantResponse productVariantResponse = productVariantService.save(productVariantRequest);
         return ResponseHandler.generateResponse(
                 "Product variant saved successfully",
                 201,

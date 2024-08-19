@@ -1,8 +1,7 @@
 package org.fleximart.fleximart.v1.service.product;
 
-import org.apache.coyote.Response;
+
 import org.fleximart.fleximart.v1.DTO.product.request.NewProductRequest;
-import org.fleximart.fleximart.v1.DTO.product.request.ProductMediaRequest;
 import org.fleximart.fleximart.v1.DTO.product.request.UpdateProductRequest;
 import org.fleximart.fleximart.v1.DTO.product.response.*;
 import org.fleximart.fleximart.v1.entity.product.*;
@@ -28,86 +27,44 @@ public class ProductService {
     private BrandRepository brandRepository;
 
     @Autowired
-    private ProductVariantRepository productVariantRepository;
-
+    private CollectionRepository collectionRepository;
 
     @Autowired
-    private CollectionRepository collectionRepository;
+    private ProductVariantService productVariantService;
 
     @Autowired
     private VariantGroupRepository variantGroupRepository;
 
+    @Autowired
+    private InventoryService inventoryService;
+
     public ProductService(ProductRepository productRepository,
                           BrandRepository brandRepository,
                           CollectionRepository collectionRepository,
-                          ProductVariantRepository productVariantRepository,
-                          VariantGroupRepository variantGroupRepository) {
+                          ProductVariantService productVariantService,
+                          VariantGroupRepository variantGroupRepository,
+                          InventoryService inventoryService) {
         this.productRepository = productRepository;
         this.brandRepository = brandRepository;
+        this.productVariantService = productVariantService;
         this.collectionRepository = collectionRepository;
-        this.productVariantRepository = productVariantRepository;
         this.variantGroupRepository = variantGroupRepository;
-    }
-
-
-
-    private VariantOptionResponse createVariantOptionResponse(VariantOption variantOption) {
-        return VariantOptionResponse.builder()
-                .id(variantOption.getId())
-                .value(variantOption.getValue())
-                .description(variantOption.getDescription())
-                .build();
+        this.inventoryService = inventoryService;
     }
 
     private VariantGroupResponse createVariantGroupResponse(VariantGroup variantGroup) {
-        List<VariantOptionResponse> variantOptionResponses = variantGroup.getVariantOptions().stream()
-                .map(vo -> VariantOptionResponse.builder()
-                        .id(vo.getId())
-                        .value(vo.getValue())
-                        .build())
-                .collect(Collectors.toList());
-
         return VariantGroupResponse.builder()
                 .id(variantGroup.getId())
                 .name(variantGroup.getName())
-                .variantOptions(variantOptionResponses)
+                .description(variantGroup.getDescription())
                 .build();
     }
 
-    private ProductVariantResponse createProductVariantResponse(ProductVariant productVariant) {
-        // Find VariantGroups based on the VariantOptions of this ProductVariant
-        List<VariantOption> variantOptions = productVariant.getVariantOptions();
-        List<VariantGroup> variantGroups = variantGroupRepository.findByVariantOptions(variantOptions);
 
-        List<VariantGroupResponse> variantGroupResponses = variantGroups.stream()
-                .map(this::createVariantGroupResponse)
-                .collect(Collectors.toList());
 
-        return ProductVariantResponse.builder()
-                .id(productVariant.getId())
-                .sku(productVariant.getSku())
-                .barCode(productVariant.getBarCode())
-                .variantGroups(variantGroupResponses)
-                .productMedia(productVariant.getProductMediaList()
-                        .stream()
-                        .map(productMedia -> ProductMediaResponse.builder()
-                                .id(productMedia.getId())
-                                .mediaUrl(productMedia.getMediaUrl())
-                                .mediaType(productMedia.getMediaType())
-                                .mediaAlt(productMedia.getAltText())
-                                .build())
-                        .collect(Collectors.toList()))
-                .build();
-    }
 
     public ProductResponse createProductResponse(Product product) {
-        // Retrieve all variants for this product
-        List<ProductVariant> productVariants = productVariantRepository.findByProduct(product);
 
-        // Convert the product variants to DTOs
-        List<ProductVariantResponse> productVariantResponses = productVariants.stream()
-                .map(this::createProductVariantResponse)
-                .collect(Collectors.toList());
 
         return ProductResponse.builder()
                 .id(product.getId())
@@ -128,15 +85,14 @@ public class ProductService {
                         .name(product.getProductType().getName())
                         .description(product.getProductType().getDescription())
                         .build())
-                .productVariants(productVariantResponses) // Add the list of product variants here
+                .productVariants(productVariantService.retrieveAndCreateProductVariantResponse(product.getId())) // Add the list of product variants here
                 .build();
     }
+
     private List<ProductResponse> createProductResponseList(List<Product> products) {
-        List<ProductResponse> productResponses = new ArrayList<>();
-        for (Product product : products) {
-            productResponses.add(createProductResponse(product));
-        }
-        return productResponses;
+        return products.stream()
+                .map(this::createProductResponse)
+                .collect(Collectors.toList());
     }
 
     private Brand findBrandOrThrow(Long brandId) {
@@ -149,21 +105,14 @@ public class ProductService {
                 .orElseThrow(() -> new ResourceNotFoundException("Collection not found"));
     }
 
-
     private List<ProductVariant> createProductVariantList(List<Long> productVariantIds) {
-        List<ProductVariant> variants = new ArrayList<>();
-        for (Long productVariantId : productVariantIds) {
-            ProductVariant productVariant = ProductVariant.builder()
-                    .id(productVariantId)
-                    .build();
-            variants.add(productVariant);
-        }
-        return variants;
+        return productVariantIds.stream()
+                .map(id -> ProductVariant.builder().id(id).build())
+                .collect(Collectors.toList());
     }
 
     public ResponseEntity<Object> findAll() {
-        List<ProductResponse> products = productRepository.findAll().stream()
-                .map(this::createProductResponse).toList();
+        List<ProductResponse> products = createProductResponseList(productRepository.findAll());
         return ResponseHandler.generateResponse(
                 "Products retrieved successfully",
                 200,
@@ -179,7 +128,6 @@ public class ProductService {
     }
 
     public ResponseEntity<Object> save(NewProductRequest newProductRequest) {
-
         Brand brand = findBrandOrThrow(newProductRequest.getBrandId());
         Collection collection = findCollectionOrThrow(newProductRequest.getCollectionId());
 
@@ -202,15 +150,12 @@ public class ProductService {
         }
     }
 
-
     public ResponseEntity<Object> update(Long id, UpdateProductRequest updateProductRequest) {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Product not found"));
 
-
         Brand brand = findBrandOrThrow(updateProductRequest.getBrandId());
         Collection collection = findCollectionOrThrow(updateProductRequest.getCollectionId());
-
 
         product.setName(updateProductRequest.getName());
         product.setDescription(updateProductRequest.getDescription());
@@ -229,7 +174,6 @@ public class ProductService {
         }
     }
 
-
     public ResponseEntity<Object> delete(Long id) {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Product not found"));
@@ -243,6 +187,5 @@ public class ProductService {
                     "Error deleting product", 500, null, true);
         }
     }
-
-
 }
+

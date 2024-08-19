@@ -7,6 +7,8 @@ import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.fleximart.fleximart.v1.entity.blog.Post;
+import org.fleximart.fleximart.v1.entity.review.Review;
+import org.fleximart.fleximart.v1.entity.wishlist.Wishlist;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -75,12 +77,17 @@ public class User {
     @OneToMany(mappedBy = "author")
     private Set<Post> posts = new HashSet<>();
 
+    @OneToMany(mappedBy = "user")
+    private Set<Wishlist> wishlists;
+
+    @OneToMany(mappedBy = "user")
+    private Set<Review> reviews;
+
     @Column(nullable = false)
     @PastOrPresent(message = "createdAt should be in the past or present")
     @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime createdAt;
-
 
 
     @Column(nullable = true)

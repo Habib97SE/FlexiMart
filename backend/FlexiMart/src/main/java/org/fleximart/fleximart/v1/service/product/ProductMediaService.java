@@ -64,7 +64,7 @@ public class ProductMediaService {
         return createProductMediaResponse(Objects.requireNonNull(productMediaRepository.findById(id).orElse(null)));
     }
 
-    public ProductMedia saveProductMedia(ProductMedia productMedia) {
+    public ProductMedia save(ProductMedia productMedia) {
         return productMediaRepository.save(productMedia);
     }
 
@@ -88,6 +88,6 @@ public class ProductMediaService {
                 .altText(productMediaRequest.getMediaAlt())
                 .build();
 
-        return createProductMediaResponse(saveProductMedia(productMedia));
+        return createProductMediaResponse(save(productMedia));
     }
 }

@@ -5,11 +5,13 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.Size;
 import lombok.*;
+import org.fleximart.fleximart.v1.entity.review.Review;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -44,6 +46,9 @@ public class Product {
         @ManyToOne
         @JoinColumn(name = "type_id", nullable = false)
         private ProductType productType;
+
+        @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
+        private Set<Review> reviews;
 
         @Column(nullable = false)
         @PastOrPresent(message = "Date must be in the past or present")
