@@ -69,6 +69,21 @@ public class ProductVariantService {
                 .build();
     }
 
+    private InventoryResponse createInventoryResponse(Long inventoryId) {
+        Inventory inventory = inventoryService.findByInventoryId(inventoryId);
+        return InventoryResponse.builder()
+                .id(inventory.getId())
+                .price(inventory.getPrice())
+                .inventoryTracking(inventory.getInventoryTracking())
+                .costPrice(inventory.getCostPrice())
+                .currency(inventory.getCurrency())
+                .discountPrice(inventory.getDiscountPrice())
+                .maxOrderQuantity(inventory.getMaxOrderQuantity())
+                .minOrderQuantity(inventory.getMinOrderQuantity())
+                .build();
+
+    }
+
     private VariantOptionResponse toVariantOptionResponse(VariantOption variantOption) {
         System.err.printf("%s : %s\n", variantOption.getId(), variantOption.getValue());
         return VariantOptionResponse.builder()
@@ -117,6 +132,7 @@ public class ProductVariantService {
                                 .collect(Collectors.toList())
                 )
                 .productMedia(createProductMediaList(productVariant.getProductMediaList()))
+                .inventory(createInventoryResponse(productVariant.getInventory()))
                 .build();
     }
 
@@ -159,12 +175,10 @@ public class ProductVariantService {
         // save variant options into the database
         List<VariantOption> variantOptions = new ArrayList<>();
         for (VariantOptionRequest variantOptionRequest : productVariantRequest.getVariantOptions()) {
-            variantOptions.add(variantOptionRepository.save(VariantOption.builder()
-                    .value(variantOptionRequest.getValue())
-                    .description(variantOptionRequest.getDescription())
-                    .variantGroup(variantGroupRepository.findById(variantOptionRequest.getVariantGroupId())
-                            .orElseThrow(() -> new ResourceNotFoundException("VariantGroup not found with id " + variantOptionRequest.getVariantGroupId())))
-                    .build()));
+            VariantOption variantOption = VariantOption.builder()
+                    .id(variantOptionRequest.getId())
+                    .build();
+            variantOptions.add(variantOption);
         }
 
         // save the inventory into the database
@@ -181,16 +195,7 @@ public class ProductVariantService {
                 .build();
         productVariant = productVariantRepository.save(productVariant);
 
-        // save the product media into the database
-        List<ProductMedia> productMedia = new ArrayList<>();
-        for (ProductMediaRequest productMediaRequest : productVariantRequest.getProductMedia()) {
-            productMedia.add(ProductMedia.builder()
-                    .productVariant(productVariant)
-                    .mediaUrl(productMediaRequest.getMediaUrl())
-                    .mediaType(productMediaRequest.getMediaType())
-                    .altText(productMediaRequest.getMediaAlt())
-                    .build());
-        }
+
 
         return ProductVariantResponse.builder()
                 .id(productVariant.getId())
@@ -201,7 +206,6 @@ public class ProductVariantService {
                                 .map(this::toVariantOptionResponse)
                                 .collect(Collectors.toList())
                 )
-                .productMedia(createProductMediaList(productMedia))
                 .build();
     }
 
