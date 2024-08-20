@@ -1,11 +1,11 @@
-package org.fleximart.fleximart.v1.entity.cart;
+package org.fleximart.fleximart.v1.entity.order;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.PastOrPresent;
 import lombok.*;
-import org.fleximart.fleximart.v1.entity.product.Product;
 import org.fleximart.fleximart.v1.entity.product.ProductVariant;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -16,30 +16,32 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class CartItem {
-
+public class OrderItem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "cart_id")
-    private Cart cart;
+    @JoinColumn(name = "order_id")  // This column will be used to link the order
+    private Order order;
 
     @Column
     private String productName;
+
+    @Enumerated(EnumType.STRING)
+    private OrderStatus status;
 
     @ManyToOne
     @JoinColumn(name = "product_variant_id")
     private ProductVariant productVariant;
 
-    @Column(nullable = false)
+    @Column
     private Integer quantity;
 
-    @Column(nullable = false)
+    @Column
     private BigDecimal unitPrice;
 
-    @Column(nullable = false)
+    @Column
     private BigDecimal totalPrice;
 
     @Column(nullable = false, updatable = false)
@@ -48,11 +50,10 @@ public class CartItem {
     @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime createdAt;
 
-    @Column(nullable = false, updatable = false)
+    @Column(nullable = false)
     @PastOrPresent(message = "Date should be in the past or present")
-    @CreationTimestamp
+    @UpdateTimestamp
     @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime updatedAt;
-
 
 }

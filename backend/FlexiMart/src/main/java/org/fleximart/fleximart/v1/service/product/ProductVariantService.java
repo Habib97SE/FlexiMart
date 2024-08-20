@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -120,7 +121,6 @@ public class ProductVariantService {
     public ProductVariantResponse createProductVariantResponse(ProductVariant productVariant) {
         // Find VariantGroups based on the VariantOptions of this ProductVariant
         List<VariantOption> variantOptions = productVariant.getVariantOptions();
-        List<VariantGroup> variantGroups = variantGroupRepository.findByVariantOptions(variantOptions);
 
         return ProductVariantResponse.builder()
                 .id(productVariant.getId())
@@ -253,7 +253,7 @@ public class ProductVariantService {
      * @param id the ID of the ProductVariant to delete.
      * @return true if the ProductVariant was deleted, false otherwise.
      */
-    public boolean delete(Long id) {
+    public Boolean delete(Long id) {
         if (id < 1) {
             return false;
         }
@@ -265,5 +265,13 @@ public class ProductVariantService {
 
         productVariantRepository.delete(productVariant);
         return true;
+    }
+
+    public Long getInventoryId (Long productVariantId) {
+        ProductVariant productVariant = productVariantRepository.findById(productVariantId).orElse(null);
+        if (productVariant == null) {
+            return null;
+        }
+        return productVariant.getInventory();
     }
 }

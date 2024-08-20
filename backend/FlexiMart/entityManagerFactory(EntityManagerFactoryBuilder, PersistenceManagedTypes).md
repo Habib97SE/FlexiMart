@@ -1,6 +1,10 @@
 classDiagram
+
 direction BT
+
+
 class AbstractAuditable {
+    
     Date  createdDate
     Date  lastModifiedDate
 }

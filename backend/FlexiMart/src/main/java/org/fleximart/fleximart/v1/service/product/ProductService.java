@@ -127,7 +127,7 @@ public class ProductService {
         return createProductResponse(product);
     }
 
-    public ResponseEntity<Object> save(NewProductRequest newProductRequest) {
+    public ProductResponse save(NewProductRequest newProductRequest) {
         Brand brand = findBrandOrThrow(newProductRequest.getBrandId());
         Collection collection = findCollectionOrThrow(newProductRequest.getCollectionId());
 
@@ -142,15 +142,14 @@ public class ProductService {
 
         try {
             product = productRepository.save(product);
-            return ResponseHandler.generateResponse(
-                    "Product saved successfully", 201, createProductResponse(product), false);
+            return createProductResponse(product);
         } catch (Exception e) {
-            return ResponseHandler.generateResponse(
-                    "Error saving product", 500, null, true);
+            System.err.println(e.getMessage());
+            return null;
         }
     }
 
-    public ResponseEntity<Object> update(Long id, UpdateProductRequest updateProductRequest) {
+    public ProductResponse update(Long id, UpdateProductRequest updateProductRequest) {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Product not found"));
 
@@ -166,25 +165,23 @@ public class ProductService {
 
         try {
             product = productRepository.save(product);
-            return ResponseHandler.generateResponse(
-                    "Product updated successfully", 200, createProductResponse(product), false);
+            return createProductResponse(product);
         } catch (Exception e) {
-            return ResponseHandler.generateResponse(
-                    "Error updating product", 500, null, true);
+            System.err.println(e.getMessage());
+            return null;
         }
     }
 
-    public ResponseEntity<Object> delete(Long id) {
+    public Boolean delete(Long id) {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Product not found"));
 
         try {
             productRepository.delete(product);
-            return ResponseHandler.generateResponse(
-                    "Product deleted successfully", 200, null, false);
+            return true;
         } catch (Exception e) {
-            return ResponseHandler.generateResponse(
-                    "Error deleting product", 500, null, true);
+            System.err.println(e.getMessage());
+            return false;
         }
     }
 }

@@ -55,7 +55,7 @@ public class ProductMediaService {
         }
     }
 
-    public List<ProductMediaResponse> getProductMediaByProductId(Long productVariantId) {
+    public List<ProductMediaResponse> getProductMediaByProductVariantId(Long productVariantId) {
         return productMediaRepository.findByProductVariant_Id(productVariantId)
                 .stream().map(this::createProductMediaResponse).toList();
     }

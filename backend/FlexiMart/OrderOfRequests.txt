@@ -1,0 +1,5 @@
+1- Create Product
+2- Create variant groups
+3- add variant options (together with variant group Ids)
+4- Add Product variant together with inventory
+5- add product media

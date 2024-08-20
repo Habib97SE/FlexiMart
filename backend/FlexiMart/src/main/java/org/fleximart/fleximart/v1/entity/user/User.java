@@ -7,6 +7,7 @@ import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.fleximart.fleximart.v1.entity.blog.Post;
+import org.fleximart.fleximart.v1.entity.order.Order;
 import org.fleximart.fleximart.v1.entity.review.Review;
 import org.fleximart.fleximart.v1.entity.wishlist.Wishlist;
 import org.hibernate.annotations.CreationTimestamp;
@@ -79,6 +80,9 @@ public class User {
 
     @OneToMany(mappedBy = "user")
     private Set<Wishlist> wishlists;
+
+    @OneToMany(mappedBy = "user")
+    private Set<Order> orders;
 
     @OneToMany(mappedBy = "user")
     private Set<Review> reviews;

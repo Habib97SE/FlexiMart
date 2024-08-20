@@ -1,7 +1,6 @@
-package org.fleximart.fleximart.v1.DTO.cart.request;
+package org.fleximart.fleximart.v1.DTO.order.response;
 
 import lombok.*;
-import org.fleximart.fleximart.v1.DTO.product.request.ProductVariantRequest;
 
 import java.math.BigDecimal;
 
@@ -10,10 +9,12 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class CartItemRequest {
+public class OrderItemResponse {
+    private Long id;
     private String productName;
-    private ProductVariantRequest productVariant;
+    private Long productVariant;
     private Integer quantity;
     private BigDecimal unitPrice;
     private BigDecimal totalPrice;
+    private String status;
 }

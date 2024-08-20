@@ -38,15 +38,6 @@ public class ProductVariant {
     )
     private List<VariantOption> variantOptions;
 
-    // Many-to-many relationship with VariantGroup entity
-    @ManyToMany
-    @JoinTable(
-            name = "product_variant_variant_group",
-            joinColumns = @JoinColumn(name = "product_variant_id"),
-            inverseJoinColumns = @JoinColumn(name = "variant_group_id")
-    )
-    private List<VariantGroup> variantGroups;
-
     @NotNull(message = "Inventory is required")
     @Column(nullable = false)
     private Long inventory;
@@ -56,11 +47,11 @@ public class ProductVariant {
 
     @NotNull(message = "SKU is required")
     @Size(max = 50, message = "SKU must not exceed 50 characters")
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String sku;
 
     @Size(max = 100, message = "Barcode must not exceed 100 characters")
-    @Column(nullable = true, unique = true)
+    @Column(nullable = true)
     private String barCode;
 
     // List of product media related to this variant

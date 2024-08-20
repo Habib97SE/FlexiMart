@@ -55,6 +55,7 @@ public class InventoryService {
     }
 
 
+
     public InventoryResponse save(InventoryRequest inventoryRequest) {
 
 
@@ -92,13 +93,19 @@ public class InventoryService {
         return createInventoryResponse(inventoryRepository.save(inventory));
     }
 
-    public InventoryResponse delete(Long id) {
+    public Boolean delete(Long id) {
         Inventory inventory = inventoryRepository.findById(id).orElse(null);
         if (inventory == null) {
-            return null;
+            return false;
         }
-        inventoryRepository.delete(inventory);
-        return createInventoryResponse(inventory);
+        try {
+            inventoryRepository.delete(inventory);
+            return true;
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
+            return false;
+        }
+
     }
 
 
