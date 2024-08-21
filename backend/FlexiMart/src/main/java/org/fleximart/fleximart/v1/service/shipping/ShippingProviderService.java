@@ -65,10 +65,9 @@ public class ShippingProviderService {
                 .build();
     }
 
-    public List<ShippingMethodResponse> findAll() {
+    public List<ShippingProviderResponse> findAll() {
         return shippingProviderRepository.findAll().stream()
-                .flatMap(shippingProvider -> shippingProvider.getShippingMethods().stream())
-                .map(this::mapToShippingMethodResponse)
+                .map(this::mapToResponse)
                 .collect(Collectors.toList());
     }
 

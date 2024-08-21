@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "flexi-mart-project",
+  "private_key_id": "2eac8c79802a663aae42e72a8a45bb4d6d007d98",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQC+OKYKpdtsT3f6\nysLGS/LwCg7MtuxNWy1UmHUTunOidj8oK5rZOT/MYYiIdkxyH/dLlfD+ZY/kDBGu\n0Kqw4oFP563bFGDmUHtLBDizZG6HXugI+3bfN8xRbs06MMXILcZkCW8zgVRJBG72\nArKU9dJKmg/2zpw1OZXKKTrrpXbiz3dscV9eMT+NIVIsuiysPSbHuQNQ+bbFqqbk\n/4Ph9lcUq4+LNBORGxGQ/gXPl3dYVDedByYECPIOo8gtCY+B0WJ9zMGZ7BAIB7pb\nr9zyuziUGxawYBYaBVffTWeW6W8lNnBmAlzCncdfUkrGjFe1q9JY5Rhd6f0I1mxH\nmS0y0iSnAgMBAAECggEAVvtwcc4F2DE+m9+70RFJtZnjypia1YSr5dMRNkQ8PD32\nA1htJoeXNM4ksMHnkwgq/NVDrhCjC5S5QUcJxnjMyM0YIuXeqXKD7nmvs9ho8l3j\nnLfgU5IgS9xu2/0Rc8f6wCPQRa0N7ZWpZ7U0FAmUb6ijRCiWJYB/jkHsP3UaN/v8\ndylDlmPIzyVyjpodpJTAuUQy5GzGT7uaRynWL7AcZ+WaDUvtGQ6ZH/fm+54xgpsw\nUGV1RbDL5yzTiynhD+JpLqXQ+8pArxOe/Y34U4EKajQO30knPaSRr9lzKkqtgnF3\n3s4YAtlC6YseEZSPa/F4Ojl3M+WGzTwLrBMjlr+IgQKBgQDonZAGSk0hnevUV71O\nTGkBPChFMO9yF8awU7XtbZ31ysOIwysBaLgLOIrCUcL3chVekn+lti5/cI113HXG\nw26C7FkC6ddUBGiEEuMT4USVY+EFVC95Bwll3WO6S58Em016pUtmoak38LJJlJGw\no2NmWx+jGVLqYWKVbOAOw0oJqwKBgQDRWA6iNDiXasgiOO26tlN8fXIFztsFszRh\ns0kQSne2ghB3hFQE23kl7j3mPwzWABsmTXPoW74kO3eLptgE74+gadLgbw/7FIiK\nMgAgZMH3JmYjPIxn/A7QEsQQfb5j3bP6H8rbvdohyqB8ggz1hVvua4KcG3pHY3+n\nfnmQ42is9QKBgGc65VulRa2Rg8LsXRqOVlsx8z0hhmG/o3FE9Qu1BdC6dyQOWNt7\nOZHhOdMarcdaXZlmsjc8Lk5oCJ8xgyL+P+DiOm5MkD685hUWvKdp5SHW/Vl8DsVL\nFiSap1NZk+xbb3rqOBgHzi0BKF33DOCy4b3e2p9q8Z0KMtHVS2nByO2ZAoGAE0l/\nn6YcCKdH5Q9Fp8wgiPmtxac3OqE2FEJGWv/hY6k8Bybj7sahtMLsZQguEJFV7wN3\nyFKbhA8OholKobnIi8j0KsVQvZs4sTLGHDXsQO8CvgBYF0R7wOPZuIM9RUopyMOh\nFvm43SAkBRSeSQiOXbr9/4/whh8+pZnbbWPmQvkCgYEAoAVeeUky/wDIG39a5Pci\ng9RKyv+Cof0XnMYjFOAYKkFUi3YsM8K2ZiPEgF0KjuR0I889XYmp1fEgpTDj7p5V\nW6zOTy0VanxCiG3QlFxrhgpmlLXO2fFOMDe/AipIFBNJbL+b6rRY5a4UBGVPQ3jK\nzVddRvSXvIkLYG7fPI9ehfQ=\n-----END PRIVATE KEY-----\n",
+  "client_email": "fleximart-product-media@flexi-mart-project.iam.gserviceaccount.com",
+  "client_id": "117309091903720597041",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/fleximart-product-media%40flexi-mart-project.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}

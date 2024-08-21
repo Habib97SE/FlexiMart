@@ -54,6 +54,17 @@ public class ShippingMethodService {
                 .orElse(null);
     }
 
+    /**
+     * Find all shipping methods offered by a provider
+     * @param providerId the id of the provider
+     * @return List of ShippingMethodResponse.
+     */
+    public List<ShippingMethodResponse> findByProviderId(Long providerId) {
+        return shippingMethodRepository.findByProvider_Id(providerId).stream()
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
+    }
+
     public ShippingMethodResponse create(ShippingMethodRequest shippingMethodRequest) {
         ShippingMethod shippingMethod = mapToEntity(shippingMethodRequest);
 
