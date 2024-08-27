@@ -164,7 +164,6 @@ public class UserService {
                 .phoneNumber(user.getPhoneNumber())
                 .dateOfBirth(String.valueOf(user.getDateOfBirth()))
                 .addresses(addressResponseList)
-                .wishlist(mapToWishlistResponse(Objects.requireNonNull(user.getWishlists().stream().findFirst().orElse(null))))
                 .reviews(createReviewResponseList())
                 .build();
     }
@@ -211,6 +210,7 @@ public class UserService {
      * @return ResponseEntity
      */
     public ResponseEntity<Object> create(UserRequest userRequest) {
+        System.err.println(userRequest.getPassword());
         if (userRepository.findByEmail(userRequest.getEmail()) != null) {
             return ResponseHandler.generateResponse("Email already exists.", 400, null, true);
         }

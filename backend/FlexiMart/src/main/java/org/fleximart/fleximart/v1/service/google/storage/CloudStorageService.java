@@ -17,7 +17,6 @@ import java.util.List;
 
 public class CloudStorageService {
     private final Storage storage;
-    private final String bucketName = "pixelvotex_image_storage";
 
     public CloudStorageService(Storage storage) {
         this.storage = storage;

@@ -63,7 +63,7 @@ public class ProductVariantService {
      * @return the VariantGroupResponse DTO.
      */
     private VariantGroupResponse createVariantGroupResponse(VariantGroup variantGroup) {
-
+        System.err.println("VariantGroupId: " + variantGroup.getId());
         return VariantGroupResponse.builder()
                 .id(variantGroup.getId())
                 .name(variantGroup.getName())

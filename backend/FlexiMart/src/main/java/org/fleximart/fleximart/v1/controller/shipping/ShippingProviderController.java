@@ -27,15 +27,12 @@ public class ShippingProviderController {
 
     private final ShippingProviderService shippingProviderService;
     private final ShippingMethodService shippingMethodService;
-    private final EmailService emailService;
 
     @Autowired
     public ShippingProviderController(ShippingProviderService shippingProviderService,
-                                      ShippingMethodService shippingMethodService,
-                                      EmailService emailService) {
+                                      ShippingMethodService shippingMethodService) {
         this.shippingProviderService = shippingProviderService;
         this.shippingMethodService = shippingMethodService;
-        this.emailService = emailService;
     }
 
     /**
@@ -45,14 +42,6 @@ public class ShippingProviderController {
     @GetMapping("/providers")
     public ResponseEntity<Object> getAllShippingProviders () throws MessagingException, IOException {
         // use CloudStorageService to upload a file called cat.jpg
-        InputStream inputStream = getClass().getClassLoader().getResourceAsStream("cat.jpg");
-        if (inputStream == null) {
-            throw new FileNotFoundException("File not found: cat.jpg");
-        }
-        byte[] content = inputStream.readAllBytes();
-        CloudStorageService cloudStorageService = new CloudStorageService();
-        String url = cloudStorageService.uploadFile("fleximart_product_media", "cat.jpg", content);
-        System.err.println("The url is: " + url);
         List<ShippingProviderResponse> shippingProviders = shippingProviderService.findAll();
         return ResponseHandler.generateResponse(
                 "Successfully retrieved all shipping providers",

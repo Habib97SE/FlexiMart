@@ -1,7 +1,10 @@
 package org.fleximart.fleximart.v1.service.cart;
 
 import org.fleximart.fleximart.v1.DTO.cart.response.CartItemResponse;
+import org.fleximart.fleximart.v1.entity.product.Inventory;
 import org.fleximart.fleximart.v1.entity.product.ProductVariant;
+import org.fleximart.fleximart.v1.repository.product.InventoryRepository;
+import org.fleximart.fleximart.v1.repository.product.ProductVariantRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.fleximart.fleximart.v1.DTO.cart.request.CartItemRequest;
@@ -20,8 +23,18 @@ public class CartItemService {
     @Autowired
     private CartItemRepository cartItemRepository;
 
-    public CartItemService(CartItemRepository cartItemRepository) {
+    @Autowired
+    private ProductVariantRepository productVariantRepository;
+
+    @Autowired
+    private InventoryRepository inventoryRepository;
+
+    public CartItemService(CartItemRepository cartItemRepository,
+                           ProductVariantRepository productVariantRepository,
+                           InventoryRepository inventoryRepository) {
         this.cartItemRepository = cartItemRepository;
+        this.productVariantRepository = productVariantRepository;
+        this.inventoryRepository = inventoryRepository;
     }
 
     /**
@@ -65,12 +78,14 @@ public class CartItemService {
 
     /**
      * Find cart item by id
-     * @param id
+     * @param id CartItem id to find
      * @return CartItemResponse
      */
     public CartItemResponse findById(Long id) {
         return toCartItemResponse(Objects.requireNonNull(cartItemRepository.findById(id).orElse(null)));
     }
+
+
 
     /**
      * Save cart item
@@ -78,6 +93,20 @@ public class CartItemService {
      * @return CartItemResponse
      */
     public CartItemResponse save(CartItemRequest cartItemRequest) {
+        ProductVariant productVariant = productVariantRepository.findById(cartItemRequest.getProductVariant()).orElse(null);
+        if (productVariant == null) {
+            return null;
+        }
+        Inventory inventory = inventoryRepository.findById(productVariant.getInventory()).orElse(null);
+        if (inventory == null) {
+            return null;
+        }
+        if (cartItemRequest.getQuantity() > inventory.getStockQuantity()) {
+            return null;
+        }
+        if (cartItemRequest.getQuantity() > inventory.getMaxOrderQuantity() || cartItemRequest.getQuantity() < inventory.getMinOrderQuantity()) {
+            return null;
+        }
         return toCartItemResponse(cartItemRepository.save(toCartItem(cartItemRequest)));
     }
 
@@ -90,6 +119,20 @@ public class CartItemService {
     public CartItemResponse update (Long id, CartItemRequest cartItemRequest) {
         CartItem cartItem = cartItemRepository.findById(id).orElse(null);
         if (cartItem == null) {
+            return null;
+        }
+        ProductVariant productVariant = productVariantRepository.findById(cartItemRequest.getProductVariant()).orElse(null);
+        if (productVariant == null) {
+            return null;
+        }
+        Inventory inventory = inventoryRepository.findById(productVariant.getInventory()).orElse(null);
+        if (inventory == null) {
+            return null;
+        }
+        if (cartItemRequest.getQuantity() > inventory.getStockQuantity()) {
+            return null;
+        }
+        if (cartItemRequest.getQuantity() > inventory.getMaxOrderQuantity() || cartItemRequest.getQuantity() < inventory.getMinOrderQuantity()) {
             return null;
         }
         cartItem.setProductVariant(ProductVariant.builder().id(cartItemRequest.getProductVariant()).build());
@@ -105,12 +148,30 @@ public class CartItemService {
      * @return Boolean
      */
     public Boolean delete (Long id) {
+        // Check if cart item exists
         CartItem cartItem = cartItemRepository.findById(id).orElse(null);
         if (cartItem == null) {
             return false;
         }
-        cartItemRepository.delete(cartItem);
-        return true;
+
+        // add item back to inventory
+        ProductVariant productVariant = productVariantRepository.findById(cartItem.getProductVariant().getId()).orElse(null);
+        if (productVariant == null) {
+            return false;
+        }
+        Inventory inventory = inventoryRepository.findById(productVariant.getInventory()).orElse(null);
+        if (inventory == null) {
+            return false;
+        }
+        try {
+            inventory.setStockQuantity(inventory.getStockQuantity() + cartItem.getQuantity());
+            inventoryRepository.save(inventory);
+            cartItemRepository.delete(cartItem);
+            return true;
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
+            return false;
+        }
     }
 
 
