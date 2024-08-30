@@ -5,88 +5,59 @@ import { set } from "nprogress";
 
 const UserContext = createContext();
 
+const USER_STORAGE_KEY = "userDetails";
+
+const saveUserToLocalStorage = (userData) => {
+    localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(userData));
+};
+
+const getUserFromLocalStorage = () => {
+    const userData = localStorage.getItem(USER_STORAGE_KEY);
+    console.log(userData);
+    return userData ? JSON.parse(userData) : null;
+};
+
+const removeUserFromLocalStorage = () => {
+    localStorage.removeItem(USER_STORAGE_KEY);
+};
+
 const UserProvider = (props) => {
-    const [user, setUser] = useState({});
-    const [addresses, setAddresses] = useState([]);
+    const [user, setUser] = useState(getUserFromLocalStorage() || {});
     const [addressTypes, setAddressTypes] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [userLoggedIn, setUserLoggedIn] = useState(false);
+
     const userModel = new UserModel();
     const addressModel = new AddressModel();
-    const userId = 1;
+    const [userLoggedIn, setUserLoggedIn] = useState(false);
+    const userId = user.id;
 
     useEffect(() => {
-        setLoading(true);
-
-        // Fetch the user
-        const fetchUser = async () => {
-            const user = await userModel.getUser(userId);
-            console.log(user);
-            if (user.error) {
-                console.log("Error fetching user");
-            } else {
-                console.log(user.data);
-                setUser(user.data);
-                setUserLoggedIn(true);
-            }
-        };
-
-        // Fetch the addresses
-        const fetchAddresses = async () => {
-            const addresses = await addressModel.getAddressByUserId(userId);
-            console.log(addresses.data);
-            if (addresses.error) {
-                console.log("Error fetching addresses");
-            } else {
-                setAddresses(addresses.data);
-            }
-        };
-
-        // Fetch the address types
-        const fetchAddressTypes = async () => {
-            const addressTypes = await addressModel.getAddressTypes();
-            console.log(addressTypes);
-            if (addressTypes.error) {
-                console.log("Error fetching address types");
-            } else {
-                setAddressTypes(addressTypes.data);
-            }
-        };
-
-        fetchUser();
-        fetchAddresses();
-        fetchAddressTypes();
-
-        setLoading(false);
-    }, []);
-
-    // Function to update user details
-    const updateUserDetails = async (userDetails) => {
-        try {
-            // check if userDetails contains an id, if not add it
-            if (!userDetails.id) {
-                userDetails.id = user.id;
-            }
-
-            if (!userDetails.middleName) {
-                userDetails.middleName = user.middleName;
-            }
-
-            userDetails.suffix = userDetails.nameSuffix;
-
-            const response = await userModel.updateUser(userDetails);
-            console.log(response);
-            if (response.data.error) {
-                return { success: false, error: response.data.message };
+        const fetchUser = async (userId) => {
+            const response = await userModel.getUser(userId);
+            if (response.error) {
+                console.error("Error fetching user:", response.error);
             } else {
                 setUser(response.data);
-                return { success: true, data: response.data.message };
+                saveUserToLocalStorage(response.data);
             }
-        } catch (error) {
-            console.error("Unexpected error:", error);
-            return { success: false, error: error.message };
+        };
+
+        if (!isNaN(userId)) {
+            fetchUser(userId);
+            setUserLoggedIn(true);
+            // Fetch the address types
+            const fetchAddressTypes = async () => {
+                const addressTypes = await addressModel.getAddressTypes();
+                console.log(addressTypes);
+                if (addressTypes.error) {
+                    console.log("Error fetching address types");
+                } else {
+                    setAddressTypes(addressTypes.data);
+                }
+            };
+
+            fetchAddressTypes();
         }
-    };
+    }, [userId]);
 
     const addNewAddress = async (address) => {
         console.log(address);
@@ -97,7 +68,9 @@ const UserProvider = (props) => {
                 console.error("Error creating address:", response.error);
                 return { success: false, error: response.error };
             } else {
-                setAddresses([...addresses, response.data]);
+                // update user.addresses with the new address
+                const newAddresses = [...user.addresses, response.data];
+                setUser({ ...user, addresses: newAddresses });
                 return { success: true, data: response.data };
             }
         } catch (error) {
@@ -112,39 +85,91 @@ const UserProvider = (props) => {
         if (response.error) {
             return { success: false, error: response.message };
         } else {
-            const newAddresses = addresses.filter(
+            const newAddresses = user.addresses.filter(
                 (address) => address.id !== addressId
             );
-            setAddresses(newAddresses);
+            setUser({ ...user, addresses: newAddresses });
             return { success: true, data: response.message };
         }
     };
 
+    const logoutUser = () => {
+        setUser({});
+        setAddressTypes([]);
+        setUserLoggedIn(false);
+        removeUserFromLocalStorage();
+    };
+
+    /**
+     *
+     * @param {object} signin obect containing email and password
+     * @returns
+     */
     const loginUser = async (signin) => {
         const response = await userModel.authenticate(signin);
         if (response.error) {
             return { success: false, error: response.message };
         }
         setUser(response.data);
+        setUserLoggedIn(true);
+        saveUserToLocalStorage(response.data);
         return { success: true, data: response.data };
+    };
+
+    /**
+     * Register a new user
+     * @param {object} user object containing user details
+     * @returns
+     */
+    const registerUser = async (user) => {
+        const response = await userModel.register(user);
+        if (response.error) {
+            return { success: false, error: response.message };
+        }
+        setUser(response.data);
+        setUserLoggedIn(true);
+        saveUserToLocalStorage(response.data);
+        return { success: true, data: response.data };
+    };
+
+    /**
+     * Update user details
+     * @param {object} userDetails : object containing user details
+     * @returns
+     */
+    const updateUserDetails = async (userDetails) => {
+        try {
+            if (!userDetails.id) {
+                userDetails.id = user.id;
+            }
+            const response = await userModel.updateUser(userDetails);
+            if (response.error) {
+                console.error("Error updating user details:", response.error);
+                return { success: false, error: response.error };
+            } else {
+                setUser(response.data);
+                saveUserToLocalStorage(response.data);
+                return { success: true, data: response.data };
+            }
+        } catch (error) {
+            console.error("Unexpected error:", error);
+            return { success: false, error: error.message };
+        }
     };
 
     const value = useMemo(
         () => ({
             user,
-            addresses,
             addressTypes,
             userLoggedIn,
-            deleteAddress,
-            setUser,
-            setAddresses,
-            setAddressTypes,
+            loginUser,
+            registerUser,
+            logoutUser,
             updateUserDetails,
             addNewAddress,
-            setUserLoggedIn,
-            loginUser,
+            deleteAddress,
         }),
-        [user, addresses, addressTypes, addressModel, userModel]
+        [user, addressTypes, userLoggedIn]
     );
 
     return (

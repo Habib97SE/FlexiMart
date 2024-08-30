@@ -2,6 +2,7 @@ import React, { useContext, useState } from "react";
 import { Container, Row, Col, Navbar, Nav, NavItem, NavLink } from "reactstrap";
 import CommonLayout from "../../../components/shop/common-layout";
 import { UserContext } from "../../../helpers/user/UserContext";
+import ProfileSidebar from "../../../components/profile/ProfileSidebar";
 
 const MyOrderListItem = ({ order }) => {
     return (
@@ -21,73 +22,14 @@ const MyOrder = () => {
     const { user } = useContext(UserContext);
     const [accountInfo, setAccountInfo] = useState(false);
 
+    console.log(user.orders);
+
     return (
         <CommonLayout parent="home" title="myorder">
             <section className="section-b-space">
                 <Container>
                     <Row>
-                        {/* Sidebar for Large Screens */}
-                        <Col lg="3" className="d-none d-lg-block">
-                            <div className="dashboard-left">
-                                <div className="block-content">
-                                    <ul>
-                                        <li>
-                                            <a href="/page/account/dashboard">
-                                                Dashboard
-                                            </a>
-                                        </li>
-                                        <li className="active">
-                                            <a href="#">My Orders</a>
-                                        </li>
-                                        <li>
-                                            <a href="#">Wishlist</a>
-                                        </li>
-                                        <li>
-                                            <a href="#">Settings</a>
-                                        </li>
-                                        <li className="last">
-                                            <a href="#">Log Out</a>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </Col>
-
-                        {/* Navbar for Small Screens */}
-                        <Col xs="12" className="d-lg-none mb-3">
-                            <Navbar color="light" light expand="md">
-                                <button
-                                    className="navbar-toggler"
-                                    onClick={() => setAccountInfo(!accountInfo)}
-                                >
-                                    <span className="navbar-toggler-icon"></span>
-                                </button>
-                                {accountInfo && (
-                                    <Nav className="flex-column">
-                                        <NavItem>
-                                            <NavLink href="/page/account/dashboard">
-                                                Dashboard
-                                            </NavLink>
-                                        </NavItem>
-                                        <NavItem>
-                                            <NavLink href="#">
-                                                Order History
-                                            </NavLink>
-                                        </NavItem>
-                                        <NavItem>
-                                            <NavLink href="#">Wishlist</NavLink>
-                                        </NavItem>
-                                        <NavItem>
-                                            <NavLink href="#">Settings</NavLink>
-                                        </NavItem>
-                                        <NavItem>
-                                            <NavLink href="#">Log Out</NavLink>
-                                        </NavItem>
-                                    </Nav>
-                                )}
-                            </Navbar>
-                        </Col>
-
+                        <ProfileSidebar activeItem={"myorders"} />
                         <Col lg="9">
                             <div className="dashboard-right">
                                 <div className="dashboard">
@@ -119,61 +61,27 @@ const MyOrder = () => {
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                    <tr>
-                                                        <td>1</td>
-                                                        <td>01/01/2021</td>
-                                                        <td>Processing</td>
-                                                        <td>$100.00</td>
-                                                        <td>
-                                                            <a href="#">
-                                                                View Order
-                                                            </a>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>2</td>
-                                                        <td>01/01/2021</td>
-                                                        <td>Processing</td>
-                                                        <td>$100.00</td>
-                                                        <td>
-                                                            <a href="#">
-                                                                View Order
-                                                            </a>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>3</td>
-                                                        <td>01/01/2021</td>
-                                                        <td>Processing</td>
-                                                        <td>$100.00</td>
-                                                        <td>
-                                                            <a href="#">
-                                                                View Order
-                                                            </a>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>4</td>
-                                                        <td>01/01/2021</td>
-                                                        <td>Processing</td>
-                                                        <td>$100.00</td>
-                                                        <td>
-                                                            <a href="#">
-                                                                View Order
-                                                            </a>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>5</td>
-                                                        <td>01/01/2021</td>
-                                                        <td>Processing</td>
-                                                        <td>$100.00</td>
-                                                        <td>
-                                                            <a href="#">
-                                                                View Order
-                                                            </a>
-                                                        </td>
-                                                    </tr>
+                                                    {user.orders.length ===
+                                                    0 ? (
+                                                        <tr>
+                                                            <td colSpan="5 fw-bold text-danger">
+                                                                No orders found
+                                                            </td>
+                                                        </tr>
+                                                    ) : (
+                                                        user.orders.map(
+                                                            (order) => (
+                                                                <MyOrderListItem
+                                                                    key={
+                                                                        order.id
+                                                                    }
+                                                                    order={
+                                                                        order
+                                                                    }
+                                                                />
+                                                            )
+                                                        )
+                                                    )}
                                                 </tbody>
                                             </table>
                                         </div>

@@ -33,8 +33,7 @@ export default function NewAddress() {
     const [success, setSuccess] = useState(false);
     const [message, setMessage] = useState("");
 
-    const { addressTypes, setAddressTypes, addNewAddress } =
-        useContext(UserContext);
+    const { addressTypes, user, addNewAddress } = useContext(UserContext);
 
     const countries = [
         "Afghanistan",
@@ -288,7 +287,7 @@ export default function NewAddress() {
             country: data.country,
             postalCode: data.postalCode,
             phoneNumber: data.phoneNumber,
-            userId: 1,
+            userId: user.id,
             addressTypeId: parseInt(data.addressType),
         };
         console.log(address);
@@ -305,6 +304,8 @@ export default function NewAddress() {
         }
     };
 
+    console.log(addressTypes);
+
     return (
         <section
             className="contact-page register-page section-b-space"
@@ -312,7 +313,7 @@ export default function NewAddress() {
         >
             <Container>
                 <Row>
-                    <Col sm="12">
+                    <Col sm="12" className="py-2">
                         <h3>New Address</h3>
                         <p>
                             You can add multiple addresses, but the default

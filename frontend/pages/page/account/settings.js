@@ -1,18 +1,18 @@
 import React from "react";
 import CommonLayout from "../../../components/shop/common-layout";
-import WishlistPage from "./common/wishlist-page";
-import { Row, Col, Container } from "reactstrap";
+import ProfilePage from "./common/profile-page";
+import { Container, Row, Col } from "reactstrap";
 import ProfileSidebar from "../../../components/profile/ProfileSidebar";
 
-const Wishliat = () => {
+const Profile = () => {
     return (
-        <CommonLayout parent="home" title="wishlist">
+        <CommonLayout parent="home" title="settings">
             <section className="section-b-space">
                 <Container>
                     <Row>
-                        <ProfileSidebar activeItem={"wishlist"} />
+                        <ProfileSidebar activeItem={"settings"} />
                         <Col lg="9">
-                            <WishlistPage />
+                            <ProfilePage />
                         </Col>
                     </Row>
                 </Container>
@@ -21,4 +21,4 @@ const Wishliat = () => {
     );
 };
 
-export default Wishliat;
+export default Profile;

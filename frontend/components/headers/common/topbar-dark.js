@@ -39,31 +39,11 @@ const TopBarDark = ({ topClass, fluid }) => {
         }
         return (
             <ul className="header-dropdown">
-                <li className="mobile-wishlist compare-mobile">
-                    <Link href={`/page/compare`}>
-                        <i className="fa fa-random" aria-hidden="true"></i>
-                        {"compare"}
-                    </Link>
+                <li>
+                    <Link href={"/page/account/login"}>Login</Link>
                 </li>
-                <li className="mobile-wishlist">
-                    <Link href={`/page/account/wishlist`}>
-                        <i className="fa fa-heart" aria-hidden="true"></i>
-                        {"wishlist"}
-                    </Link>
-                </li>
-                <li className="onhover-dropdown mobile-account">
-                    <i className="fa fa-user" aria-hidden="true"></i>{" "}
-                    {"My account"}
-                    <ul className="onhover-show-div">
-                        <li>
-                            <Link href={"/pages/account/login"}>Login</Link>
-                        </li>
-                        <li>
-                            <Link href={"/pages/account/register"}>
-                                Register
-                            </Link>
-                        </li>
-                    </ul>
+                <li>
+                    <Link href={"/page/account/register"}>Register</Link>
                 </li>
             </ul>
         );

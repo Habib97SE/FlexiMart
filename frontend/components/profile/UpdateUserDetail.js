@@ -80,7 +80,7 @@ export default function UpdateUserDetail() {
     return (
         <Container>
             <Row>
-                <Col sm="12">
+                <Col sm="12" className="py-2">
                     <h3>Update Personal Details</h3>
                     <Form
                         className="theme-form"
@@ -281,6 +281,7 @@ export default function UpdateUserDetail() {
                         </Col>
                     </Form>
                 </Col>
+                <hr />
             </Row>
         </Container>
     );

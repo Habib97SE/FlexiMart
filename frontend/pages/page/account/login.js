@@ -8,6 +8,7 @@ import { useForm, Controller } from "react-hook-form";
 import { set } from "nprogress";
 import { UserContext } from "../../../helpers/user/UserContext";
 import { useRouter } from "next/router";
+import Link from "next/link";
 
 const schema = yup.object().shape({
     email: yup
@@ -39,7 +40,7 @@ const schema = yup.object().shape({
 
 const Login = () => {
     const router = useRouter();
-    const { user, userLoggedIn, loginUser } = useContext(UserContext);
+    const { userLoggedIn, loginUser } = useContext(UserContext);
     const [loginDetails, setLoginDetails] = useState({
         email: "",
         password: "",
@@ -72,6 +73,7 @@ const Login = () => {
             setSuccess(true);
             setError(false);
             setMessage("Login successful");
+            router.push("/page/account/dashboard");
         } else {
             setError(true);
             setSuccess(false);
@@ -81,7 +83,7 @@ const Login = () => {
 
     if (userLoggedIn) {
         // redirect to dashboard
-        router.push("/pages/account/dashboard");
+        router.push("/page/account/dashboard");
     }
 
     return (
@@ -163,6 +165,19 @@ const Login = () => {
                                             </div>
                                         )}
                                     </div>
+                                    <div className="form-group">
+                                        <input
+                                            type="checkbox"
+                                            id="remember"
+                                            name="remember"
+                                        />
+                                        <Label
+                                            className="form-check-label m-1"
+                                            htmlFor="remember"
+                                        >
+                                            Remember Me
+                                        </Label>
+                                    </div>
                                     <button
                                         type="submit"
                                         className="btn btn-solid"
@@ -179,6 +194,16 @@ const Login = () => {
                                             {message}
                                         </div>
                                     )}
+                                    <div className="my-3">
+                                        <Link
+                                            className="text-primary text-decoration-underline"
+                                            href={
+                                                "/page/account/forgot-password"
+                                            }
+                                        >
+                                            Forgot Password?
+                                        </Link>
+                                    </div>
                                     <div className="footer-social">
                                         <ul>
                                             <li>
@@ -210,7 +235,7 @@ const Login = () => {
                         </Col>
                         <Col lg="6" className="right-login">
                             <h3>New Customer</h3>
-                            <div className="theme-card authentication-right">
+                            <div className="theme-card authentication-right d-flex flex-column justify-content-center align-items-center text-center">
                                 <h6 className="title-font">Create A Account</h6>
                                 <p>
                                     Sign up for a free account at our store.
@@ -218,9 +243,12 @@ const Login = () => {
                                     you to be able to order from our shop. To
                                     start shopping click register.
                                 </p>
-                                <a href="#" className="btn btn-solid">
-                                    Create an Account
-                                </a>
+                                <Link
+                                    href={"/page/account/register"}
+                                    className="col-md-6 col-lg-5 btn btn-solid"
+                                >
+                                    Create Account
+                                </Link>
                             </div>
                         </Col>
                     </Row>

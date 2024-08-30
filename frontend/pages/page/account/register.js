@@ -1,11 +1,12 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import CommonLayout from "../../../components/shop/common-layout";
 import { Input, Container, Row, Form, Label, Col } from "reactstrap";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useForm, Controller } from "react-hook-form";
-import UserModel from "../../../src/models/UserModel";
+import { UserContext } from "../../../helpers/user/UserContext";
+import { useRouter } from "next/router";
 
 const schema = yup.object().shape({
     firstName: yup.string().required("First name is required"),
@@ -34,6 +35,8 @@ const schema = yup.object().shape({
 });
 
 const Register = () => {
+    const router = useRouter();
+
     const {
         control,
         handleSubmit,
@@ -41,6 +44,8 @@ const Register = () => {
     } = useForm({
         resolver: yupResolver(schema),
     });
+
+    const { user, registerUser, userLoggedIn } = useContext(UserContext);
 
     const [message, setMessage] = useState("");
     const [error, setError] = useState(false);
@@ -56,22 +61,26 @@ const Register = () => {
         const userDetail = {
             firstName: data.firstName,
             lastName: data.lastName,
-            hashedPassword: data.password,
+            password: data.password,
             email: data.email,
             phoneNumber: data.phoneNumber,
         };
-        const response = await UserModel.register(userDetail);
+        const response = await registerUser(userDetail);
         console.log(response);
-        if (!response.error) {
-            setError(false);
+        if (response.success) {
             setSuccess(true);
+            setError(false);
             setMessage("Account created successfully");
         } else {
             setError(true);
             setSuccess(false);
-            setMessage(response.message);
+            setMessage(response.error);
         }
     };
+
+    if (userLoggedIn) {
+        router.push("/page/account/dashboard");
+    }
 
     return (
         <CommonLayout parent="home" title="register">
@@ -301,6 +310,19 @@ const Register = () => {
                                         </Col>
                                     </Row>
                                 </Form>
+                                <Row>
+                                    <Col sm="12">
+                                        <div className="login-text">
+                                            <h6>Already have an account?</h6>
+                                            <a
+                                                href="/page/account/login"
+                                                className="btn btn-solid"
+                                            >
+                                                Login
+                                            </a>
+                                        </div>
+                                    </Col>
+                                </Row>
                             </div>
                         </Col>
                     </Row>

@@ -2,78 +2,32 @@ import React, { useEffect, useState, useContext } from "react";
 import CommonLayout from "../../../components/shop/common-layout";
 import { Container, Row, Col, Navbar, Nav, NavItem, NavLink } from "reactstrap";
 import { UserContext } from "../../../helpers/user/UserContext";
+import { useRouter } from "next/router";
+import Link from "next/link";
+import ProfileSidebar from "../../../components/profile/ProfileSidebar";
 
 const Dashboard = () => {
-    const { user } = useContext(UserContext);
+    const router = useRouter();
+    const { user, userLoggedIn, logoutUser } = useContext(UserContext);
     const [accountInfo, setAccountInfo] = useState(false);
+
+    const handleLogout = () => {
+        logoutUser();
+        router.push("/page/account/login");
+    };
+
+    // if user is not sett in the context, redirect to login page
+    if (!userLoggedIn) {
+        router.push("/page/account/login");
+        return;
+    }
 
     return (
         <CommonLayout parent="home" title="dashboard">
             <section className="section-b-space">
                 <Container>
                     <Row>
-                        {/* Sidebar for Large Screens */}
-                        <Col lg="3" className="d-none d-lg-block">
-                            <div className="dashboard-left">
-                                <div className="block-content">
-                                    <ul>
-                                        <li className="active">
-                                            <a href="/page/account/dashboard">
-                                                Dashboard
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a href="#">Order History</a>
-                                        </li>
-                                        <li>
-                                            <a href="#">Wishlist</a>
-                                        </li>
-                                        <li>
-                                            <a href="#">Settings</a>
-                                        </li>
-                                        <li className="last">
-                                            <a href="#">Log Out</a>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </Col>
-
-                        {/* Navbar for Small Screens */}
-                        <Col xs="12" className="d-lg-none mb-3">
-                            <Navbar color="light" light expand="md">
-                                <button
-                                    className="navbar-toggler"
-                                    onClick={() => setAccountInfo(!accountInfo)}
-                                >
-                                    <span className="navbar-toggler-icon"></span>
-                                </button>
-                                {accountInfo && (
-                                    <Nav className="flex-column">
-                                        <NavItem>
-                                            <NavLink href="/page/account/dashboard">
-                                                Dashboard
-                                            </NavLink>
-                                        </NavItem>
-                                        <NavItem>
-                                            <NavLink href="#">
-                                                Order History
-                                            </NavLink>
-                                        </NavItem>
-                                        <NavItem>
-                                            <NavLink href="#">Wishlist</NavLink>
-                                        </NavItem>
-                                        <NavItem>
-                                            <NavLink href="#">Settings</NavLink>
-                                        </NavItem>
-                                        <NavItem>
-                                            <NavLink href="#">Log Out</NavLink>
-                                        </NavItem>
-                                    </Nav>
-                                )}
-                            </Navbar>
-                        </Col>
-
+                        <ProfileSidebar activeItem={"dashboard"} />
                         <Col lg="9">
                             <div className="dashboard-right">
                                 <div className="dashboard">
@@ -148,9 +102,9 @@ const Dashboard = () => {
                                             <div className="box">
                                                 <div className="box-title">
                                                     <h3>Address Book</h3>
-                                                    <a href="#">
+                                                    <Link href="/page/account/profile">
                                                         Manage Addresses
-                                                    </a>
+                                                    </Link>
                                                 </div>
                                                 <Row>
                                                     <Col sm="6">
