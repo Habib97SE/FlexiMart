@@ -1,10 +1,12 @@
 package org.fleximart.fleximart.v1.DTO.user.response;
 
 import lombok.*;
+import org.fleximart.fleximart.v1.DTO.order.response.OrderResponse;
 import org.fleximart.fleximart.v1.DTO.review.response.ReviewResponse;
 import org.fleximart.fleximart.v1.DTO.wishlist.response.WishlistResponse;
 import org.fleximart.fleximart.v1.entity.user.Address;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -23,7 +25,8 @@ public class UserResponse {
     private String phoneNumber;
     private String profilePicture;
     private String dateOfBirth;
-    private List<AddressResponse> addresses;
-    private WishlistResponse wishlist;
-    private List<ReviewResponse> reviews;
+    private List<AddressResponse> addresses = new ArrayList<>();
+    private List<WishlistResponse> wishlist;
+    private List<ReviewResponse> reviews = new ArrayList<>();
+    private List<OrderResponse> orders = new ArrayList<>();
 }

@@ -2,7 +2,9 @@ package org.fleximart.fleximart.v1.service.product;
 
 import org.fleximart.fleximart.v1.DTO.product.request.CollectionRequest;
 import org.fleximart.fleximart.v1.DTO.product.response.CollectionResponse;
+import org.fleximart.fleximart.v1.DTO.product.response.ProductResponse;
 import org.fleximart.fleximart.v1.entity.product.Collection;
+import org.fleximart.fleximart.v1.entity.product.Product;
 import org.fleximart.fleximart.v1.exception.ResourceNotFoundException;
 import org.fleximart.fleximart.v1.repository.product.CollectionRepository;
 import org.fleximart.fleximart.v1.utils.ResponseHandler;

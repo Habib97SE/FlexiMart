@@ -43,7 +43,7 @@ public class WishlistService {
                 .id(wishlist.getId())
                 .userId(wishlist.getUser().getId())
                 .items(
-                        wishlist.getItems().stream()
+                        (List<WishlistItemResponse>) wishlist.getItems().stream()
                                 .map(this::mapToItemResponse)
                                 .collect(Collectors.toSet())
                 )

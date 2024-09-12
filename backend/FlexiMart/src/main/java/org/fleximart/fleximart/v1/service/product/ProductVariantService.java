@@ -43,6 +43,10 @@ public class ProductVariantService {
     private InventoryRepository inventoryRepository;
     @Autowired
     private VariantOptionService variantOptionService;
+    @Autowired
+    private ProductMediaRepository productMediaRepository;
+    @Autowired
+    private ProductMediaService productMediaService;
 
     public ProductVariantService(ProductVariantRepository productVariantRepository,
                                  ProductRepository productRepository,
@@ -166,6 +170,23 @@ public class ProductVariantService {
     }
 
 
+    private VariantOption saveOrUpdateOptions (VariantOptionRequest variantOptionRequest) {
+        return VariantOption.builder()
+                .value(variantOptionRequest.getValue())
+                .description(variantOptionRequest.getDescription())
+                .variantGroup(VariantGroup.builder().id(variantOptionRequest.getVariantGroupId()).build())
+                .build();
+    }
+
+    private ProductMedia saveProductMedia (ProductMediaRequest productMediaRequest, Long productVariantId) {
+        ProductMedia productMedia = ProductMedia.builder()
+                .mediaUrl(productMediaRequest.getMediaUrl())
+                .mediaType(productMediaRequest.getMediaType())
+                .altText(productMediaRequest.getMediaAlt())
+                .build();
+        return productMediaService.save(productVariantId, productMedia);
+    }
+
     /**
      * Save a new ProductVariant with associated VariantOptions.
      *
@@ -176,9 +197,8 @@ public class ProductVariantService {
         // save variant options into the database
         List<VariantOption> variantOptions = new ArrayList<>();
         for (VariantOptionRequest variantOptionRequest : productVariantRequest.getVariantOptions()) {
-            VariantOption variantOption = VariantOption.builder()
-                    .id(variantOptionRequest.getId())
-                    .build();
+            VariantOption variantOption = saveOrUpdateOptions(variantOptionRequest);
+            variantOption = variantOptionRepository.save(variantOption);
             variantOptions.add(variantOption);
         }
 
@@ -196,12 +216,20 @@ public class ProductVariantService {
                 .build();
         productVariant = productVariantRepository.save(productVariant);
 
+        // Save product media in the database
+        List<ProductMedia> productMediaList = new ArrayList<>();
+        for (ProductMediaRequest productMediaRequest : productVariantRequest.getProductMedia()) {
+            ProductMedia productMedia = saveProductMedia(productMediaRequest, productVariant.getId());
+            productMediaList.add(productMedia);
+        }
 
 
         return ProductVariantResponse.builder()
                 .id(productVariant.getId())
                 .sku(productVariant.getSku())
                 .barCode(productVariant.getBarCode())
+                .productMedia(createProductMediaList(productMediaList))
+                .inventory(inventoryResponse)
                 .variantOptions(
                         variantOptions.stream()
                                 .map(this::toVariantOptionResponse)

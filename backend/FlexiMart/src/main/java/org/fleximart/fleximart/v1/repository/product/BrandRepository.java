@@ -9,4 +9,5 @@ import java.util.List;
 @Repository
 public interface BrandRepository extends JpaRepository<Brand, Long> {
     Brand findBrandById (Long id);
+    List<Brand> findBrandsByNameStartingWith (String name);
 }

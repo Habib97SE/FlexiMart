@@ -5,6 +5,7 @@ import org.fleximart.fleximart.v1.DTO.shipping.response.ShippingMethodResponse;
 import org.fleximart.fleximart.v1.DTO.shipping.response.ShippingProviderResponse;
 import org.fleximart.fleximart.v1.entity.shipping.ShippingMethod;
 import org.fleximart.fleximart.v1.entity.shipping.ShippingProvider;
+import org.fleximart.fleximart.v1.repository.shipping.ShippingMethodRepository;
 import org.fleximart.fleximart.v1.repository.shipping.ShippingProviderRepository;
 import org.springframework.stereotype.Service;
 
@@ -14,10 +15,12 @@ import java.util.stream.Collectors;
 @Service
 public class ShippingProviderService {
 
+    private final ShippingMethodRepository shippingMethodRepository;
     private ShippingProviderRepository shippingProviderRepository;
 
-    public ShippingProviderService(ShippingProviderRepository shippingProviderRepository) {
+    public ShippingProviderService(ShippingProviderRepository shippingProviderRepository, ShippingMethodRepository shippingMethodRepository) {
         this.shippingProviderRepository = shippingProviderRepository;
+        this.shippingMethodRepository = shippingMethodRepository;
     }
 
     private ShippingMethodResponse mapToShippingMethodResponse(ShippingMethod shippingMethod) {
@@ -78,6 +81,19 @@ public class ShippingProviderService {
     }
 
     public ShippingProviderResponse save(ShippingProviderRequest shippingProviderRequest) {
+        ShippingProvider shippingProvider = shippingProviderRepository.save(mapToEntity(shippingProviderRequest));
+        // check if the shipping provider has shipping methods
+        if (shippingProviderRequest.getShippingMethods() != null) {
+            shippingProviderRequest.getShippingMethods().forEach(shippingMethodRequest -> {
+                ShippingMethod shippingMethod = ShippingMethod.builder()
+                        .methodName(shippingMethodRequest.getMethodName())
+                        .description(shippingMethodRequest.getDescription())
+                        .provider(shippingProvider)
+                        .build();
+                shippingMethod = shippingMethodRepository.save(shippingMethod);
+                shippingProvider.getShippingMethods().add(shippingMethod);
+            });
+        }
         return mapToResponse(shippingProviderRepository.save(mapToEntity(shippingProviderRequest)));
     }
 

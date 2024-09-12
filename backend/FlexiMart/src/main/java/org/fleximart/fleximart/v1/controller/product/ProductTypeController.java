@@ -1,7 +1,9 @@
 package org.fleximart.fleximart.v1.controller.product;
 
 import org.fleximart.fleximart.v1.DTO.product.request.ProductTypeRequest;
+import org.fleximart.fleximart.v1.DTO.product.response.ProductResponse;
 import org.fleximart.fleximart.v1.DTO.product.response.ProductTypeResponse;
+import org.fleximart.fleximart.v1.service.product.ProductService;
 import org.fleximart.fleximart.v1.service.product.ProductTypeService;
 import org.fleximart.fleximart.v1.utils.ResponseHandler;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,9 +18,13 @@ public class ProductTypeController {
 
     private final ProductTypeService productTypeService;
 
+    private final ProductService productService;
+
     @Autowired
-    public ProductTypeController(ProductTypeService productTypeService) {
+    public ProductTypeController(ProductTypeService productTypeService,
+                                 ProductService productService) {
         this.productTypeService = productTypeService;
+        this.productService = productService;
     }
 
     @GetMapping
@@ -105,6 +111,36 @@ public class ProductTypeController {
                 200,
                 null,
                 true
+        );
+    }
+
+    @GetMapping("/{id}/products")
+    public ResponseEntity<Object> getProductsByProductTypeId(@PathVariable Long id) {
+        List<ProductResponse> productResponseList = productService.findByProductTypeId(id);
+
+        if (productResponseList == null) {
+            return ResponseHandler.generateResponse(
+                    "Something went wrong while fetching products for the product type",
+                    500,
+                    null,
+                    true
+            );
+        }
+
+        if (productResponseList.isEmpty()) {
+            return ResponseHandler.generateResponse(
+                    "No products found for the product type",
+                    404,
+                    null,
+                    true
+            );
+        }
+
+        return ResponseHandler.generateResponse(
+                "Products retrieved successfully",
+                200,
+                productResponseList,
+                false
         );
     }
 }

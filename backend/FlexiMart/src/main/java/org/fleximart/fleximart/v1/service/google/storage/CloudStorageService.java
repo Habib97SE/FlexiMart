@@ -8,19 +8,22 @@ import org.springframework.stereotype.Service;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
 
+
+@Service
 public class CloudStorageService {
     private final Storage storage;
 
-    public CloudStorageService(Storage storage) {
-        this.storage = storage;
-    }
 
     public CloudStorageService() throws IOException {
 
@@ -32,6 +35,16 @@ public class CloudStorageService {
 
     private String createBucketUrl () {
         return "https://storage.googleapis.com/fleximart_product_media/";
+    }
+
+
+    public byte[] downloadFile(String url) throws IOException {
+        // download file from given url
+        InputStream inputStream = new URL(url).openStream();
+
+        Path tempFile = Files.createTempFile(null, null);
+        Files.copy(inputStream, tempFile, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+        return Files.readAllBytes(tempFile);
     }
 
     public String uploadFile(String bucketName, String objectName, byte[] content) {
@@ -80,5 +93,15 @@ public class CloudStorageService {
     public byte[] downloadFile(String bucketName, String objectName) {
         Blob blob = storage.get(BlobId.of(bucketName, objectName));
         return blob.getContent();
+    }
+
+    /**
+     * Delete a file from the bucket by providing the bucket name and the object name
+     * @param bucketName the name of the bucket
+     * @param objectName the name of the object
+     * @return true if the file is deleted successfully, false otherwise
+     */
+    public Boolean deleteFile(String bucketName, String objectName) {
+        return storage.delete(BlobId.of(bucketName, objectName));
     }
 }

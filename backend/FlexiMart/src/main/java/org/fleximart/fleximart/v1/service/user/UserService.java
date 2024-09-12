@@ -1,7 +1,8 @@
 package org.fleximart.fleximart.v1.service.user;
 
-import org.fleximart.fleximart.v1.DTO.blog.response.MediaResponse;
-import org.fleximart.fleximart.v1.DTO.product.response.ProductResponse;
+import org.fleximart.fleximart.v1.DTO.order.response.OrderItemResponse;
+import org.fleximart.fleximart.v1.DTO.order.response.OrderResponse;
+import org.fleximart.fleximart.v1.DTO.order.response.ShippingResponse;
 import org.fleximart.fleximart.v1.DTO.review.response.ReviewMediaResponse;
 import org.fleximart.fleximart.v1.DTO.review.response.ReviewResponse;
 import org.fleximart.fleximart.v1.DTO.user.request.UserRequest;
@@ -12,12 +13,16 @@ import org.fleximart.fleximart.v1.DTO.user.response.AddressTypeResponse;
 import org.fleximart.fleximart.v1.DTO.user.response.UserResponse;
 import org.fleximart.fleximart.v1.DTO.wishlist.response.WishlistItemResponse;
 import org.fleximart.fleximart.v1.DTO.wishlist.response.WishlistResponse;
+import org.fleximart.fleximart.v1.entity.order.Order;
+import org.fleximart.fleximart.v1.entity.order.OrderItem;
+import org.fleximart.fleximart.v1.entity.order.Shipping;
 import org.fleximart.fleximart.v1.entity.review.Review;
 import org.fleximart.fleximart.v1.entity.review.ReviewMedia;
 import org.fleximart.fleximart.v1.entity.user.Address;
 import org.fleximart.fleximart.v1.entity.user.User;
 import org.fleximart.fleximart.v1.entity.wishlist.Wishlist;
 import org.fleximart.fleximart.v1.entity.wishlist.WishlistItem;
+import org.fleximart.fleximart.v1.repository.order.OrderRepository;
 import org.fleximart.fleximart.v1.repository.review.ReviewRepository;
 import org.fleximart.fleximart.v1.repository.user.AddressRepository;
 import org.fleximart.fleximart.v1.repository.user.UserRepository;
@@ -32,7 +37,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -50,14 +54,18 @@ public class UserService {
 
     @Autowired ReviewRepository reviewRepository;
 
+    @Autowired OrderRepository orderRepository;
+
     public UserService(UserRepository userRepository,
                        AddressRepository addressRepository,
                        WishlistRepository wishlistRepository,
-                       ReviewRepository reviewRepository) {
+                       ReviewRepository reviewRepository,
+                       OrderRepository orderRepository) {
         this.userRepository = userRepository;
         this.addressRepository = addressRepository;
         this.wishlistRepository = wishlistRepository;
         this.reviewRepository = reviewRepository;
+        this.orderRepository = orderRepository;
     }
 
     private ReviewMediaResponse mapToMediaResponse(ReviewMedia reviewMedia) {
@@ -86,6 +94,46 @@ public class UserService {
                 .build();
     }
 
+    private OrderItemResponse mapToOrderItemResponse(OrderItem orderItem) {
+        return OrderItemResponse.builder()
+                .id(orderItem.getId())
+                .productName(orderItem.getProductName())
+                .productVariant(orderItem.getProductVariant().getId())
+                .quantity(orderItem.getQuantity())
+                .unitPrice(orderItem.getUnitPrice())
+                .totalPrice(orderItem.getTotalPrice())
+                .status(orderItem.getStatus().name())
+                .build();
+    }
+
+    private ShippingResponse mapToShippingResponse(Shipping shipping) {
+        return ShippingResponse.builder()
+                .id(shipping.getId())
+                .address(shipping.getAddress().getId())
+                .totalCost(shipping.getTotalCost())
+                .discount(shipping.getDiscount())
+                .order(shipping.getOrder().getId())
+                .deliveredAt(shipping.getDeliveredAt())
+                .build();
+    }
+
+    private OrderResponse mapToOrderResponse (Order order) {
+        return OrderResponse.builder()
+                .id(order.getId())
+                .status(order.getStatus().name())
+                .orderItems(order.getOrderItems().stream().map(this::mapToOrderItemResponse).collect(Collectors.toList()))
+                .user(order.getUser().getId())
+                .discount(order.getDiscount())
+                .totalAmount(order.getTotalAmount())
+                .paymentMethod(order.getPaymentMethod().getId())
+                .paymentStatus(order.getPaymentStatus().name())
+                .transactionId(order.getTransactionId())
+                .orderNumber(order.getOrderNumber())
+                .billingAddress(order.getBillingAddress().getId())
+                .shippingResponse(mapToShippingResponse(order.getShipping()))
+                .build();
+    }
+
     private List<ReviewResponse> createReviewResponseList () {
         List<ReviewResponse> reviewResponseList = new ArrayList<>();
         for (Review review : reviewRepository.findAll()) {
@@ -94,12 +142,12 @@ public class UserService {
         return reviewResponseList;
     }
 
-    private Set<WishlistItemResponse> mapToWishlistItemResponseList(Set<WishlistItem> wishlistItems) {
+    private List<WishlistItemResponse> mapToWishlistItemResponseList(Set<WishlistItem> wishlistItems) {
         return wishlistItems.stream().map(wishlistItem -> WishlistItemResponse.builder()
                 .productId(wishlistItem.getProduct().getId())
                 .productName(wishlistItem.getProduct().getName())
                 .build())
-                .collect(Collectors.toSet());
+                .collect(Collectors.toList());
     }
 
     private WishlistResponse mapToWishlistResponse(Wishlist wishlist) {
@@ -119,6 +167,7 @@ public class UserService {
                 .postalCode(address.getPostalCode())
                 .name(address.getName())
                 .country(address.getCountry())
+                .phoneNumber(address.getPhoneNumber())
                 .addressType(
                         AddressTypeResponse.builder()
                                 .id(address.getAddressType().getId())
@@ -165,6 +214,8 @@ public class UserService {
                 .dateOfBirth(String.valueOf(user.getDateOfBirth()))
                 .addresses(addressResponseList)
                 .reviews(createReviewResponseList())
+                .wishlist(user.getWishlists().stream().map(this::mapToWishlistResponse).collect(Collectors.toList()))
+                .orders(user.getOrders().stream().map(this::mapToOrderResponse).collect(Collectors.toList()))
                 .build();
     }
 

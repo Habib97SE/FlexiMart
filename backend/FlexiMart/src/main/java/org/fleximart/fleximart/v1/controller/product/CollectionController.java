@@ -2,7 +2,9 @@ package org.fleximart.fleximart.v1.controller.product;
 
 import org.fleximart.fleximart.v1.DTO.product.request.CollectionRequest;
 import org.fleximart.fleximart.v1.DTO.product.response.CollectionResponse;
+import org.fleximart.fleximart.v1.DTO.product.response.ProductResponse;
 import org.fleximart.fleximart.v1.service.product.CollectionService;
+import org.fleximart.fleximart.v1.service.product.ProductService;
 import org.fleximart.fleximart.v1.utils.ResponseHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -16,9 +18,13 @@ public class CollectionController {
 
     private final CollectionService collectionService;
 
+    private final ProductService productService;
+
     @Autowired
-    public CollectionController(CollectionService collectionService) {
+    public CollectionController(CollectionService collectionService,
+                                ProductService productService) {
         this.collectionService = collectionService;
+        this.productService = productService;
     }
 
     @GetMapping
@@ -56,5 +62,35 @@ public class CollectionController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Object> deleteCollection(@PathVariable Long id) {
         return collectionService.delete(id);
+    }
+
+    @GetMapping("/{id}/products")
+    public ResponseEntity<Object> getProductsByCollectionId(@PathVariable Long id) {
+        List<ProductResponse> productResponseList = productService.findByCollectionId(id);
+
+        if (productResponseList == null) {
+            return ResponseHandler.generateResponse(
+                    "Something went wrong while fetching products for the collection",
+                    500,
+                    null,
+                    true
+            );
+        }
+
+         if (productResponseList.isEmpty()) {
+            return ResponseHandler.generateResponse(
+                    "No products found for the collection",
+                    404,
+                    null,
+                    true
+            );
+        }
+
+        return ResponseHandler.generateResponse(
+                "Products retrieved successfully",
+                200,
+                productResponseList,
+                false
+        );
     }
 }

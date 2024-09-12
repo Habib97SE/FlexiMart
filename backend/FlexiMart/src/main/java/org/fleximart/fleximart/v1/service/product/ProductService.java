@@ -184,5 +184,21 @@ public class ProductService {
             return false;
         }
     }
+
+    public List<ProductResponse> findByCollectionId(Long collectionId) {
+        Collection collection = collectionRepository.findById(collectionId)
+                .orElseThrow(() -> new ResourceNotFoundException("Collection not found"));
+        return createProductResponseList(productRepository.findByCollection_Id(collectionId));
+    }
+
+    public List<ProductResponse> findByBrandId(Long brandId) {
+        Brand brand = brandRepository.findById(brandId)
+                .orElseThrow(() -> new ResourceNotFoundException("Brand not found"));
+        return createProductResponseList(productRepository.findByBrand_Id(brandId));
+    }
+
+    public List<ProductResponse> findByProductTypeId(Long productTypeId) {
+        return createProductResponseList(productRepository.findByProductType_Id(productTypeId));
+    }
 }
 

@@ -253,7 +253,7 @@ public class ProductController {
 
     @PostMapping("/{productId}/product-variants/{productVariantId}/product-media/")
     public ResponseEntity<Object> createNewProductMedia (@PathVariable Long productId, @PathVariable Long productVariantId, @RequestBody ProductMedia productMedia ) {
-         ProductMedia productMediaResponse = productMediaService.save(productMedia);
+         ProductMedia productMediaResponse = productMediaService.save(productVariantId, productMedia);
         if (productMediaResponse != null) {
             return ResponseHandler.generateResponse(
                     "Product media created successfully.",

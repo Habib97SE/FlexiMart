@@ -5,9 +5,11 @@ import org.fleximart.fleximart.v1.DTO.product.response.BrandResponse;
 import org.fleximart.fleximart.v1.entity.product.Brand;
 import org.fleximart.fleximart.v1.exception.ResourceNotFoundException;
 import org.fleximart.fleximart.v1.repository.product.BrandRepository;
+import org.fleximart.fleximart.v1.service.google.storage.CloudStorageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,8 +19,13 @@ public class BrandService {
     @Autowired
     private BrandRepository brandRepository;
 
-    public BrandService(BrandRepository brandRepository) {
+    @Autowired
+    private CloudStorageService cloudStorageService;
+
+    public BrandService(BrandRepository brandRepository,
+                        CloudStorageService cloudStorageService) {
         this.brandRepository = brandRepository;
+        this.cloudStorageService = cloudStorageService;
     }
 
     private BrandResponse createBrandResponse(Brand brand) {
@@ -37,7 +44,10 @@ public class BrandService {
         return brandResponses;
     }
 
-    public List<BrandResponse> findAll() {
+    public List<BrandResponse> findAll() throws IOException {
+        byte[] imageFile = cloudStorageService.downloadFile("https://via.placeholder.com/600");
+        String url = cloudStorageService.uploadFile("fleximart_product_media", "placeholder.jpg", imageFile);
+        System.out.printf("The url is: %s\n", url);
         return brandRepository.findAll().stream()
                 .map(this::createBrandResponse)
                 .toList();
@@ -72,6 +82,10 @@ public class BrandService {
         return brand;
     }
 
+    public List<BrandResponse> getAutoCompleteBrands(String name) {
+        List<Brand> brands = brandRepository.findBrandsByNameStartingWith(name);
+        return createBrandResponseList(brands);
+    }
 
 
 }

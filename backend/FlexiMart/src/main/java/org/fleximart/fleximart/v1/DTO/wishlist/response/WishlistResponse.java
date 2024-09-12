@@ -2,6 +2,7 @@ package org.fleximart.fleximart.v1.DTO.wishlist.response;
 
 import lombok.*;
 
+import java.util.List;
 import java.util.Set;
 
 @Getter
@@ -12,5 +13,5 @@ import java.util.Set;
 public class WishlistResponse {
     private Long id;
     private Long userId;
-    private Set<WishlistItemResponse> items;
+    private List<WishlistItemResponse> items;
 }

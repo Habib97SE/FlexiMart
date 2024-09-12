@@ -3,6 +3,7 @@ package org.fleximart.fleximart.v1.DTO.order.response;
 import lombok.*;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -13,7 +14,7 @@ import java.util.List;
 public class OrderResponse {
     private Long id;
     private String status;
-    private List<OrderItemResponse> orderItems;
+    private List<OrderItemResponse> orderItems = new ArrayList<OrderItemResponse>();
     private Long user;
     private BigDecimal discount;
     private BigDecimal totalAmount;

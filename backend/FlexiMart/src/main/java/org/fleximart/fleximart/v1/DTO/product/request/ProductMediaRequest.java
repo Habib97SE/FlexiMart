@@ -12,6 +12,4 @@ public class ProductMediaRequest {
     private String mediaUrl;
     private String mediaType;
     private String mediaAlt;
-    private Long productVariantId;
-
 }

@@ -6,6 +6,7 @@ import org.fleximart.fleximart.v1.entity.product.Product;
 import org.fleximart.fleximart.v1.entity.product.ProductMedia;
 import org.fleximart.fleximart.v1.entity.product.ProductVariant;
 import org.fleximart.fleximart.v1.repository.product.ProductMediaRepository;
+import org.fleximart.fleximart.v1.service.google.storage.CloudStorageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,8 +19,13 @@ public class ProductMediaService {
     @Autowired
     private ProductMediaRepository productMediaRepository;
 
-    public ProductMediaService(ProductMediaRepository productMediaRepository) {
+    @Autowired
+    private CloudStorageService cloudStorageService;
+
+    public ProductMediaService(ProductMediaRepository productMediaRepository,
+                               CloudStorageService cloudStorageService) {
         this.productMediaRepository = productMediaRepository;
+        this.cloudStorageService = cloudStorageService;
     }
 
     private ProductMediaResponse createProductMediaResponse(ProductMedia productMedia) {
@@ -29,6 +35,23 @@ public class ProductMediaService {
                 .mediaType(productMedia.getMediaType())
                 .mediaAlt(productMedia.getAltText())
                 .build();
+    }
+
+    private String saveToCloudStorage (String imageUrl) {
+       byte[] imageBytes = null;
+        try {
+            imageBytes = cloudStorageService.downloadFile(imageUrl);
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
+        }
+
+        if (imageBytes == null) {
+            throw new IllegalArgumentException("Failed to download image from URL.");
+        }
+
+        String objectName = imageUrl.substring(imageUrl.lastIndexOf('/') + 1);
+        String bucketName = "fleximart_product_media";
+        return cloudStorageService.uploadFile(bucketName, objectName, imageBytes);
     }
 
     public Boolean deleteProductMedia(Long id) {
@@ -64,7 +87,8 @@ public class ProductMediaService {
         return createProductMediaResponse(Objects.requireNonNull(productMediaRepository.findById(id).orElse(null)));
     }
 
-    public ProductMedia save(ProductMedia productMedia) {
+    public ProductMedia save(Long productVariantId, ProductMedia productMedia) {
+        productMedia.setProductVariant(ProductVariant.builder().id(productVariantId).build());
         return productMediaRepository.save(productMedia);
     }
 
@@ -74,20 +98,4 @@ public class ProductMediaService {
     }
 
 
-    public Object addProductMediaForProduct(Long productVariantId, ProductMediaRequest productMediaRequest) {
-
-        if (productMediaRequest.getMediaUrl() == null || productMediaRequest.getMediaType() == null) {
-            throw new IllegalArgumentException("Media URL and Media Type are required fields.");
-        }
-
-        // Build and save the ProductMedia entity
-        ProductMedia productMedia = ProductMedia.builder()
-                .productVariant(ProductVariant.builder().id(productVariantId).build())
-                .mediaUrl(productMediaRequest.getMediaUrl())
-                .mediaType(productMediaRequest.getMediaType())
-                .altText(productMediaRequest.getMediaAlt())
-                .build();
-
-        return createProductMediaResponse(save(productMedia));
-    }
 }
