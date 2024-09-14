@@ -1,7 +1,10 @@
+"use client";
+import React, {useContext, useState} from "react";
 import CommonLayout from "@/components/CommonLayout";
 import { useForm } from "react-hook-form";
 import { yupResolver} from "@hookform/resolvers/yup";
 import * as yup from "yup";
+import { UserContext } from "@/context/UserContext";
 
 const schema = yup.object().shape({
     email: yup.string().email("Invalid email").required(),
@@ -15,13 +18,27 @@ type FormData = {
 
 const Login = () => {
 
+    const {authorizeUser} = useContext(UserContext);
+    const [error, setError] = useState<boolean>(false);
+    const [message, setMessage] = useState<string>("");
+    const [success, setSuccess] = useState<boolean>(false);
+
     const {register, handleSubmit, formState: {errors}} = useForm<FormData>({
         resolver: yupResolver(schema),
     });
 
 
-    const onSubmit = (data: FormData) => {
+    const onSubmit = async (data: FormData) => {
         console.log(data);
+        const response = await authorizeUser(data);
+        console.log(response);
+        if (response.error) {
+            setError(true);
+            setMessage(response.message);
+        } else {
+            setSuccess(true);
+            setMessage(response.message);
+        }
     };
 
 
@@ -33,6 +50,7 @@ const Login = () => {
     const data = {
         title: "Login",
         path: path,
+        user: null
     };
 
 
@@ -63,6 +81,16 @@ const Login = () => {
                         className={"px-3 py-2 bg-blue-500 text-white mt-2 hover:bg-blue-600 focus:outline-none"}
                         type="submit">Login</button>
                 </form>
+                {error && 
+                    <div className="bg-red-100 border border-red-500 text-red-800 px-4 py-3 rounded my-3">
+                        {message}
+                    </div>
+                }
+                {success &&
+                    <div className="bg-green-100 border border-green-500 text-green-800 px-4 py-3 rounded my-3">
+                        {message}
+                    </div>
+                }
             </div>
         </CommonLayout>
     );

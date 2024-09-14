@@ -27,15 +27,13 @@ class UserModel {
         this.baseUrl = `${BACKEND_DATA.API_URL}/users`;
     }
 
-    getBaseUrl() : string {
+    getBaseUrl(): string {
         return this.baseUrl;
     }
 
-    void setBaseUrl(baseUrl: string) {
+    setBaseUrl(baseUrl: string) {
         this.baseUrl = baseUrl;
     }
-
-    
 
     async getUser(id: number): Promise<User> {
         const response: AxiosResponse<User> = await axios.get(
@@ -65,10 +63,13 @@ class UserModel {
     }
 
     async authorize(loginRequest: LoginRequest) {
+        const loginEndpoint: string = "http://localhost:8080/api/v1/auth/user";
         const response: AxiosResponse<User> = await axios.post(
-            `${this.baseUrl}/authorize`,
+            loginEndpoint,
             loginRequest
         );
-        return response;
+        return response.data;
     }
 }
+
+export { UserModel };
