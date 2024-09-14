@@ -1,0 +1,51 @@
+export const RightChatListData = [
+    {
+      id: 1,
+      name: "Vincent Porter",
+      image: "/user.png",
+      status: "Online",
+      statusClass: "online",
+    },
+    {
+      id: 2,
+      name: "Ain Chavez",
+      image: "/user1.jpg",
+      status: "28 minutes ago",
+      statusClass: "away",
+    },
+    {
+      id: 3,
+      name: "Kori Thomas",
+      image: "/user2.jpg",
+      status: "Online",
+      statusClass: "online",
+    },
+    {
+      id: 4,
+      name: "Erica Hughes",
+      image: "/user3.jpg",
+      status: "Online",
+      statusClass: "online",
+    },
+    {
+      id: 5,
+      name: "Ginger Johnston",
+      image: "/man.png",
+      status: "2 minutes ago",
+      statusClass: "offline",
+    },
+    {
+      id: 6,
+      name: "Prasanth Anand",
+      image: "/user5.jpg",
+      status: "2 hours ago",
+      statusClass: "away",
+    },
+    {
+      id: 7,
+      name: "Hileri Jecno",
+      image: "/designer.jpg",
+      status: "Online",
+      statusClass: "online",
+    },
+  ];
