@@ -19,7 +19,7 @@ public class WebConfig {
         http
                 .cors(cors -> cors.configurationSource(request -> {
                     var corsConfig = new org.springframework.web.cors.CorsConfiguration();
-                    corsConfig.setAllowedOrigins(List.of("http://localhost:3000")); // Adjust this to your frontend's origin
+                    corsConfig.setAllowedOrigins(List.of("http://localhost:3010")); // Adjust this to your frontend's origin
                     corsConfig.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
                     corsConfig.setAllowedHeaders(List.of("*"));
                     corsConfig.setAllowCredentials(true);
