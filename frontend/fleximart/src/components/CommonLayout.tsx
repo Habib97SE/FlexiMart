@@ -9,7 +9,7 @@ import Header from "@/components/header/Header";
 const CommonLayout = ({ children, data}) => {
     return (
         <>
-            <Header title={data.title} path={data.path} />
+            <Header title={data.title} paths={data.path} />
             <main>
                 {children}
             </main>

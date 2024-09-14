@@ -35,9 +35,11 @@ const Login = () => {
         if (response.error) {
             setError(true);
             setMessage(response.message);
+            setSuccess(false);
         } else {
             setSuccess(true);
             setMessage(response.message);
+            setError(false);
         }
     };
 
@@ -50,7 +52,6 @@ const Login = () => {
     const data = {
         title: "Login",
         path: path,
-        user: null
     };
 
 

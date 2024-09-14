@@ -2,7 +2,7 @@ import Link from 'next/link';
 import TopBar from "@/components/header/TopBar";
 import {FaShoppingCart} from "react-icons/fa";
 
-export default function Header({title, path}) {
+export default function Header({title, paths}) {
     return (
         <header className="sticky top-0 bg-white z-50 shadow-md">
             <div className="mobile-fix-option"></div>
@@ -69,7 +69,19 @@ export default function Header({title, path}) {
                     {/* Loop through path and print as PAth1 / PATH2 / PATH3 ... */}
                     <nav aria-label="breadcrumb">
                         <ol className="breadcrumb">
-                            {path.map((path, index) => {
+                            {paths.map((path, index) => {
+                                {/* If it is the last path, don't add / */}
+                                if (index === paths.length - 1) {
+                                    return (
+                                        <span className={"text-xl"} key={index}>
+                                            {path.name}
+                                        </span>
+                                    );
+                                }
+                                {/* Don't render path if we're in home page */}
+                                if (paths.length === 1) {
+                                    return null;
+                                }
                                 return (
                                     <span className={"text-xl"} key={index}>
                                         <Link href={path.href}>

@@ -3,6 +3,7 @@ import { ProductResponse } from "@/models/ProductModel";
 import { AddressResponse } from "@/models/AddressModel";
 import { LoginRequest } from "@/interface/LoginRequest";
 import { BACKEND_DATA } from "@/constants/backenddata";
+import { UserResponse } from "@/interface/UserResponse";
 
 export interface Wishlist {
     id: number;
@@ -64,7 +65,7 @@ class UserModel {
 
     async authorize(loginRequest: LoginRequest) {
         const loginEndpoint: string = "http://localhost:8080/api/v1/auth/user";
-        const response: AxiosResponse<User> = await axios.post(
+        const response: AxiosResponse<UserResponse> = await axios.post(
             loginEndpoint,
             loginRequest
         );

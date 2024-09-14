@@ -2,6 +2,7 @@
 import React, { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { UserModel } from "../models/UserModel";
 import { LoginRequest } from "@/interface/LoginRequest";
+import { UserResponse } from "@/interface/UserResponse";
 
 const UserContext = createContext(null);
 
@@ -10,7 +11,7 @@ const UserContext = createContext(null);
 
 const USER_KEY = "user_data";
 
-function saveUser(user) {
+function saveUser(user : UserResponse) {
     localStorage.setItem(USER_KEY, JSON.stringify(user));
 }
 
@@ -35,7 +36,7 @@ function UserProvider({ children }) {
     });
 
     const authorizeUser = async (loginRequest : LoginRequest) => {
-        const user = await userModel.authorize(loginRequest);
+        const user : UserResponse = await userModel.authorize(loginRequest);
         if (user.error) {
             console.log(user.message);
             return {
