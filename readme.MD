@@ -8,7 +8,7 @@ The backend is designed to efficiently manage products and their variants, promo
 
 The frontend is built using Next.JS, a React framework that provides server-side rendering and a great developer experience. The frontend is designed to be fast, responsive, and user-friendly, with a focus on performance and accessibility.
 
-You can see all endpoints in the [API Documentation](API.md)
+You can see all endpoints in the [API Documentation](./backend/API.md)
 
 ## Backend Features
 
