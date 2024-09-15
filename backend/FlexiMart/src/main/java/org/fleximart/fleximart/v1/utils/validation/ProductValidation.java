@@ -1,53 +1,42 @@
 package org.fleximart.fleximart.v1.utils.validation;
 
+import org.fleximart.fleximart.v1.DTO.product.request.ProductRequest;
+
 public class ProductValidation {
-    public static boolean validateProductName(String productName) {
-        return productName != null && productName.length() > 0;
+
+    public static boolean isProductNameValid(String name) {
+        return !name.isEmpty();
     }
 
-    public static boolean validateProductDescription(String productDescription) {
-        return productDescription != null && productDescription.length() > 0;
+    public static boolean isBrandIdValid(Long brandId) {
+        return brandId > 0;
     }
 
-    public static boolean validateProductPrice(double productPrice) {
-        return productPrice > 0;
+    public static boolean isCollectionIdValid(Long collectionId) {
+        return collectionId > 0;
     }
 
-    public static boolean validateProductQuantity(int productQuantity) {
-        return productQuantity > 0;
+    public static boolean isDescriptionValid(String description) {
+        return !description.isEmpty();
     }
 
-    public static boolean validateProductCategory(String productCategory) {
-        return productCategory != null && productCategory.length() > 0;
+    public static boolean isModelNumberValid(String modelNumber) {
+        return !modelNumber.isEmpty();
     }
 
-    public static boolean validateProductImage(String productImage) {
-        return productImage != null && productImage.length() > 0;
+    public static boolean isProductTypeIdValid(Long productTypeId) {
+        return productTypeId > 0;
     }
 
-    public static boolean validateProductRating(double productRating) {
-        return productRating >= 0 && productRating <= 5;
+    public static boolean isProductRequestValid(String name, Long brandId, Long collectionId, String description, String modelNumber, Long productTypeId) {
+        return isProductNameValid(name) && isBrandIdValid(brandId) && isCollectionIdValid(collectionId) && isDescriptionValid(description) && isModelNumberValid(modelNumber) && isProductTypeIdValid(productTypeId);
     }
 
-    public static boolean validateProductDiscount(double productDiscount) {
-        return productDiscount >= 0 && productDiscount <= 100;
+    public static boolean isProductRequestValid(ProductRequest productRequest) {
+        return isProductRequestValid(productRequest.getName(), productRequest.getBrandId(), productRequest.getCollectionId(), productRequest.getDescription(), productRequest.getModelNumber(), productRequest.getProductTypeId());
     }
 
-    public static boolean validateProductDiscountedPrice(double productDiscountedPrice) {
-        return productDiscountedPrice >= 0;
-    }
 
-    public static boolean validateProductDiscountStartDate(String productDiscountStartDate) {
-        return productDiscountStartDate != null && productDiscountStartDate.length() > 0;
-    }
 
-    public static boolean validateProductDiscountEndDate(String productDiscountEndDate) {
-        return productDiscountEndDate != null && productDiscountEndDate.length() > 0;
-    }
-
-    public static boolean validateProductDiscountStatus(String productDiscountStatus) {
-        return productDiscountStatus != null && productDiscountStatus.length() > 0;
-    }
-    
 
 }

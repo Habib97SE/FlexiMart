@@ -1,8 +1,7 @@
 package org.fleximart.fleximart.v1.service.product;
 
 
-import org.fleximart.fleximart.v1.DTO.product.request.NewProductRequest;
-import org.fleximart.fleximart.v1.DTO.product.request.UpdateProductRequest;
+import org.fleximart.fleximart.v1.DTO.product.request.ProductRequest;
 import org.fleximart.fleximart.v1.DTO.product.response.*;
 import org.fleximart.fleximart.v1.entity.product.*;
 import org.fleximart.fleximart.v1.repository.product.*;
@@ -12,7 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.fleximart.fleximart.v1.exception.ResourceNotFoundException;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -127,17 +125,17 @@ public class ProductService {
         return createProductResponse(product);
     }
 
-    public ProductResponse save(NewProductRequest newProductRequest) {
-        Brand brand = findBrandOrThrow(newProductRequest.getBrandId());
-        Collection collection = findCollectionOrThrow(newProductRequest.getCollectionId());
+    public ProductResponse save(ProductRequest productRequest) {
+        Brand brand = findBrandOrThrow(productRequest.getBrandId());
+        Collection collection = findCollectionOrThrow(productRequest.getCollectionId());
 
         Product product = Product.builder()
-                .name(newProductRequest.getName())
-                .description(newProductRequest.getDescription())
+                .name(productRequest.getName())
+                .description(productRequest.getDescription())
                 .collection(collection)
                 .brand(brand)
-                .modelNumber(newProductRequest.getModelNumber())
-                .productType(ProductType.builder().id(newProductRequest.getProductTypeId()).build())
+                .modelNumber(productRequest.getModelNumber())
+                .productType(ProductType.builder().id(productRequest.getProductTypeId()).build())
                 .build();
 
         try {
@@ -149,18 +147,18 @@ public class ProductService {
         }
     }
 
-    public ProductResponse update(Long id, UpdateProductRequest updateProductRequest) {
+    public ProductResponse update(Long id, ProductRequest productRequest) {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Product not found"));
 
-        Brand brand = findBrandOrThrow(updateProductRequest.getBrandId());
-        Collection collection = findCollectionOrThrow(updateProductRequest.getCollectionId());
+        Brand brand = findBrandOrThrow(productRequest.getBrandId());
+        Collection collection = findCollectionOrThrow(productRequest.getCollectionId());
 
-        product.setName(updateProductRequest.getName());
-        product.setDescription(updateProductRequest.getDescription());
+        product.setName(productRequest.getName());
+        product.setDescription(productRequest.getDescription());
         product.setBrand(brand);
-        product.setModelNumber(updateProductRequest.getModelNumber());
-        product.setProductType(ProductType.builder().id(updateProductRequest.getProductTypeId()).build());
+        product.setModelNumber(productRequest.getModelNumber());
+        product.setProductType(ProductType.builder().id(productRequest.getProductTypeId()).build());
         product.setCollection(collection);
 
         try {

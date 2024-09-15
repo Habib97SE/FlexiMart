@@ -29,7 +29,7 @@ import org.fleximart.fleximart.v1.repository.user.UserRepository;
 import org.fleximart.fleximart.v1.repository.wishlist.WishlistRepository;
 import org.fleximart.fleximart.v1.utils.Encryption;
 import org.fleximart.fleximart.v1.utils.ResponseHandler;
-import org.fleximart.fleximart.v1.utils.UserValidation;
+import org.fleximart.fleximart.v1.utils.validation.UserValidation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.ResponseEntity;

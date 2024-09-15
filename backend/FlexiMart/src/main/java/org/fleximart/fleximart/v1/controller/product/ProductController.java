@@ -1,14 +1,12 @@
 package org.fleximart.fleximart.v1.controller.product;
 
 import org.fleximart.fleximart.v1.DTO.product.request.InventoryRequest;
-import org.fleximart.fleximart.v1.DTO.product.request.NewProductRequest;
+import org.fleximart.fleximart.v1.DTO.product.request.ProductRequest;
 import org.fleximart.fleximart.v1.DTO.product.request.ProductVariantRequest;
-import org.fleximart.fleximart.v1.DTO.product.request.UpdateProductRequest;
 import org.fleximart.fleximart.v1.DTO.product.response.InventoryResponse;
 import org.fleximart.fleximart.v1.DTO.product.response.ProductMediaResponse;
 import org.fleximart.fleximart.v1.DTO.product.response.ProductResponse;
 import org.fleximart.fleximart.v1.DTO.product.response.ProductVariantResponse;
-import org.fleximart.fleximart.v1.entity.product.Inventory;
 import org.fleximart.fleximart.v1.entity.product.ProductMedia;
 import org.fleximart.fleximart.v1.entity.product.ProductVariant;
 import org.fleximart.fleximart.v1.service.product.InventoryService;
@@ -18,7 +16,6 @@ import org.fleximart.fleximart.v1.service.product.ProductVariantService;
 import org.fleximart.fleximart.v1.utils.ResponseHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -57,8 +54,8 @@ public class ProductController {
     }
 
     @PostMapping
-    public ResponseEntity<Object> createProduct(@RequestBody NewProductRequest newProductRequest) {
-        ProductResponse productResponse = productService.save(newProductRequest);
+    public ResponseEntity<Object> createProduct(@RequestBody ProductRequest productRequest) {
+        ProductResponse productResponse = productService.save(productRequest);
         if (productResponse == null) {
             return ResponseHandler.generateResponse(
                     "Something went wrong",
@@ -96,8 +93,8 @@ public class ProductController {
     }
 
     @PutMapping("/{productId}")
-    public ResponseEntity<Object> updateProduct (@PathVariable Long productId, @RequestBody UpdateProductRequest updateProductRequest) {
-        ProductResponse productResponse = productService.update(productId, updateProductRequest);
+    public ResponseEntity<Object> updateProduct (@PathVariable Long productId, @RequestBody ProductRequest productRequest) {
+        ProductResponse productResponse = productService.update(productId, productRequest);
         if (productResponse == null) {
             return ResponseHandler.generateResponse(
                     "Something went wrong",
