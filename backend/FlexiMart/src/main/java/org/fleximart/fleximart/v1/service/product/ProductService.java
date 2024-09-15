@@ -2,6 +2,8 @@ package org.fleximart.fleximart.v1.service.product;
 
 
 import org.fleximart.fleximart.v1.DTO.product.request.ProductRequest;
+import org.fleximart.fleximart.v1.exception.ProductValidationException;
+import org.fleximart.fleximart.v1.utils.validation.ProductValidation;
 import org.fleximart.fleximart.v1.DTO.product.response.*;
 import org.fleximart.fleximart.v1.entity.product.*;
 import org.fleximart.fleximart.v1.repository.product.*;
@@ -126,6 +128,9 @@ public class ProductService {
     }
 
     public ProductResponse save(ProductRequest productRequest) {
+        if (!ProductValidation.isProductRequestValid(productRequest)) {
+            throw new ProductValidationException("Product validation failed");
+        }
         Brand brand = findBrandOrThrow(productRequest.getBrandId());
         Collection collection = findCollectionOrThrow(productRequest.getCollectionId());
 
@@ -148,6 +153,9 @@ public class ProductService {
     }
 
     public ProductResponse update(Long id, ProductRequest productRequest) {
+        if (!ProductValidation.isProductRequestValid(productRequest)) {
+            throw new ProductValidationException("Product validation failed");
+        }
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Product not found"));
 
