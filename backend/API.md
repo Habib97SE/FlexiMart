@@ -4,6 +4,26 @@ The backend endpoints are designed to efficiently manage products and their vari
 
 Each version of the APIs is prefixed with `/api/v1/` and located in the respective folder in the project directory (e.g. v1, v2 etc).
 
+-   [Content page](#content-page)
+-   [Wishlist](#wishlist)
+-   [Variant Options](#variant-options)
+-   [Variant Group](#variant-group)
+-   [User](#user)
+-   [Shipping Provider](#shipping-provider)
+-   [Review](#review)
+-   [Product](#product)
+-   [Product Type](#product-type)
+-   [Payment Method](#payment-method)
+-   [Order](#order)
+-   [Collection](#collection)
+-   [Brand](#brand)
+-   [Tag](#tag)
+-   [Blog Post](#blog-post)
+-   [Blog Category](#blog-category)
+-   [Blog Media](#blog-media)
+-   [Authentication](#authentication)
+-   [Address](#address)
+
 ## Content page:
 
 The following endpoints can be used to create, update, delete and retrieve content pages. A content page is a static page that can be used to display information about the store, products, or any other content, e.g. About Us, Contact Us, etc.
