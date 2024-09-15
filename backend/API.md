@@ -191,6 +191,8 @@ You can create, update, delete and retrieve reviews. A review is a user's opinio
 
 ## Collection:
 
+A collection is a group of products that share a common theme or category. The following endpoints can be used to create, update, delete and retrieve collections.
+
 -   GET `/api/v1/collections` : Retrieve a list of all collections.
 -   GET `/api/v1/collections/{collectionId}` : Retrieve details of a specific collection by its ID.
 -   POST `/api/v1/collections` : Create a new collection.
@@ -206,6 +208,8 @@ You can create, update, delete and retrieve reviews. A review is a user's opinio
 -   DELETE `/api/v1/brands/{brandId}` : Delete a specific brand by its ID.
 
 ## Tag:
+
+Tag is a keyword or term assigned to a piece of information (e.g., a blog post) to describe it and enable it to be found again by browsing or searching.
 
 -   GET `/api/v1/blogs/tags` : Retrieve a list of all tags.
 -   GET `/api/v1/blogs/tags/{tagId}` : Retrieve details of a specific tag by its ID.
