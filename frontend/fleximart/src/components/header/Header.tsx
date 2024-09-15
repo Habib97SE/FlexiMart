@@ -1,23 +1,27 @@
+import Image from 'next/image';
 import Link from 'next/link';
 import TopBar from "@/components/header/TopBar";
-import {FaShoppingCart} from "react-icons/fa";
+import { FaShoppingCart } from "react-icons/fa";
 
-export default function Header({title, paths}) {
+export default function Header({ title, paths }) {
     return (
         <header className="sticky top-0 bg-white z-50 shadow-md">
             <div className="mobile-fix-option"></div>
 
             {/* Top Header */}
-            <TopBar/>
+            <TopBar />
 
             {/* Main Navigation */}
             <div className="container mx-auto py-4">
                 <div className="flex justify-between items-center">
                     {/* Logo */}
                     <div className="logo">
-                        <Link href="/">
-                            Logo
-                        </Link>
+                        <Image
+                            src="https://via.placeholder.com/150x50?text=Logo"
+                            alt="Logo"
+                            width={150}
+                            height={50}
+                        />
                     </div>
 
                     {/* Main Menu */}
@@ -52,11 +56,11 @@ export default function Header({title, paths}) {
                             </div>
                             <div className="relative">
                                 <Link href="/page/account/cart">
-                                    <FaShoppingCart className="h-6 cursor-pointer"/>
+                                    <FaShoppingCart className="h-6 cursor-pointer" />
                                     <span
                                         className="absolute top-0 right-0 h-4 w-4 bg-red-500 text-white text-xs rounded-full flex justify-center items-center">
-                      0
-                    </span>
+                                        0
+                                    </span>
 
                                 </Link>
                             </div>
@@ -70,7 +74,7 @@ export default function Header({title, paths}) {
                     <nav aria-label="breadcrumb">
                         <ol className="breadcrumb">
                             {paths.map((path, index) => {
-                                {/* If it is the last path, don't add / */}
+                                {/* If it is the last path, don't add / */ }
                                 if (index === paths.length - 1) {
                                     return (
                                         <span className={"text-xl"} key={index}>
@@ -78,7 +82,7 @@ export default function Header({title, paths}) {
                                         </span>
                                     );
                                 }
-                                {/* Don't render path if we're in home page */}
+                                {/* Don't render path if we're in home page */ }
                                 if (paths.length === 1) {
                                     return null;
                                 }

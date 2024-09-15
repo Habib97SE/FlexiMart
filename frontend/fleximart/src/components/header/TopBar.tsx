@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { FaHeart, FaUser } from "react-icons/fa";
 
 export default function TopBar() {
     return (
@@ -14,12 +15,14 @@ export default function TopBar() {
                 </div>
                 <div className="flex space-x-4">
                     <Link href="/profile/wishlist" className={"d-flex flex-row"}>
-                        Wishlist
+                        <span className="flex items-start justify-center">
+                            <FaHeart /> Wishlist
+                        </span>
                     </Link>
                     <div className="relative group">
-                  <span className="cursor-pointer">
-                    My Account
-                  </span>
+                        <span className="cursor-pointer flex items-start">
+                            <FaUser /> My Account
+                        </span>
                         <ul className="absolute right-0 hidden group-hover:block bg-white text-black shadow-lg py-2">
                             <li>
                                 <Link href="/login">
