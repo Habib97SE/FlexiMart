@@ -11,7 +11,7 @@ const UserContext = createContext(null);
 
 const USER_KEY = "user_data";
 
-function saveUser(user : UserResponse) {
+function saveUser(user: UserResponse) {
     localStorage.setItem(USER_KEY, JSON.stringify(user));
 }
 
@@ -32,11 +32,15 @@ function UserProvider({ children }) {
     const [userLoggedIn, setUserLoggedIn] = useState(false);
 
     useEffect(() => {
-        
-    });
+        const user = getUser();
+        if (user) {
+            setUser(user);
+            setUserLoggedIn(true);
+        }
+    }, []);
 
-    const authorizeUser = async (loginRequest : LoginRequest) => {
-        const user : UserResponse = await userModel.authorize(loginRequest);
+    const authorizeUser = async (loginRequest: LoginRequest) => {
+        const user: UserResponse = await userModel.authorize(loginRequest);
         if (user.error) {
             console.log(user.message);
             return {
@@ -56,11 +60,13 @@ function UserProvider({ children }) {
     }
 
 
-    const value = useMemo(() => ({ 
-        user, 
+    const value = useMemo(() => ({
+        user,
+        userLoggedIn,
         setUser,
         authorizeUser
-    }), [user]);
+
+    }), [user, userLoggedIn]);
 
     return (
         <UserContext.Provider value={value}>

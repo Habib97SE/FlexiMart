@@ -8,6 +8,7 @@ import * as yup from "yup";
 import { UserContext } from "@/context/UserContext";
 import Link from "next/link";
 import Alert from "@/components/Alert";
+import { useRouter } from "next/router";
 
 const schema = yup.object().shape({
     email: yup.string().email("Invalid email").required(),
@@ -20,8 +21,8 @@ type FormData = {
 };
 
 const Login = () => {
-
-    const { authorizeUser } = useContext(UserContext);
+    const router = useRouter();
+    const { authorizeUser, userLoggedIn } = useContext(UserContext);
     const [error, setError] = useState<boolean>(false);
     const [message, setMessage] = useState<string>("");
     const [success, setSuccess] = useState<boolean>(false);
@@ -32,9 +33,7 @@ const Login = () => {
 
 
     const onSubmit = async (data: FormData) => {
-        console.log(data);
         const response = await authorizeUser(data);
-        console.log(response);
         if (response.error) {
             setError(true);
             setMessage(response.message);
@@ -56,6 +55,10 @@ const Login = () => {
         title: "Login",
         path: path,
     };
+
+    if (userLoggedIn) {
+        router.push("/");
+    }
 
 
     return (
@@ -91,17 +94,19 @@ const Login = () => {
                                         />
                                         {errors.password && <p className="text-red-500">{errors.password.message}</p>}
                                     </div>
-                                    <input type="submit" className="btn btn-solid bg-blue-600 text-white py-2 px-6 rounded hover:bg-blue-700 transition" value={"Login"} />
-                                    {error &&
-                                        <Alert message={message} messageStatus={"DANGER"} />}
-                                    {success &&
-                                        <Alert message={message} messageStatus={"SUCCESS"} />}
+                                    <input type="submit" className="btn btn-solid bg-gray-600 text-white py-2 px-6 rounded hover:bg-gray-700 transition" value={"Login"} />
+                                    <div className="my-2">
+                                        {error &&
+                                            <Alert message={message} messageStatus={"DANGER"} />}
+                                        {success &&
+                                            <Alert message={message} messageStatus={"SUCCESS"} />}
+                                    </div>
                                 </form>
                             </div>
                         </div>
 
                         {/* New Customer Section */}
-                        <div className="p-8 shadow-lg rounded-lg bg-white">
+                        <div className="p-8 shadow-lg rounded-lg bg-white flex flex-col justify-center items-center text-center">
                             <h3 className="text-2xl font-bold mb-6">New Customer</h3>
                             <div className="theme-card">
                                 <h6 className="text-lg font-semibold mb-4">Create An Account</h6>
