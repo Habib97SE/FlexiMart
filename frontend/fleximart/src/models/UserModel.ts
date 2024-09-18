@@ -65,11 +65,18 @@ class UserModel {
 
     async authorize(loginRequest: LoginRequest) {
         const loginEndpoint: string = "http://localhost:8080/api/v1/auth/user";
-        const response: AxiosResponse<UserResponse> = await axios.post(
-            loginEndpoint,
-            loginRequest
-        );
-        return response.data;
+        try {
+            const response: AxiosResponse<UserResponse> = await axios.post(
+                loginEndpoint,
+                loginRequest
+            );
+            return response.data;
+        } catch (error) {
+            return {
+                error: true,
+                message: "Invalid credentials",
+            };
+        }
     }
 }
 

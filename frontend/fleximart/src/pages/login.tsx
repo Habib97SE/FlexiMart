@@ -1,10 +1,13 @@
 "use client";
-import React, {useContext, useState} from "react";
+import React, { useContext, useState } from "react";
+import Image from 'next/image';
 import CommonLayout from "@/components/CommonLayout";
 import { useForm } from "react-hook-form";
-import { yupResolver} from "@hookform/resolvers/yup";
+import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { UserContext } from "@/context/UserContext";
+import Link from "next/link";
+import Alert from "@/components/Alert";
 
 const schema = yup.object().shape({
     email: yup.string().email("Invalid email").required(),
@@ -18,12 +21,12 @@ type FormData = {
 
 const Login = () => {
 
-    const {authorizeUser} = useContext(UserContext);
+    const { authorizeUser } = useContext(UserContext);
     const [error, setError] = useState<boolean>(false);
     const [message, setMessage] = useState<string>("");
     const [success, setSuccess] = useState<boolean>(false);
 
-    const {register, handleSubmit, formState: {errors}} = useForm<FormData>({
+    const { register, handleSubmit, formState: { errors } } = useForm<FormData>({
         resolver: yupResolver(schema),
     });
 
@@ -45,8 +48,8 @@ const Login = () => {
 
 
     const path = [
-        {name: "Home", href: "/"},
-        {name: "Login", href: "/login"}
+        { name: "Home", href: "/" },
+        { name: "Login", href: "/login" }
     ];
 
     const data = {
@@ -57,42 +60,64 @@ const Login = () => {
 
     return (
         <CommonLayout data={data}>
-            <h1>Login</h1>
-            <div className={"fluid-container"}>
-                <form onSubmit={handleSubmit(onSubmit)}>
-                    <div>
-                        <label>Email</label>
-                        <input type="text" {...register("email")} className={`form-control border w-full rounded ${errors.email ? "border-red-500" : ""}`} />
-                        <p
-                            className={"text-red-500 font-thin"}
-                        >{errors.email?.message}</p>
+
+            <section className="login-page section-b-space py-12">
+                <div className="container mx-auto">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                        {/* Login Form Section */}
+                        <div className="p-8 shadow-lg rounded-lg bg-white">
+                            <h3 className="text-2xl font-bold mb-6">Login</h3>
+                            <div className="theme-card">
+                                <form className="theme-form" onSubmit={handleSubmit(onSubmit)}>
+                                    <div className="form-group mb-4">
+                                        <label htmlFor="email" className="form-label block mb-2 text-gray-700">Email</label>
+                                        <input
+                                            {...register("email")}
+                                            id="email"
+                                            placeholder="Email"
+                                            type="email"
+                                            className={`form-control w-full border border-gray-300 rounded px-4 py-2 ${errors.email ? 'border-red-500' : ''}`}
+                                        />
+                                        {errors.email && <p className="text-red-500">{errors.email.message}</p>}
+                                    </div>
+                                    <div className="form-group mb-6">
+                                        <label htmlFor="password" className="form-label block mb-2 text-gray-700">Password</label>
+                                        <input
+                                            {...register("password")}
+                                            id="password"
+                                            placeholder="Enter your password"
+                                            type="password"
+                                            className={`form-control w-full border border-gray-300 rounded px-4 py-2 ${errors.password ? 'border-red-500' : ''}`}
+                                        />
+                                        {errors.password && <p className="text-red-500">{errors.password.message}</p>}
+                                    </div>
+                                    <input type="submit" className="btn btn-solid bg-blue-600 text-white py-2 px-6 rounded hover:bg-blue-700 transition" value={"Login"} />
+                                    {error &&
+                                        <Alert message={message} messageStatus={"DANGER"} />}
+                                    {success &&
+                                        <Alert message={message} messageStatus={"SUCCESS"} />}
+                                </form>
+                            </div>
+                        </div>
+
+                        {/* New Customer Section */}
+                        <div className="p-8 shadow-lg rounded-lg bg-white">
+                            <h3 className="text-2xl font-bold mb-6">New Customer</h3>
+                            <div className="theme-card">
+                                <h6 className="text-lg font-semibold mb-4">Create An Account</h6>
+                                <p className="mb-6">
+                                    Sign up for a free account at our store. Registration is quick and easy.
+                                    It allows you to be able to order from our shop. To start shopping click register.
+                                </p>
+                                <Link href="#" className="btn btn-solid bg-green-600 text-white py-2 px-6 rounded hover:bg-green-700 transition">
+                                    Create an Account
+                                </Link>
+
+                            </div>
+                        </div>
                     </div>
-                    <div>
-                        <label>Password</label>
-                        <input
-                            type="password"
-                            {...register("password")}
-                            className={`form-control border w-full rounded ${errors.password ? "border-red-500" : ""}`}
-                        />
-                        <p
-                            className={"text-red-500 font-thin"}
-                        >{errors.password?.message}</p>
-                    </div>
-                    <button
-                        className={"px-3 py-2 bg-blue-500 text-white mt-2 hover:bg-blue-600 focus:outline-none"}
-                        type="submit">Login</button>
-                </form>
-                {error && 
-                    <div className="bg-red-100 border border-red-500 text-red-800 px-4 py-3 rounded my-3">
-                        {message}
-                    </div>
-                }
-                {success &&
-                    <div className="bg-green-100 border border-green-500 text-green-800 px-4 py-3 rounded my-3">
-                        {message}
-                    </div>
-                }
-            </div>
+                </div>
+            </section>
         </CommonLayout>
     );
 }
