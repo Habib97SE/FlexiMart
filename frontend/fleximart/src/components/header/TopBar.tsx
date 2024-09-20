@@ -12,8 +12,8 @@ export default function TopBar() {
 
         const navItems = [
             {
-                name: "Profile",
-                href: "/profile",
+                name: "Dashboard",
+                href: "/profile/dashboard",
             },
             {
                 name: "Orders",
@@ -35,7 +35,7 @@ export default function TopBar() {
 
         const NavLinks = navItems.map((item, index) => {
             return (
-                <li key={index} className="py-4 px-3 hover:bg-gray-500 hover:text-white font-bold">
+                <li key={index} className="py-4 w-52 px-3 hover:bg-gray-500 hover:text-white font-bold">
                     <Link href={item.href}>
                         {item.name}
                     </Link>

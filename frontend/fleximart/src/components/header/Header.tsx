@@ -2,6 +2,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import TopBar from "@/components/header/TopBar";
 import { FaShoppingCart } from "react-icons/fa";
+import BreadcrumbSection from '../beadcrumbsection/BreadcrumbSection';
 
 export default function Header({ title, paths }) {
     return (
@@ -68,36 +69,7 @@ export default function Header({ title, paths }) {
                     </div>
                 </div>
             </div>
-            <div className={"row"}>
-                <div className={"container-fluid"}>
-                    {/* Loop through path and print as PAth1 / PATH2 / PATH3 ... */}
-                    <nav aria-label="breadcrumb">
-                        <ol className="breadcrumb">
-                            {paths.map((path, index) => {
-                                {/* If it is the last path, don't add / */ }
-                                if (index === paths.length - 1) {
-                                    return (
-                                        <span className={"text-xl"} key={index}>
-                                            {path.name}
-                                        </span>
-                                    );
-                                }
-                                {/* Don't render path if we're in home page */ }
-                                if (paths.length === 1) {
-                                    return null;
-                                }
-                                return (
-                                    <span className={"text-xl"} key={index}>
-                                        <Link href={path.href}>
-                                            {path.name} / {" "}
-                                        </Link>
-                                    </span>
-                                );
-                            })}
-                        </ol>
-                    </nav>
-                </div>
-            </div>
+            <BreadcrumbSection title={title} paths={paths} />
         </header>
     );
 }

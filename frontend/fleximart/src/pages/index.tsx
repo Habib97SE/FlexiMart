@@ -66,7 +66,7 @@ const Home = () => {
                         specialProducts={[product, product, product, product]}
                     />
                 </div>
-                <Newsletter />
+
             </CommonLayout>
         </>
 
