@@ -17,12 +17,14 @@ export default function Header({ title, paths }) {
                 <div className="flex justify-between items-center">
                     {/* Logo */}
                     <div className="logo">
-                        <Image
-                            src="https://via.placeholder.com/150x50?text=Logo"
-                            alt="Logo"
-                            width={150}
-                            height={50}
-                        />
+                        <Link href={"/"}>
+                            <Image
+                                src="https://via.placeholder.com/150x50?text=Logo"
+                                alt="Logo"
+                                width={150}
+                                height={50}
+                            />
+                        </Link>
                     </div>
 
                     {/* Main Menu */}

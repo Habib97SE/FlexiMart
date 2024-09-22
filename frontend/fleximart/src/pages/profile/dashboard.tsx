@@ -32,7 +32,6 @@ const DashboardPage = () => {
                                                     className="text-blue-600 font-bold transition-transform transform hover:translate-x-2 hover:text-blue-800 relative group"
                                                 >
                                                     Account Info
-                                                    <span className="absolute right-0 opacity-0 group-hover:opacity-100 transition-opacity"> &gt; </span>
                                                 </Link>
                                             </li>
                                             <li>
@@ -41,7 +40,6 @@ const DashboardPage = () => {
                                                     className="text-gray-600 transition-transform transform hover:translate-x-2 hover:text-blue-800 relative group"
                                                 >
                                                     Address Book
-                                                    <span className="absolute right-0 opacity-0 group-hover:opacity-100 transition-opacity"> &gt; </span>
                                                 </Link>
                                             </li>
                                             <li>
@@ -50,7 +48,6 @@ const DashboardPage = () => {
                                                     className="text-gray-600 transition-transform transform hover:translate-x-2 hover:text-blue-800 relative group"
                                                 >
                                                     My Orders
-                                                    <span className="absolute right-0 opacity-0 group-hover:opacity-100 transition-opacity"> &gt; </span>
                                                 </Link>
                                             </li>
                                             <li>
@@ -59,7 +56,6 @@ const DashboardPage = () => {
                                                     className="text-gray-600 transition-transform transform hover:translate-x-2 hover:text-blue-800 relative group"
                                                 >
                                                     My Wishlist
-                                                    <span className="absolute right-0 opacity-0 group-hover:opacity-100 transition-opacity"> &gt; </span>
                                                 </Link>
                                             </li>
                                             <li>
@@ -68,7 +64,6 @@ const DashboardPage = () => {
                                                     className="text-gray-600 transition-transform transform hover:translate-x-2 hover:text-blue-800 relative group"
                                                 >
                                                     Newsletter
-                                                    <span className="absolute right-0 opacity-0 group-hover:opacity-100 transition-opacity"> &gt; </span>
                                                 </Link>
                                             </li>
                                             <li>
@@ -77,7 +72,6 @@ const DashboardPage = () => {
                                                     className="text-gray-600 transition-transform transform hover:translate-x-2 hover:text-blue-800 relative group"
                                                 >
                                                     My Account
-                                                    <span className="absolute right-0 opacity-0 group-hover:opacity-100 transition-opacity"> &gt; </span>
                                                 </Link>
                                             </li>
                                             <li>
@@ -86,7 +80,6 @@ const DashboardPage = () => {
                                                     className="text-gray-600 transition-transform transform hover:translate-x-2 hover:text-blue-800 relative group"
                                                 >
                                                     Change Password
-                                                    <span className="absolute right-0 opacity-0 group-hover:opacity-100 transition-opacity"> &gt; </span>
                                                 </Link>
                                             </li>
                                             <li className="last">
@@ -94,7 +87,6 @@ const DashboardPage = () => {
                                                     href="#"
                                                     className="text-red-600 transition-transform transform hover:translate-x-2 hover:text-red-800 relative group"
                                                 >
-                                                    <span className="absolute right-0 opacity-0 group-hover:opacity-100 transition-opacity"> &gt; </span>
                                                     Log Out
 
                                                 </Link>

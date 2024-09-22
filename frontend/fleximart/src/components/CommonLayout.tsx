@@ -11,7 +11,7 @@ import Newsletter from "./Newsletter";
 const CommonLayout = ({ children, data }) => {
     return (
         <>
-            <Header title={data.title} paths={data.path} />
+            <Header title={data.title} paths={data.paths} />
             <main>
                 {children}
             </main>
