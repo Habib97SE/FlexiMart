@@ -15,6 +15,9 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Service class for Collection
+ */
 @Service
 public class CollectionService {
 
@@ -30,6 +33,19 @@ public class CollectionService {
                 .id(collection.getId())
                 .name(collection.getName())
                 .description(collection.getDescription())
+                .slug(collection.getSlug())
+                .collectionImage(collection.getCollectionImage())
+                .createdAt(collection.getCreatedAt().toString())
+                .updatedAt(collection.getUpdatedAt().toString())
+                .build();
+    }
+
+    private Collection mapCollectionRequestToCollection(CollectionRequest collectionRequest) {
+        return Collection.builder()
+                .name(collectionRequest.getName())
+                .description(collectionRequest.getDescription())
+                .slug(collectionRequest.getSlug())
+                .collectionImage(collectionRequest.getCollectionImage())
                 .build();
     }
 
@@ -53,38 +69,72 @@ public class CollectionService {
                 .orElseThrow(() -> new ResourceNotFoundException("Collection not found"));
     }
 
+    public CollectionResponse findBySlug(String slug) {
+        Collection collection = collectionRepository.findBySlug(slug);
+        if (collection == null) {
+            throw new ResourceNotFoundException("Collection not found");
+        }
+
+        return createCollectionResponse(collection);
+    }
+
 
     public ResponseEntity<Object> save(CollectionRequest collectionRequest) {
-        Collection collection = Collection.builder()
-                .name(collectionRequest.getName())
-                .description(collectionRequest.getDescription())
-                .build();
-        collectionRepository.save(collection);
-        return ResponseHandler.generateResponse(
-                "Collection created successfully",
-                201,
-                createCollectionResponse(collection),
-                false
-        );
+        System.out.println(collectionRequest.getSlug());
+        if (collectionRequest.getSlug().isEmpty()) {
+            collectionRequest.setSlug(collectionRequest.getName().toLowerCase().replace(" ", "-"));
+        }
+
+        try {
+            Collection collection = mapCollectionRequestToCollection(collectionRequest);
+            collection = collectionRepository.save(collection);
+
+            return ResponseHandler.generateResponse(
+                    "Collection saved successfully",
+                    201,
+                    createCollectionResponse(collection),
+                    false
+            );
+
+        } catch (Exception e) {
+            return ResponseHandler.generateResponse(
+                    "Collection not saved",
+                    500,
+                    null,
+                    true
+            );
+        }
+
     }
 
     public ResponseEntity<Object> update(Long id, CollectionRequest collectionRequest) {
-        return collectionRepository.findById(id)
-                .map(collection -> {
-                    collection.setName(collectionRequest.getName());
-                    collection.setDescription(collectionRequest.getDescription());
-                    collectionRepository.save(collection);
-                    return ResponseHandler.generateResponse(
-                            "Collection updated successfully",
-                            200,
-                            createCollectionResponse(collection),
-                            false);
-                })
-                .orElseGet(() -> ResponseHandler.generateResponse(
-                        "Collection not found",
-                        404,
-                        null,
-                        true));
+        if (collectionRequest.getSlug().isEmpty()) {
+            collectionRequest.setSlug(collectionRequest.getName().toLowerCase().replace(" ", "-"));
+        }
+        Collection collection = mapCollectionRequestToCollection(collectionRequest);
+
+        try {
+            collection.setId(id);
+            collection = collectionRepository.save(collection);
+            return ResponseHandler.generateResponse(
+                    "Collection updated successfully",
+                    200,
+                    createCollectionResponse(collection),
+                    false
+            );
+        } catch (ResourceNotFoundException e) {
+            return ResponseHandler.generateResponse(
+                    "Collection not found",
+                    404,
+                    null,
+                    true
+            );
+        }
+
+
+
+
+
     }
 
 

@@ -1,5 +1,6 @@
 import CommonLayout from "@/components/CommonLayout";
 import Image from 'next/image';
+import HEAD from 'next/head';
 import aboutImage from '@/assets/images/about.jpg';
 import TestimonialSlider from "@/components/TestimonialSlider";
 
@@ -13,6 +14,10 @@ const About = () => {
     }
     return (
         <>
+            <HEAD>
+                <title>About Us</title>
+                <meta name="description" content="About Us" />
+            </HEAD>
             <CommonLayout data={data}>
                 <section className="about-page section-b-space py-12">
                     <div className="container mx-auto">

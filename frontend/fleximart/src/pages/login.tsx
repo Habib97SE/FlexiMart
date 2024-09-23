@@ -53,7 +53,7 @@ const Login = () => {
 
     const data = {
         title: "Login",
-        path: path,
+        paths: path,
     };
 
     if (userLoggedIn) {

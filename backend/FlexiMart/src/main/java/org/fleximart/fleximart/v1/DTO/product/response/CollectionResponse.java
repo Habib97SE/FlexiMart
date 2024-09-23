@@ -11,4 +11,8 @@ public class CollectionResponse {
     private Long id;
     private String name;
     private String description;
+    private String slug;
+    private String collectionImage;
+    private String createdAt;
+    private String updatedAt;
 }

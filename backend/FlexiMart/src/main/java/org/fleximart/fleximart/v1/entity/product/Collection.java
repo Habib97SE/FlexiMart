@@ -32,6 +32,12 @@ public class Collection {
     @Size(max = 1000, message = "Description should not exceed 1000 characters")
     private String description;
 
+    @Size(max = 250, message = "Slug should not exceed 250 characters")
+    private String slug;
+
+    @Column(nullable = true, length = 1000)
+    private String collectionImage;
+
     @Column(nullable = false)
     @PastOrPresent(message = "createdAt should be in the past or present")
     @CreationTimestamp

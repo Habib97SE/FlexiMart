@@ -10,4 +10,6 @@ import lombok.*;
 public class CollectionRequest {
     private String name;
     private String description;
+    private String slug = "";
+    private String collectionImage = "";
 }

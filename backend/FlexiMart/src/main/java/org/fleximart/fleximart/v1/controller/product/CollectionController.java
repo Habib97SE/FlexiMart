@@ -49,6 +49,17 @@ public class CollectionController {
         );
     }
 
+    @GetMapping("/slug/{slug}")
+    public ResponseEntity<Object> findBySlug(@PathVariable String slug) {
+        CollectionResponse collectionResponse = collectionService.findBySlug(slug);
+        return ResponseHandler.generateResponse(
+                "Collection retrieved successfully",
+                200,
+                collectionResponse,
+                false
+        );
+    }
+
     @PostMapping
     public ResponseEntity<Object> createCollection(@RequestBody CollectionRequest collectionRequest) {
         return collectionService.save(collectionRequest);

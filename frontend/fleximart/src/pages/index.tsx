@@ -9,7 +9,7 @@ import Head from "next/head";
 const Home = () => {
     const data = {
         title: "Home",
-        path: [
+        paths: [
             { name: "Home", href: "/" }
         ]
     }
