@@ -1,14 +1,21 @@
 "use client";
-import React, { createContext, useContext, useEffect, useMemo, useState } from "react";
+import React, { createContext, useContext, useEffect, useMemo, useState, ReactNode } from "react";
 import { UserModel } from "../models/UserModel";
 import { LoginRequest } from "@/interface/LoginRequest";
 import { UserResponse } from "@/interface/UserResponse";
 
-const UserContext = createContext(null);
+// Define a type for the context
+interface UserContextType {
+    user: UserResponse | null;
+    userLoggedIn: boolean;
+    setUser: (user: UserResponse | null) => void;
+    authorizeUser: (loginRequest: LoginRequest) => Promise<{ error: boolean; message: string }>;
+}
 
+// Create context with default value
+const UserContext = createContext<UserContextType | undefined>(undefined);
 
-// save user data in local storage 
-
+// Save user data in local storage
 const USER_KEY = "user_data";
 
 function saveUser(user: UserResponse) {
@@ -17,18 +24,21 @@ function saveUser(user: UserResponse) {
 
 function getUser() {
     const user = localStorage.getItem(USER_KEY);
-    return JSON.parse(user);
+    return user ? JSON.parse(user) : null;
 }
 
 function removeUser() {
     localStorage.removeItem(USER_KEY);
 }
 
+// Define the UserProvider component
+interface UserProviderProps {
+    children: ReactNode;
+}
 
-
-function UserProvider({ children }) {
+function UserProvider({ children }: UserProviderProps) {
     const userModel = new UserModel();
-    const [user, setUser] = useState(null);
+    const [user, setUser] = useState<UserResponse | null>(null);
     const [userLoggedIn, setUserLoggedIn] = useState(false);
 
     useEffect(() => {
@@ -46,7 +56,7 @@ function UserProvider({ children }) {
             return {
                 error: user.error,
                 message: user.message
-            }
+            };
         } else {
             console.log(user);
             setUser(user);
@@ -55,24 +65,30 @@ function UserProvider({ children }) {
             return {
                 error: false,
                 message: "User authorized"
-            }
+            };
         }
-    }
+    };
 
-
-    const value = useMemo(() => ({
-        user,
-        userLoggedIn,
-        setUser,
-        authorizeUser
-
-    }), [user, userLoggedIn]);
-
-    return (
-        <UserContext.Provider value={value}>
-            {children}
-        </UserContext.Provider>
+    const value = useMemo(
+        () => ({
+            user,
+            userLoggedIn,
+            setUser,
+            authorizeUser
+        }),
+        [user, userLoggedIn]
     );
+
+    return <UserContext.Provider value={value}>{children}</UserContext.Provider>;
 }
 
-export { UserContext, UserProvider };
+// Hook to use the UserContext
+function useUser() {
+    const context = useContext(UserContext);
+    if (context === undefined) {
+        throw new Error("useUser must be used within a UserProvider");
+    }
+    return context;
+}
+
+export { UserContext, UserProvider, useUser };

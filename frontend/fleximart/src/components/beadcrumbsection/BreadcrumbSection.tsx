@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-const BreadcrumbSection = ({ title, paths }) => {
+const BreadcrumbSection = ({ title, paths = [] }) => {
 
     const navItems = paths.map((item, index) => {
         return (

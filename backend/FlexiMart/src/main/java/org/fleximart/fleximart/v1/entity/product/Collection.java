@@ -32,6 +32,7 @@ public class Collection {
     @Size(max = 1000, message = "Description should not exceed 1000 characters")
     private String description;
 
+    @Column(nullable = false, unique = true)
     @Size(max = 250, message = "Slug should not exceed 250 characters")
     private String slug;
 

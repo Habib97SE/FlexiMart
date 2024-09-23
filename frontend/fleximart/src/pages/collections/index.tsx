@@ -4,7 +4,11 @@ import CollectionModel from '@/models/CollectionModel';
 import Link from 'next/link';
 import HEAD from 'next/head';
 
-
+/**
+ * This page will display all the collections available
+ * @param collection : variable to store the collection data
+ * @returns 
+ */
 const CollectionPage = ({ collection }) => {
 
     const model: CollectionModel = new CollectionModel();

@@ -25,7 +25,7 @@ class CollectionModel {
     ): Promise<CollectionResponse> {
         try {
             const response = await axios.get(`${this.baseUrl}/slug/${slug}`);
-
+            console.log(response);
             if (response.data.data.error === true) {
                 throw new Error(response.data.data.message);
             }

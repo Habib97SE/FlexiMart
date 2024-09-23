@@ -11,4 +11,6 @@ export interface CollectionResponse {
     description: string;
     collectionImage: string;
     slug: string;
+    createdAt: string;
+    updatedAt: string;
 }
