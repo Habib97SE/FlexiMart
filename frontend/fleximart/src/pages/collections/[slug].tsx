@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
 import FilterBar from '@/components/product/FilterBar';
+import PriceRangeFilter from '@/components/product/PriceRangeFilter';
 
 const CollectionPage = () => {
     // State to handle toggling of dropdowns
@@ -102,14 +103,7 @@ const CollectionPage = () => {
                             )}
                         </div>
                         {/* Price Range */}
-                        <div className="mb-8">
-                            <h3 className="font-bold text-lg mb-4">Price</h3>
-                            <input type="range" min="0" max="500" className="w-full" />
-                            <div className="flex justify-between text-sm mt-2">
-                                <span>$0</span>
-                                <input type="text" className="w-16 text-center" value={"500"} />
-                            </div>
-                        </div>
+                        <PriceRangeFilter />
                     </div>
 
                     {/* Main Content */}
