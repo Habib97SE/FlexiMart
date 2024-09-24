@@ -195,6 +195,7 @@ A collection is a group of products that share a common theme or category. The f
 
 -   GET `/api/v1/collections` : Retrieve a list of all collections.
 -   GET `/api/v1/collections/{collectionId}` : Retrieve details of a specific collection by its ID.
+-   GET `/api/v1/collections/slug/{slug}` : Retrieve details of a specific collection by its slug (slugs are unique).
 -   POST `/api/v1/collections` : Create a new collection.
 -   PUT `/api/v1/collections/{collectionId}` : Update details of a specific collection by its ID.
 -   DELETE `/api/v1/collections/{collectionId}` : Delete a specific collection by its ID.
