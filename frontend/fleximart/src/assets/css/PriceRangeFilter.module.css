@@ -1,0 +1,17 @@
+.sliderTrack {
+    height: 100%;
+    position: absolute;
+    background-color: #fe696a;
+}
+
+.minTooltip {
+    position: absolute;
+    bottom: 30px;
+    transform: translateX(-50%);
+}
+
+.maxTooltip {
+    position: absolute;
+    bottom: 30px;
+    transform: translateX(50%);
+}

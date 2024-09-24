@@ -1,15 +1,12 @@
-import { useState } from 'react';
 import { FaTh, FaBars } from 'react-icons/fa';
 
-const FilterBar = () => {
-    const [layout, setLayout] = useState('grid');
-    const [productsPerPage, setProductsPerPage] = useState(10);
-    const [sortOrder, setSortOrder] = useState('Sorting items');
+const FilterBar = ({ layout, setLayout, productsPerRow, setProductsPerRow, sortOrder, setSortOrder }) => {
 
-    const ColorBar = ({ index }) => {
+    const ProductPerRowBar = (active) => {
         return (
-            <div key={index} className="w-2 h-6 bg-red-500"></div>
+            <span className={`w-2 h-6 ${active ? 'bg-red-500' : 'bg-gray-300'} cursor-pointer`} ></span>
         );
+
     }
 
     return (
@@ -39,37 +36,32 @@ const FilterBar = () => {
                     </div>
                     <span className="mx-4"></span>
                     {/* Product Layout Bars */}
-                    <div className="flex space-x-1 ">
+                    <div className="flex space-x-5">
+                        <div className='flex space-x-1' onClick={() => setProductsPerRow(2)} >
+                            {Array(2).fill(0).map((_, i) => (
+                                <ProductPerRowBar key={i} active={productsPerRow === 2} />
+                            ))}
+                        </div>
+                        <div className="flex space-x-1"
+                            onClick={() => setProductsPerRow(3)}>
+                            {Array(3).fill(0).map((_, i) => (
+                                <ProductPerRowBar key={i} active={productsPerRow === 3} />
+                            ))}
 
-                        {[...Array(2)].map((_, i) => (
-                            <ColorBar key={i} index={i} />
-                        ))}
-                        <span className="mx-5"></span>
-                        {[...Array(4)].map((_, i) => (
-                            <ColorBar key={i} index={i} />
-                        ))}
-                        <span className="mx-3"></span>
-                        {[...Array(6)].map((_, i) => (
-                            <ColorBar key={i} index={i} />
-                        ))}
+                        </div>
+
+
+                        <div className="flex space-x-1"
+                            onClick={() => setProductsPerRow(4)}>
+                            {Array(4).fill(0).map((_, i) => (
+                                <ProductPerRowBar key={i} active={productsPerRow === 4} />
+                            ))}
+                        </div>
                     </div>
                 </div>
 
-                {/* Products Per Page Dropdown */}
+                {/* Products Per Page and Sorting Dropdown */}
                 <div className="flex space-x-6">
-                    {/* Products Per Page Dropdown */}
-                    <div className="relative">
-                        <select
-                            className="border rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-500"
-                            value={productsPerPage}
-                            onChange={(e) => setProductsPerPage(Number(e.target.value))}
-                        >
-                            <option value={10}>10 Products Per Page</option>
-                            <option value={15}>15 Products Per Page</option>
-                            <option value={20}>20 Products Per Page</option>
-                        </select>
-                    </div>
-
                     {/* Sorting Dropdown */}
                     <div className="relative">
                         <select
@@ -77,15 +69,16 @@ const FilterBar = () => {
                             value={sortOrder}
                             onChange={(e) => setSortOrder(e.target.value)}
                         >
-                            <option value="Sorting items">Sorting items</option>
-                            <option value="HighToLow">High To Low</option>
-                            <option value="LowToHigh">Low To High</option>
-                            <option value="Newest">Newest</option>
+                            <option value="default">Sorting items</option>
+                            <option value="HighToLow">Price: High To Low</option>
+                            <option value="LowToHigh">Price: Low To High</option>
+                            <option value="AZ">Alphabetically: A-Z</option>
+                            <option value="ZA">Alphabetically: Z-A</option>
                         </select>
                     </div>
                 </div>
             </div>
-        </div>
+        </div >
     );
 };
 

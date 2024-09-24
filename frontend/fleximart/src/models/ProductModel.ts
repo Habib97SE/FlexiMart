@@ -8,3 +8,12 @@ export interface ProductResponse {
     stock: number;
 }
 
+class ProductModel {
+    private baseUrl: string;
+
+    constructor() {
+        this.baseUrl = "http://localhost:8080/api/v1/products";
+    }
+
+    // Get all
+}

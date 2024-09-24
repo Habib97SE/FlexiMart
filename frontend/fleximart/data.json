@@ -1,0 +1,145 @@
+{
+    "id": 1,
+    "name": "BRANDON TENN - Sneakers - white",
+    "description": "Tå: Rund",
+    "brand": {
+        "id": 1,
+        "name": "NIKE",
+        "description": null,
+        "website": null,
+        "logo": null
+    },
+    "collection": {
+        "id": 1,
+        "name": "Shoes",
+        "description": "Shoes for all types",
+        "slug": null,
+        "collectionImage": null,
+        "createdAt": null,
+        "updatedAt": null
+    },
+    "modelNumber": "BB112O0C3-A11",
+    "productType": {
+        "id": 1,
+        "name": "Physicall",
+        "description": "physical goods that should be shipped."
+    },
+    "productVariants": [
+        {
+            "id": 1,
+            "sku": "dfgf34",
+            "barCode": "8273878",
+            "variantOptions": [
+                {
+                    "id": 1,
+                    "value": "44",
+                    "description": "Size 44",
+                    "variantGroup": {
+                        "id": 1,
+                        "name": "Size",
+                        "description": null
+                    }
+                }
+            ],
+            "productMedia": [
+                {
+                    "id": 1,
+                    "mediaUrl": "https://google.com",
+                    "mediaType": "ïmage/jpg",
+                    "mediaAlt": "hello world"
+                }
+            ],
+            "inventory": {
+                "id": 1,
+                "price": 1499,
+                "discountPrice": 1399,
+                "costPrice": 999,
+                "currency": "SEK",
+                "stockQuantity": null,
+                "minOrderQuantity": 1,
+                "maxOrderQuantity": 10,
+                "stockStatus": null,
+                "inventoryTracking": true,
+                "reOrderLevel": null,
+                "productVariantId": null
+            }
+        },
+        {
+            "id": 2,
+            "sku": "dfgf34",
+            "barCode": "8273878",
+            "variantOptions": [
+                {
+                    "id": 1,
+                    "value": "44",
+                    "description": "Size 44",
+                    "variantGroup": {
+                        "id": 1,
+                        "name": "Size",
+                        "description": null
+                    }
+                }
+            ],
+            "productMedia": [],
+            "inventory": {
+                "id": 2,
+                "price": 1499,
+                "discountPrice": 1399,
+                "costPrice": 999,
+                "currency": "SEK",
+                "stockQuantity": null,
+                "minOrderQuantity": 1,
+                "maxOrderQuantity": 10,
+                "stockStatus": null,
+                "inventoryTracking": true,
+                "reOrderLevel": null,
+                "productVariantId": null
+            }
+        },
+        {
+            "id": 5,
+            "sku": "sdfkj23",
+            "barCode": "23978",
+            "variantOptions": [
+                {
+                    "id": 2,
+                    "value": "44",
+                    "description": "string",
+                    "variantGroup": {
+                        "id": 1,
+                        "name": "Size",
+                        "description": null
+                    }
+                }
+            ],
+            "productMedia": [
+                {
+                    "id": 2,
+                    "mediaUrl": "https://google.com",
+                    "mediaType": "ïmage/jpg",
+                    "mediaAlt": "hello world"
+                },
+                {
+                    "id": 3,
+                    "mediaUrl": "https://google.com",
+                    "mediaType": "ïmage/jpg",
+                    "mediaAlt": "hello world"
+                }
+            ],
+            "inventory": {
+                "id": 5,
+                "price": 1999,
+                "discountPrice": 1899,
+                "costPrice": 999,
+                "currency": "SEK",
+                "stockQuantity": null,
+                "minOrderQuantity": 1,
+                "maxOrderQuantity": 10,
+                "stockStatus": null,
+                "inventoryTracking": true,
+                "reOrderLevel": null,
+                "productVariantId": null
+            }
+        }
+    ]
+}
