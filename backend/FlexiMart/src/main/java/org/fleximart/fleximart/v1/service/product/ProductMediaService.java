@@ -6,15 +6,19 @@ import org.fleximart.fleximart.v1.entity.product.Product;
 import org.fleximart.fleximart.v1.entity.product.ProductMedia;
 import org.fleximart.fleximart.v1.entity.product.ProductVariant;
 import org.fleximart.fleximart.v1.repository.product.ProductMediaRepository;
+import org.fleximart.fleximart.v1.service.MediaManagement;
 import org.fleximart.fleximart.v1.service.google.storage.CloudStorageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
 
 @Service
 public class ProductMediaService {
+
+    private final String bucketName = "fleximart_product_media";
 
     @Autowired
     private ProductMediaRepository productMediaRepository;
@@ -37,21 +41,14 @@ public class ProductMediaService {
                 .build();
     }
 
-    private String saveToCloudStorage (String imageUrl) {
-       byte[] imageBytes = null;
-        try {
-            imageBytes = cloudStorageService.downloadFile(imageUrl);
-        } catch (Exception e) {
-            System.err.println(e.getMessage());
-        }
+    private String saveToCloudStorage (String imageUrl) throws IOException {
+        // Download file from url
+        byte[] imageFile = MediaManagement.downloadImageFromUrl(imageUrl);
 
-        if (imageBytes == null) {
-            throw new IllegalArgumentException("Failed to download image from URL.");
-        }
-
-        String objectName = imageUrl.substring(imageUrl.lastIndexOf('/') + 1);
-        String bucketName = "fleximart_product_media";
-        return cloudStorageService.uploadFile(bucketName, objectName, imageBytes);
+        // Upload the image to google cloud storage
+        String url = this.cloudStorageService.uploadFile(bucketName, "placeholder.txt", imageFile);
+        System.out.println("The url is: " + url);
+        return url;
     }
 
     public Boolean deleteProductMedia(Long id) {

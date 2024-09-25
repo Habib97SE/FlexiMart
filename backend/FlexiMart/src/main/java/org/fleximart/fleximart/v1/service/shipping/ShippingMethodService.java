@@ -56,6 +56,7 @@ public class ShippingMethodService {
 
     /**
      * Find all shipping methods offered by a provider
+     *
      * @param providerId the id of the provider
      * @return List of ShippingMethodResponse.
      */
