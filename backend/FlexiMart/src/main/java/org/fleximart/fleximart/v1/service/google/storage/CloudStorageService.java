@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-
 @Service
 public class CloudStorageService {
     private final Storage storage;
@@ -27,13 +26,15 @@ public class CloudStorageService {
 
     public CloudStorageService() throws IOException {
 
-        String jsonPath = "src/main/resources/flexi-mart-project-2eac8c79802a.json";
-        this.storage = StorageOptions.newBuilder().setCredentials(ServiceAccountCredentials.fromStream(new FileInputStream(jsonPath)))
+        this.storage = StorageOptions.newBuilder().setCredentials(
+                        ServiceAccountCredentials.fromStream(
+                                new FileInputStream("src/main/resources/flexi-mart-project-28d3cbe24b1e.json")
+                        ))
                 .build()
                 .getService();
     }
 
-    private String createBucketUrl () {
+    private String createBucketUrl() {
         return "https://storage.googleapis.com/fleximart_product_media/";
     }
 
@@ -80,8 +81,9 @@ public class CloudStorageService {
 
     /**
      * Upload all sorts of images
+     *
      * @param bucketName the name of the bucket
-     * @param content the content of the image
+     * @param content    the content of the image
      * @return the url of the image
      */
     public String uploadImage(String bucketName, byte[] content) {
@@ -97,6 +99,7 @@ public class CloudStorageService {
 
     /**
      * Delete a file from the bucket by providing the bucket name and the object name
+     *
      * @param bucketName the name of the bucket
      * @param objectName the name of the object
      * @return true if the file is deleted successfully, false otherwise

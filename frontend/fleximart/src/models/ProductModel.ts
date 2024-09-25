@@ -16,4 +16,29 @@ class ProductModel {
     }
 
     // Get all
+    async getProducts(): Promise<ProductResponse[]> {
+        const response = await axios.get(this.baseUrl);
+        return response.data;
+    }
+
+    // Get by id
+    async getProductById(id: number): Promise<ProductResponse> {
+        const response = await axios.get(`${this.baseUrl}/${id}`);
+        return response.data;
+    }
+
+    // Get by slug
+    async getProductBySlug(slug: string): Promise<ProductResponse> {
+        try {
+            const response = await axios.get(`${this.baseUrl}/slug/${slug}`);
+            if (response.data.error === true) {
+                throw new Error("Product not found");
+            }
+            return response.data.data;
+        } catch (error) {
+            throw new Error("Product not found");
+        }
+    }
 }
+
+export default ProductModel;

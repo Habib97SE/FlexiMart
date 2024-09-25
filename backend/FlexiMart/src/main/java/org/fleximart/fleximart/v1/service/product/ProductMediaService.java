@@ -20,12 +20,11 @@ public class ProductMediaService {
 
     private final String bucketName = "fleximart_product_media";
 
-    @Autowired
     private ProductMediaRepository productMediaRepository;
 
-    @Autowired
     private CloudStorageService cloudStorageService;
 
+    @Autowired
     public ProductMediaService(ProductMediaRepository productMediaRepository,
                                CloudStorageService cloudStorageService) {
         this.productMediaRepository = productMediaRepository;
@@ -41,20 +40,30 @@ public class ProductMediaService {
                 .build();
     }
 
-    private String saveToCloudStorage (String imageUrl) throws IOException {
-        // Download file from url
-        byte[] imageFile = MediaManagement.downloadImageFromUrl(imageUrl);
-
-        // Upload the image to google cloud storage
-        String url = this.cloudStorageService.uploadFile(bucketName, "placeholder.txt", imageFile);
-        System.out.println("The url is: " + url);
-        return url;
+    private String saveToCloudStorage(String imageUrl) throws Exception {
+       try {
+           // Download the image from the url
+           byte[] imageFile = MediaManagement.downloadImageFromUrl(imageUrl);
+           // Upload the image to google cloud storage
+           return cloudStorageService.uploadFile(bucketName, imageUrl, imageFile);
+       } catch (Exception e) {
+           System.err.println(e.getMessage());
+           return null;
+       }
     }
 
     public Boolean deleteProductMedia(Long id) {
         try {
-            productMediaRepository.deleteById(id);
-            return true;
+            ProductMedia productMedia = productMediaRepository.findById(id).orElse(null);
+            if (productMedia == null) {
+                return true;
+            }
+            boolean result = MediaManagement.deleteFromGoogleCloudStorage(productMedia.getMediaUrl());
+            if (result) {
+                productMediaRepository.delete(productMedia);
+                return true;
+            }
+            return false;
         } catch (Exception e) {
             System.err.println(e.getMessage());
             return false;

@@ -46,7 +46,7 @@ const CollectionPage = ({ collection }) => {
                     <div
                         className="py-3 px-5 bg-gray-200 m-2 d-block "
                         key={collection.id}>
-                        <Link href={`/collection/${collection.slug}`}>
+                        <Link href={`/collections/${collection.slug}`}>
                             {collection.name}
                         </Link>
                     </div>

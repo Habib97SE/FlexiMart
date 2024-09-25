@@ -79,7 +79,7 @@ const CollectionPage = () => {
             console.log(slug);
             const fetchCollectionData = async () => {
                 const data = await collectionModel.getCollectionBySlug(slug);
-                const products = await collectionModel.getProductsByCollectionId(data.id);  
+                const products = await collectionModel.getProductsByCollectionId(data.id);
                 setCollectionData(data);
             }
             fetchCollectionData();
@@ -189,8 +189,6 @@ const CollectionPage = () => {
                                         </div>
                                     )}
                                 </div>
-                                {/* Price Range */}
-                                <PriceRangeFilter />
                             </div>
 
 
