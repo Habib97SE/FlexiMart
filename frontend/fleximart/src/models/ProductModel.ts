@@ -32,11 +32,11 @@ class ProductModel {
         try {
             const response = await axios.get(`${this.baseUrl}/slug/${slug}`);
             if (response.data.error === true) {
-                throw new Error("Product not found");
+                return null;
             }
             return response.data.data;
         } catch (error) {
-            throw new Error("Product not found");
+            return null;
         }
     }
 }
