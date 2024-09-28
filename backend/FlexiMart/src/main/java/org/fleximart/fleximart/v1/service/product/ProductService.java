@@ -26,18 +26,15 @@ public class ProductService {
     @Autowired
     private BrandRepository brandRepository;
 
-    @Autowired
     private CollectionRepository collectionRepository;
 
-    @Autowired
     private ProductVariantService productVariantService;
 
-    @Autowired
     private VariantGroupRepository variantGroupRepository;
 
-    @Autowired
     private InventoryService inventoryService;
 
+    @Autowired
     public ProductService(ProductRepository productRepository,
                           BrandRepository brandRepository,
                           CollectionRepository collectionRepository,
@@ -70,6 +67,7 @@ public class ProductService {
                 .id(product.getId())
                 .name(product.getName())
                 .description(product.getDescription())
+                .slug(product.getSlug())
                 .brand(BrandResponse.builder()
                         .id(product.getBrand().getId())
                         .name(product.getBrand().getName())
@@ -121,6 +119,15 @@ public class ProductService {
         );
     }
 
+    /**
+     * Retrieve product that match the given slug
+     * @param slug : slug to find the product with
+     * @return the product if found else null.
+     */
+    public ProductResponse findBySlug (String slug) {
+        return createProductResponse(productRepository.findBySlug(slug));
+    }
+
     public ProductResponse findById(Long id) {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Product not found"));
@@ -138,6 +145,7 @@ public class ProductService {
                 .name(productRequest.getName())
                 .description(productRequest.getDescription())
                 .collection(collection)
+                .slug(productRequest.getSlug())
                 .brand(brand)
                 .modelNumber(productRequest.getModelNumber())
                 .productType(ProductType.builder().id(productRequest.getProductTypeId()).build())

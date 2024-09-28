@@ -14,6 +14,7 @@ public class ProductResponse {
     private Long id;
     private String name;
     private String description;
+    private String slug;
     private BrandResponse brand;
     private CollectionResponse collection;
     private String modelNumber;

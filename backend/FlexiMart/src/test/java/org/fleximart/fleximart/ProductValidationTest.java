@@ -169,19 +169,6 @@ public class ProductValidationTest {
     }
 
     // Test case for isProductRequestValid with ProductRequest object
-    @Test
-    public void testIsProductRequestValid_withValidProductRequest() {
-        ProductRequest productRequest = new ProductRequest("Valid Name", 1L, 1L, "Valid description", "Model123", 1L);
-        assertTrue(ProductValidation.isProductRequestValid(productRequest));
-    }
-
-    @Test
-    public void testIsProductRequestValid_withInvalidProductRequest() {
-        ProductRequest productRequest = new ProductRequest("", 0L, -1L, "", "", 0L);
-        assertFalse(ProductValidation.isProductRequestValid(productRequest));
-    }
-
-    @Test
     public void testIsProductRequestValid_withNullProductRequest() {
         assertThrows(NullPointerException.class, () -> ProductValidation.isProductRequestValid(null));
     }

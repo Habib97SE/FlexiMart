@@ -1,10 +1,23 @@
+"use client";
+import React, { useEffect, useState } from "react";
 import Image from 'next/image';
 import Link from 'next/link';
 import TopBar from "@/components/header/TopBar";
 import { FaShoppingCart } from "react-icons/fa";
 import BreadcrumbSection from '../beadcrumbsection/BreadcrumbSection';
+import { useCart } from '@/context/CartContext';
 
 export default function Header({ title, paths }) {
+
+    const { cart } = useCart();
+
+    const [cartCount, setCartCount] = useState(0);
+
+    useEffect(() => {
+        setCartCount(cart.length);
+    }, [cart]);
+
+
     return (
         <header className="sticky top-0 bg-white z-50 shadow-md">
             <div className="mobile-fix-option"></div>
@@ -59,10 +72,10 @@ export default function Header({ title, paths }) {
                             </div>
                             <div className="relative">
                                 <Link href="/page/account/cart">
-                                    <FaShoppingCart className="h-6 cursor-pointer" />
+                                    <FaShoppingCart className="cursor-pointer w-12 h-24" />
                                     <span
                                         className="absolute top-0 right-0 h-4 w-4 bg-red-500 text-white text-xs rounded-full flex justify-center items-center">
-                                        0
+                                        {cartCount}
                                     </span>
 
                                 </Link>

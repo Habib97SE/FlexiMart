@@ -23,44 +23,47 @@ import java.util.Set;
 public class Product {
 
     @Id
-        @GeneratedValue(strategy = GenerationType.IDENTITY)
-        private Long id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-        @Column(nullable = false)
-        private String name;
+    @Column(nullable = false)
+    private String name;
 
-        @Column(nullable = true)
-        private String description;
+    @Column(nullable = true)
+    private String description;
 
-        @ManyToOne
-        @JoinColumn(name = "collection_id", nullable = false)
-        private Collection collection;
+    @ManyToOne
+    @JoinColumn(name = "collection_id", nullable = false)
+    private Collection collection;
 
-        @ManyToOne
-        @JoinColumn(name = "brand_id", nullable = false)
-        private Brand brand;
+    @ManyToOne
+    @JoinColumn(name = "brand_id", nullable = false)
+    private Brand brand;
 
-        @Column(nullable = false)
-        private String modelNumber;
+    @Column(nullable = false)
+    private String modelNumber;
 
-        @ManyToOne
-        @JoinColumn(name = "type_id", nullable = false)
-        private ProductType productType;
+    @ManyToOne
+    @JoinColumn(name = "type_id", nullable = false)
+    private ProductType productType;
 
-        @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
-        private Set<Review> reviews;
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
+    private Set<Review> reviews;
 
-        @Column(nullable = false)
-        @PastOrPresent(message = "Date must be in the past or present")
-        @CreationTimestamp
-        @Temporal(TemporalType.TIMESTAMP)
-        private LocalDateTime createdAt;
+    @Column(nullable = false, unique = true)
+    private String slug;
 
-        @Column(nullable = true)
-        @UpdateTimestamp
-        @PastOrPresent(message = "Date must be in the past or present")
-        @Temporal(TemporalType.TIMESTAMP)
-        private LocalDateTime updatedAt;
+    @Column(nullable = false)
+    @PastOrPresent(message = "Date must be in the past or present")
+    @CreationTimestamp
+    @Temporal(TemporalType.TIMESTAMP)
+    private LocalDateTime createdAt;
+
+    @Column(nullable = true)
+    @UpdateTimestamp
+    @PastOrPresent(message = "Date must be in the past or present")
+    @Temporal(TemporalType.TIMESTAMP)
+    private LocalDateTime updatedAt;
 
 
 }

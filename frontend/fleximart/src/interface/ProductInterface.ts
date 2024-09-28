@@ -1,4 +1,6 @@
 export interface ProductVariant {
+    barCode: ReactNode;
+    variantOptions: any;
     id: string;
     name: string;
     price: number;

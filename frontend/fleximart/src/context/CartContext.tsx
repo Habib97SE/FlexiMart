@@ -10,6 +10,7 @@ interface CartContextType {
 
 function saveCartToLocalStorage(cart: any[]): boolean {
     try {
+        // Save cart to local storage for 30 days
         localStorage.setItem("cart", JSON.stringify(cart));
         return true;
     } catch (error) {
@@ -42,7 +43,7 @@ function CartProvider({ children }: { children: ReactNode }) {
             setCart(JSON.parse(localStorageCartData));
         }
 
-        setCart(localStorageCartData ? JSON.parse(localStorageCartData) : []);
+        setCart([]);
 
     }, [])
 
@@ -94,4 +95,4 @@ function useCart() {
     return context;
 }
 
-export { CartProvider, useCart };
+export { CartContext, CartProvider, useCart };

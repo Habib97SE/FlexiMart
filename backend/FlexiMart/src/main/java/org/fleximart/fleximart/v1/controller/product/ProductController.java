@@ -53,6 +53,26 @@ public class ProductController {
         );
     }
 
+    @GetMapping("/slug/{slug}")
+    public ResponseEntity<Object> findBySlug (@PathVariable String slug) {
+        ProductResponse productResponse = productService.findBySlug(slug);
+        // if no product were found
+        if (productResponse  == null) {
+            ResponseHandler.generateResponse(
+                    "Something went wrong",
+                    404,
+                    null,
+                    true
+            );
+        }
+        return ResponseHandler.generateResponse(
+                "Product retrieved successfully",
+                200,
+                productResponse,
+                false
+        );
+    }
+
     @PostMapping
     public ResponseEntity<Object> createProduct(@RequestBody ProductRequest productRequest) {
         ProductResponse productResponse = productService.save(productRequest);
@@ -91,6 +111,8 @@ public class ProductController {
                 false
         );
     }
+
+
 
     @PutMapping("/{productId}")
     public ResponseEntity<Object> updateProduct (@PathVariable Long productId, @RequestBody ProductRequest productRequest) {

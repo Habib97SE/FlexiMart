@@ -32,7 +32,7 @@ export default function TopBar() {
 
     const MyAccountDropdown = () => {
         return (
-            <ul className="absolute right-0 hidden group-hover:block bg-white text-black shadow-lg py-2">
+            <ul className="absolute right-0 hidden group-hover:block bg-white text-black shadow-lg py-2  z-10">
                 {navItems.map((item, index) => (
                     <li
                         key={index}
