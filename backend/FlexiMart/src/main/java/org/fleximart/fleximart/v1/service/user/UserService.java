@@ -98,7 +98,7 @@ public class UserService {
         return OrderItemResponse.builder()
                 .id(orderItem.getId())
                 .productName(orderItem.getProductName())
-                .productVariant(orderItem.getProductVariant().getId())
+                .product(orderItem.getProduct().getId())
                 .quantity(orderItem.getQuantity())
                 .unitPrice(orderItem.getUnitPrice())
                 .totalPrice(orderItem.getTotalPrice())

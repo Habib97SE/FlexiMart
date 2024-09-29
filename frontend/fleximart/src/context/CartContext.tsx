@@ -6,15 +6,18 @@ import { UserModel } from "../models/UserModel";
 interface CartContextType {
     cart: any[];
     setCart: (cart: any[]) => void;
+    addItemToCart: (item: any) => void;
+    removeItemFromCart: (index: number) => void;
+    clearCart: () => void;
 }
 
 function saveCartToLocalStorage(cart: any[]): boolean {
     try {
-        // Save cart to local storage for 30 days
+        // Save cart to local storage
         localStorage.setItem("cart", JSON.stringify(cart));
         return true;
     } catch (error) {
-        console.log(error);
+        console.error("Failed to save cart:", error);
         return false;
     }
 }
@@ -23,52 +26,36 @@ function removeCartFromLocalStorage() {
     localStorage.removeItem("cart");
 }
 
-
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
 function CartProvider({ children }: { children: ReactNode }) {
-    const userModel = new UserModel();
     const [cart, setCart] = useState<any[]>([]);
 
+    // Load cart from local storage when the component is mounted
     useEffect(() => {
-        const cart = localStorage.getItem("cart");
-        if (cart) {
-            setCart(JSON.parse(cart));
+        const storedCart = localStorage.getItem("cart");
+        if (storedCart) {
+            setCart(JSON.parse(storedCart));
         }
     }, []);
-
-    useEffect(() => {
-        const localStorageCartData = localStorage.getItem("cart");
-        if (localStorageCartData) {
-            setCart(JSON.parse(localStorageCartData));
-        }
-
-        setCart([]);
-
-    }, [])
 
     const addItemToCart = (item: any) => {
         const newCart = [...cart, item];
         setCart(newCart);
         saveCartToLocalStorage(newCart);
-    }
+    };
 
     const removeItemFromCart = (index: number) => {
         const newCart = [...cart];
         newCart.splice(index, 1);
         setCart(newCart);
-        const result: boolean = saveCartToLocalStorage(newCart);
-        if (!result) {
-            console.log("Error saving cart to local storage");
-            return result;
-        }
-        return result;
-    }
+        saveCartToLocalStorage(newCart);
+    };
 
     const clearCart = () => {
         setCart([]);
         removeCartFromLocalStorage();
-    }
+    };
 
     const value = useMemo(() => {
         return {
@@ -76,15 +63,11 @@ function CartProvider({ children }: { children: ReactNode }) {
             setCart,
             addItemToCart,
             removeItemFromCart,
-            clearCart
-        }
+            clearCart,
+        };
     }, [cart]);
 
-    return (
-        <CartContext.Provider value={value}>
-            {children}
-        </CartContext.Provider>
-    );
+    return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
 }
 
 function useCart() {
@@ -95,4 +78,4 @@ function useCart() {
     return context;
 }
 
-export { CartContext, CartProvider, useCart };
+export { CartProvider, useCart };

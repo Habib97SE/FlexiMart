@@ -1,218 +1,170 @@
 package org.fleximart.fleximart.v1.service.product;
 
-
+import org.fleximart.fleximart.v1.DTO.product.request.ProductMediaRequest;
 import org.fleximart.fleximart.v1.DTO.product.request.ProductRequest;
-import org.fleximart.fleximart.v1.exception.ProductValidationException;
-import org.fleximart.fleximart.v1.utils.validation.ProductValidation;
 import org.fleximart.fleximart.v1.DTO.product.response.*;
 import org.fleximart.fleximart.v1.entity.product.*;
-import org.fleximart.fleximart.v1.repository.product.*;
-import org.fleximart.fleximart.v1.utils.ResponseHandler;
+import org.fleximart.fleximart.v1.repository.product.ProductRepository;
+import org.fleximart.fleximart.v1.service.MediaManagement;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.fleximart.fleximart.v1.exception.ResourceNotFoundException;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
-
 
 @Service
 public class ProductService {
 
-    @Autowired
-    private ProductRepository productRepository;
+    private final ProductRepository productRepository;
 
     @Autowired
-    private BrandRepository brandRepository;
-
-    private CollectionRepository collectionRepository;
-
-    private ProductVariantService productVariantService;
-
-    private VariantGroupRepository variantGroupRepository;
-
-    private InventoryService inventoryService;
-
-    @Autowired
-    public ProductService(ProductRepository productRepository,
-                          BrandRepository brandRepository,
-                          CollectionRepository collectionRepository,
-                          ProductVariantService productVariantService,
-                          VariantGroupRepository variantGroupRepository,
-                          InventoryService inventoryService) {
+    public ProductService(ProductRepository productRepository) {
         this.productRepository = productRepository;
-        this.brandRepository = brandRepository;
-        this.productVariantService = productVariantService;
-        this.collectionRepository = collectionRepository;
-        this.variantGroupRepository = variantGroupRepository;
-        this.inventoryService = inventoryService;
     }
 
-    private VariantGroupResponse createVariantGroupResponse(VariantGroup variantGroup) {
-        return VariantGroupResponse.builder()
-                .id(variantGroup.getId())
-                .name(variantGroup.getName())
-                .description(variantGroup.getDescription())
+    private Product mapToProduct(ProductRequest productRequest) {
+        return Product.builder()
+                .name(productRequest.getName())
+                .description(productRequest.getDescription())
+                .collection(Collection.builder().id(productRequest.getCollectionId()).build())
+                .brand(Brand.builder().id(productRequest.getBrandId()).build())
+                .modelNumber(productRequest.getModelNumber())
+                .productType(ProductType.builder().id(productRequest.getProductTypeId()).build())
+                .slug(productRequest.getSlug())
                 .build();
     }
 
-
-
-
-    public ProductResponse createProductResponse(Product product) {
-
-
+    private ProductResponse mapToProductResponse (Product product) {
         return ProductResponse.builder()
                 .id(product.getId())
                 .name(product.getName())
                 .description(product.getDescription())
                 .slug(product.getSlug())
-                .brand(BrandResponse.builder()
-                        .id(product.getBrand().getId())
-                        .name(product.getBrand().getName())
-                        .build())
-                .collection(CollectionResponse.builder()
-                        .id(product.getCollection().getId())
-                        .name(product.getCollection().getName())
-                        .description(product.getCollection().getDescription())
-                        .build())
+                .brand(BrandResponse.builder().id(product.getBrand().getId()).name(product.getBrand().getName()).build())
+                .collection(CollectionResponse.builder().id(product.getCollection().getId()).name(product.getCollection().getName()).build())
                 .modelNumber(product.getModelNumber())
-                .productType(ProductTypeResponse.builder()
-                        .id(product.getProductType().getId())
-                        .name(product.getProductType().getName())
-                        .description(product.getProductType().getDescription())
-                        .build())
-                .productVariants(productVariantService.retrieveAndCreateProductVariantResponse(product.getId())) // Add the list of product variants here
+                .productType(ProductTypeResponse.builder().id(product.getProductType().getId()).name(product.getProductType().getName()).build())
+                .inventory(InventoryResponse.builder().id(product.getInventory().getId()).price(product.getInventory().getPrice()).discountPrice(product.getInventory().getDiscountPrice()).costPrice(product.getInventory().getCostPrice()).currency(product.getInventory().getCurrency()).stockQuantity(product.getInventory().getStockQuantity()).minOrderQuantity(product.getInventory().getMinOrderQuantity()).maxOrderQuantity(product.getInventory().getMaxOrderQuantity()).stockStatus(product.getInventory().getStockStatus()).inventoryTracking(product.getInventory().getInventoryTracking()).reOrderLevel(product.getInventory().getReOrderLevel()).productId(product.getId()).build())
+                .productMedia(product.getProductMedia().stream().map(productMedia -> ProductMediaResponse.builder().id(productMedia.getId()).mediaAlt(productMedia.getAltText()).mediaType(productMedia.getMediaType()).mediaUrl(productMedia.getMediaUrl()).build()).collect(Collectors.toList()))
                 .build();
     }
 
-    private List<ProductResponse> createProductResponseList(List<Product> products) {
-        return products.stream()
-                .map(this::createProductResponse)
+    public List<ProductResponse> findAll() {
+        return productRepository.findAll().stream()
+                .map(this::mapToProductResponse)
                 .collect(Collectors.toList());
     }
 
-    private Brand findBrandOrThrow(Long brandId) {
-        return brandRepository.findById(brandId)
-                .orElseThrow(() -> new ResourceNotFoundException("Brand not found"));
-    }
-
-    private Collection findCollectionOrThrow(Long collectionId) {
-        return collectionRepository.findById(collectionId)
-                .orElseThrow(() -> new ResourceNotFoundException("Collection not found"));
-    }
-
-    private List<ProductVariant> createProductVariantList(List<Long> productVariantIds) {
-        return productVariantIds.stream()
-                .map(id -> ProductVariant.builder().id(id).build())
-                .collect(Collectors.toList());
-    }
-
-    public ResponseEntity<Object> findAll() {
-        List<ProductResponse> products = createProductResponseList(productRepository.findAll());
-        return ResponseHandler.generateResponse(
-                "Products retrieved successfully",
-                200,
-                products,
-                false
-        );
-    }
-
-    /**
-     * Retrieve product that match the given slug
-     * @param slug : slug to find the product with
-     * @return the product if found else null.
-     */
     public ProductResponse findBySlug (String slug) {
-        return createProductResponse(productRepository.findBySlug(slug));
-    }
-
-    public ProductResponse findById(Long id) {
-        Product product = productRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Product not found"));
-        return createProductResponse(product);
-    }
-
-    public ProductResponse save(ProductRequest productRequest) {
-        if (!ProductValidation.isProductRequestValid(productRequest)) {
-            throw new ProductValidationException("Product validation failed");
-        }
-        Brand brand = findBrandOrThrow(productRequest.getBrandId());
-        Collection collection = findCollectionOrThrow(productRequest.getCollectionId());
-
-        Product product = Product.builder()
-                .name(productRequest.getName())
-                .description(productRequest.getDescription())
-                .collection(collection)
-                .slug(productRequest.getSlug())
-                .brand(brand)
-                .modelNumber(productRequest.getModelNumber())
-                .productType(ProductType.builder().id(productRequest.getProductTypeId()).build())
-                .build();
-
-        try {
-            product = productRepository.save(product);
-            return createProductResponse(product);
-        } catch (Exception e) {
-            System.err.println(e.getMessage());
+        Product product = productRepository.findBySlug(slug);
+        if (product == null) {
             return null;
         }
+        return mapToProductResponse(product);
     }
 
-    public ProductResponse update(Long id, ProductRequest productRequest) {
-        if (!ProductValidation.isProductRequestValid(productRequest)) {
-            throw new ProductValidationException("Product validation failed");
+    public ProductResponse findById (Long id) {
+        Product product = productRepository.findById(id).orElse(null);
+        if (product == null) {
+            return null;
         }
-        Product product = productRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Product not found"));
+        return mapToProductResponse(product);
+    }
 
-        Brand brand = findBrandOrThrow(productRequest.getBrandId());
-        Collection collection = findCollectionOrThrow(productRequest.getCollectionId());
+    public ProductResponse save (ProductRequest productRequest) throws Exception {
+        Product product = mapToProduct(productRequest);
 
+        for (ProductMediaRequest productMedia : productRequest.getProductMediaRequestList()) {
+            byte[] imageFile = MediaManagement.downloadImageFromUrl(productMedia.getMediaUrl());
+            String url = MediaManagement.uploadToGoogleCloudStorage("fleximart_product_media", product.getName() + "_media", imageFile);
+            productMedia.setMediaUrl(url);
+        }
+        product = productRepository.save(product);
+
+        List<ProductMedia> mediaList = new LinkedList<>();
+
+        // Save Product MEdia
+        for (ProductMediaRequest productMedia : productRequest.getProductMediaRequestList()) {
+            ProductMedia productMediaEntity = ProductMedia.builder()
+                    .altText(productMedia.getMediaAlt())
+                    .mediaType(productMedia.getMediaType())
+                    .mediaUrl(productMedia.getMediaUrl())
+                    .product(product)
+                    .build();
+            mediaList.add(productMediaEntity);
+        }
+
+        // check if slug is already taken
+        if (productRepository.findBySlug(product.getSlug()) != null) {
+            // make slug unique
+            product.setSlug(product.getSlug() + "-" + product.getId());
+        }
+
+        product.setProductMedia(mediaList);
+
+        Inventory inventory = Inventory.builder()
+                .price(productRequest.getInventory().getPrice())
+                .discountPrice(productRequest.getInventory().getDiscountPrice())
+                .costPrice(productRequest.getInventory().getCostPrice())
+                .currency(productRequest.getInventory().getCurrency())
+                .stockQuantity(productRequest.getInventory().getStockQuantity())
+                .minOrderQuantity(productRequest.getInventory().getMinOrderQuantity())
+                .maxOrderQuantity(productRequest.getInventory().getMaxOrderQuantity())
+                .stockStatus(productRequest.getInventory().getStockStatus())
+                .inventoryTracking(productRequest.getInventory().getInventoryTracking())
+                .reOrderLevel(productRequest.getInventory().getReOrderLevel())
+                .product(product)
+                .build();
+        product.setInventory(inventory);
+        product = productRepository.save(product);
+        return mapToProductResponse(product);
+    }
+
+    public ProductResponse update (Long productId, ProductRequest productRequest) {
+        Product product = productRepository.findById(productId).orElse(null);
+        if (product == null) {
+            return null;
+        }
         product.setName(productRequest.getName());
         product.setDescription(productRequest.getDescription());
-        product.setBrand(brand);
+        product.setCollection(Collection.builder().id(productRequest.getCollectionId()).build());
+        product.setBrand(Brand.builder().id(productRequest.getBrandId()).build());
         product.setModelNumber(productRequest.getModelNumber());
         product.setProductType(ProductType.builder().id(productRequest.getProductTypeId()).build());
-        product.setCollection(collection);
-
-        try {
-            product = productRepository.save(product);
-            return createProductResponse(product);
-        } catch (Exception e) {
-            System.err.println(e.getMessage());
-            return null;
-        }
+        product.setSlug(productRequest.getSlug());
+        product = productRepository.save(product);
+        return mapToProductResponse(product);
     }
 
-    public Boolean delete(Long id) {
-        Product product = productRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Product not found"));
-
-        try {
-            productRepository.delete(product);
-            return true;
-        } catch (Exception e) {
-            System.err.println(e.getMessage());
+    public Boolean delete (Long id) {
+        Product product = productRepository.findById(id).orElse(null);
+        if (product == null) {
             return false;
         }
+        productRepository.delete(product);
+        return true;
     }
 
-    public List<ProductResponse> findByCollectionId(Long collectionId) {
-        Collection collection = collectionRepository.findById(collectionId)
-                .orElseThrow(() -> new ResourceNotFoundException("Collection not found"));
-        return createProductResponseList(productRepository.findByCollection_Id(collectionId));
+    public List<ProductResponse> findByBrand (Long brandId) {
+        return productRepository.findByBrand_Id(brandId).stream()
+                .map(this::mapToProductResponse)
+                .collect(Collectors.toList());
     }
 
-    public List<ProductResponse> findByBrandId(Long brandId) {
-        Brand brand = brandRepository.findById(brandId)
-                .orElseThrow(() -> new ResourceNotFoundException("Brand not found"));
-        return createProductResponseList(productRepository.findByBrand_Id(brandId));
+    public List<ProductResponse> findByCollection (Long collectionId) {
+        return productRepository.findByCollection_Id(collectionId).stream()
+                .map(this::mapToProductResponse)
+                .collect(Collectors.toList());
     }
 
-    public List<ProductResponse> findByProductTypeId(Long productTypeId) {
-        return createProductResponseList(productRepository.findByProductType_Id(productTypeId));
+    public List<ProductResponse> findByProductType (Long productTypeId) {
+        return productRepository.findByProductType_Id(productTypeId).stream()
+                .map(this::mapToProductResponse)
+                .collect(Collectors.toList());
     }
+
+
+
+
 }
-

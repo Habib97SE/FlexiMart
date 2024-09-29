@@ -19,6 +19,8 @@ public class ProductResponse {
     private CollectionResponse collection;
     private String modelNumber;
     private ProductTypeResponse productType;
-    private List<ProductVariantResponse> productVariants; // List of product variants
+    private InventoryResponse inventory;
+    private List<ProductMediaResponse> productMedia;
+
 
 }

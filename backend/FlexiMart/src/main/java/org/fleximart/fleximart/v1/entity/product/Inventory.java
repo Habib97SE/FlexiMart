@@ -55,6 +55,11 @@ public class Inventory {
     @Column(nullable = true)
     private Integer reOrderLevel;
 
+    @JsonBackReference
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "product_id", nullable = false)
+    private Product product;
+
     @Column(nullable = false)
     @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)

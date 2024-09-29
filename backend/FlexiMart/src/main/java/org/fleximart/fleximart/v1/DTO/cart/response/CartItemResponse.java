@@ -2,7 +2,6 @@ package org.fleximart.fleximart.v1.DTO.cart.response;
 
 
 import lombok.*;
-import org.fleximart.fleximart.v1.DTO.product.response.ProductVariantResponse;
 
 import java.math.BigDecimal;
 
@@ -13,7 +12,7 @@ import java.math.BigDecimal;
 @Builder
 public class CartItemResponse {
     private Long id;
-    private Long productVariant;
+    private Long product;
     private Integer quantity;
     private BigDecimal totalPrice;
 }

@@ -5,6 +5,7 @@ import org.fleximart.fleximart.v1.DTO.product.response.BrandResponse;
 import org.fleximart.fleximart.v1.entity.product.Brand;
 import org.fleximart.fleximart.v1.exception.ResourceNotFoundException;
 import org.fleximart.fleximart.v1.repository.product.BrandRepository;
+import org.fleximart.fleximart.v1.service.MediaManagement;
 import org.fleximart.fleximart.v1.service.google.storage.CloudStorageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -33,6 +34,8 @@ public class BrandService {
                 .id(brand.getId())
                 .name(brand.getName())
                 .description(brand.getDescription())
+                .logo(brand.getLogo())
+                .website(brand.getWebsite())
                 .build();
     }
 
@@ -45,9 +48,6 @@ public class BrandService {
     }
 
     public List<BrandResponse> findAll() throws IOException {
-        byte[] imageFile = cloudStorageService.downloadFile("https://via.placeholder.com/600");
-        String url = cloudStorageService.uploadFile("fleximart_product_media", "placeholder.jpg", imageFile);
-        System.out.printf("The url is: %s\n", url);
         return brandRepository.findAll().stream()
                 .map(this::createBrandResponse)
                 .toList();
@@ -59,12 +59,16 @@ public class BrandService {
                 .orElseThrow(() -> new ResourceNotFoundException("Brand not found"));
     }
 
-    public BrandResponse save(BrandRequest brandRequest) {
-        Brand brand = Brand.builder()
+    public BrandResponse save(BrandRequest brandRequest) throws Exception {
+        byte[] imageFile = MediaManagement.downloadImageFromUrl(brandRequest.getLogo());
+        String url = MediaManagement.uploadToGoogleCloudStorage("fleximart_product_media", brandRequest.getName() + "_logo", imageFile);
+        brandRequest.setLogo(url);
+        Brand brand = brandRepository.save(Brand.builder()
                 .name(brandRequest.getName())
                 .description(brandRequest.getDescription())
-                .build();
-        return createBrandResponse(brandRepository.save(brand));
+                .logo(brandRequest.getLogo())
+                .build());
+        return createBrandResponse(brand);
     }
 
     public BrandResponse update(Long id, BrandRequest brandRequest) {

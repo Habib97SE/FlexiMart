@@ -2,11 +2,11 @@
 import React, { createContext, useContext, useEffect, useMemo, useState, ReactNode } from "react";
 import { UserModel } from "../models/UserModel";
 import { LoginRequest } from "@/interface/LoginRequest";
-import { UserResponse } from "@/interface/UserResponse";
+import { UserData, UserResponse } from "@/interface/UserResponse";
 
 // Define a type for the context
 interface UserContextType {
-    user: UserResponse | null;
+    user: UserData | null;
     userLoggedIn: boolean;
     setUser: (user: UserResponse | null) => void;
     authorizeUser: (loginRequest: LoginRequest) => Promise<{ error: boolean; message: string }>;
@@ -38,7 +38,7 @@ interface UserProviderProps {
 
 function UserProvider({ children }: UserProviderProps) {
     const userModel = new UserModel();
-    const [user, setUser] = useState<UserResponse | null>(null);
+    const [user, setUser] = useState<UserData | null>(null);
     const [userLoggedIn, setUserLoggedIn] = useState(false);
 
     useEffect(() => {
@@ -68,6 +68,30 @@ function UserProvider({ children }: UserProviderProps) {
             };
         }
     };
+
+    const registerUser = async (registerData: RegisterData) => {
+        const user: UserResponse = await userModel.register(registerData);
+        if (user.error) {
+            console.log(user.message);
+            return {
+                error: user.error,
+                message: user.message
+            };
+        }
+        console.log(user);
+        setUser(user);
+        setUserLoggedIn(true);
+        saveUser(user);
+        return {
+            error: false,
+            message: "User registered"
+        };
+    }
+
+    const logoutUser = () => {
+        const id = user.id;
+
+    }
 
     const value = useMemo(
         () => ({

@@ -2,8 +2,14 @@
 import CommonLayout from "@/components/CommonLayout";
 import Link from "next/link";
 import HEAD from "next/head";
+import { useUser } from "@/context/UserContext";
+import { useRouter } from "next/router";
 
 const DashboardPage = () => {
+    const router = useRouter();
+
+    const { user, userLoggedIn } = useUser();
+
     const data = {
         title: "My Account",
         path: [
@@ -11,6 +17,11 @@ const DashboardPage = () => {
             { name: "My Account", href: "/dashboard" },
         ]
     }
+
+    if (!userLoggedIn) {
+        router.push("/login");
+    }
+
     return (
         <>
             <CommonLayout data={data}>

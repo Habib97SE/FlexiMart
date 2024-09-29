@@ -61,7 +61,7 @@ public class CollectionController {
     }
 
     @PostMapping
-    public ResponseEntity<Object> createCollection(@RequestBody CollectionRequest collectionRequest) {
+    public ResponseEntity<Object> createCollection(@RequestBody CollectionRequest collectionRequest) throws Exception {
         return collectionService.save(collectionRequest);
     }
 
@@ -77,7 +77,7 @@ public class CollectionController {
 
     @GetMapping("/{id}/products")
     public ResponseEntity<Object> getProductsByCollectionId(@PathVariable Long id) {
-        List<ProductResponse> productResponseList = productService.findByCollectionId(id);
+        List<ProductResponse> productResponseList = productService.findByCollection(id);
 
         if (productResponseList == null) {
             return ResponseHandler.generateResponse(

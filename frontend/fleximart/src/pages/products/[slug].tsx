@@ -9,6 +9,9 @@ import Image from "next/image";
 import Slider from "react-slick";
 import { FaFacebook, FaInstagram, FaTwitter } from "react-icons/fa";
 import TabbedSection from "@/components/product/TabbedSection";
+import RelatedProducts from "@/components/product/RelatedProducts";
+import HEAD from "next/head";
+import { set } from "react-hook-form";
 
 const ProductPage = () => {
     const [activeTab, setActiveTab] = useState('description');
@@ -18,6 +21,8 @@ const ProductPage = () => {
     const [productData, setProductData] = useState(null as ProductResponse | null);
     const [errorFindingProduct, setErrorFindingProduct] = useState(false);
     const productModel: ProductModel = new ProductModel();
+    const [selectedVariant, setSelectedVariant] = useState(0);
+    const [quantity, setQuantity] = useState(1);
 
     const data = {
         title: "Product Page",
@@ -32,15 +37,22 @@ const ProductPage = () => {
      * Add a product variant to the cart
      * @param variantId number : id of the variant to add to cart
      */
-    const addToCart = (variantId: number) => {
+    const addToCart = () => {
+        if (selectedVariant == 0) {
+            return null;
+        }
         const productVariant = {
             name: productData?.name,
             brand: productData?.brand.name,
-            variant: productData?.productVariants.find((variant) => variant.id === variantId),
-
+            variant: productData?.productVariants.find(variant => variant.id == selectedVariant),
+            totalPrice: productData?.productVariants.find(variant => variant.id == selectedVariant)?.inventory.discountPrice * quantity,
+            quantity: quantity,
         }
         if (productVariant) {
+            console.log(productVariant);
             addItemToCart(productVariant);
+            setQuantity(1);
+            setSelectedVariant(0);
         } else {
             return null;
         }
@@ -48,8 +60,19 @@ const ProductPage = () => {
     };
 
 
+
+    /**
+     * Calculate the percentage of discount applied to the product
+     * @param price nunmber : original price of the product
+     * @param discountPrice number : discounted price of the product
+     * @returns : number : percentage of discount applied in Integer (whool number) form.
+     */
+    const calculateDiscountPercentage = (price: number, discountPrice: number) => {
+        return Math.floor(((price - discountPrice) / price) * 100);
+    }
+
+
     useEffect(() => {
-        console.log(slug);
         if (slug) {
             const fetchData = async () => {
                 const response = await productModel.getProductBySlug(slug as string);
@@ -58,7 +81,6 @@ const ProductPage = () => {
                     return;
                 }
                 setProductData(response);
-                console.log(response);
             }
             fetchData();
 
@@ -66,19 +88,7 @@ const ProductPage = () => {
 
     }, [slug]);
 
-    if (errorFindingProduct) {
-        return (
-            <div
-                className="container-fluiid"
-            >
-                <div className="row">
-                    <div className="flex flex-col items-center justify-center">
-                        <h1>Product Not Found</h1>
-                    </div>
-                </div>
-            </div>
-        )
-    }
+
 
     const productImages = [
         { id: 1, src: "https://via.placeholder.com/1000?text=productOne", alt: "yellow" },
@@ -96,10 +106,35 @@ const ProductPage = () => {
         prevArrow: <button>Previous</button>,
     };
 
+    if (errorFindingProduct) {
+        return (
+            <div
+                className="container-fluiid"
+            >
+                <div className="row">
+                    <div className="flex flex-col items-center justify-center">
+                        <h1>Product Not Found</h1>
+                    </div>
+                </div>
+            </div>
+        )
+    }
+
 
     return (
 
         <>
+            <HEAD>
+                <title>{productData?.name}</title>
+                <meta name="description" content={productData?.description} />
+                <meta property="og:title" content={productData?.name} />
+                <meta property="og:description" content={productData?.description} />
+                <meta property="og:image" content={productImages[0].src} />
+                <meta property="og:url" content={`https://www.example.com/products/${productData?.slug}`} />
+                <meta property="og:type" content="product" />
+                <meta property="og:site_name" content="Example" />
+                <meta property="og:locale" content="en_US" />
+            </HEAD>
             <CommonLayout data={data}>
                 <section className="py-8 my-2">
                     <div className="container mx-auto">
@@ -136,12 +171,12 @@ const ProductPage = () => {
 
                             {/* Product Details */}
                             <div>
-                                <h2 className="text-3xl font-bold mb-2">Trim Dress</h2>
+                                <h2 className="text-3xl font-bold mb-2">{productData?.name}</h2>
                                 <h4 className="text-xl">
-                                    <del className="text-gray-500">$145</del>
-                                    <span className="text-red-500 ml-2">40% off</span>
+                                    <del className="text-gray-500">{productData?.productVariants[0].inventory.price} {productData?.productVariants[0].inventory.currency}</del>
+                                    <span className="text-red-500 ml-2">{calculateDiscountPercentage(productData?.productVariants[0].inventory.price, productData?.productVariants[0].inventory.discountPrice)} % off</span>
                                 </h4>
-                                <h3 className="text-2xl font-semibold mb-4">$87</h3>
+                                <h3 className="text-2xl font-semibold mb-4">{productData?.productVariants[0].inventory.discountPrice} {productData?.productVariants[0].inventory.currency}</h3>
 
                                 {/* Color Variant */}
                                 <ul className="flex space-x-2 mb-4">
@@ -153,9 +188,13 @@ const ProductPage = () => {
                                 <div className="border-t border-dashed my-4 ">
                                     <h6 className="font-semibold">Select Size</h6>
                                     <div className="flex space-x-2">
-                                        <span className="border rounded px-4 py-2 cursor-pointer">S</span>
-                                        <span className="border rounded px-4 py-2 cursor-pointer">M</span>
-                                        <span className="border rounded px-4 py-2 cursor-pointer">L</span>
+                                        {productData?.productVariants.map(variant => (
+                                            <button
+                                                onClick={() => {
+                                                    setSelectedVariant(parseInt(variant.id));
+                                                }}
+                                                key={variant.id} className={`px-3 py-2 rounded-md ${selectedVariant === variant.id ? "border border-red-600" : "border"}`}>{variant.variantOptions[0].value}</button>
+                                        ))}
                                     </div>
                                 </div>
 
@@ -163,20 +202,29 @@ const ProductPage = () => {
                                 <div className="mb-4">
                                     <h6 className="font-semibold">Quantity</h6>
                                     <div className="flex items-center space-x-2">
-                                        <button className="px-3 py-2 bg-gray-200">-</button>
+                                        <button
+                                            onClick={() => setQuantity(quantity - 1)}
+                                            className="px-3 py-2 bg-gray-200">-</button>
                                         <input
                                             type="text"
-                                            value="1"
+                                            initialValue={quantity}
+                                            value={quantity}
                                             className="border text-center w-12"
                                             readOnly
+                                            onChange={(e) => setQuantity(parseInt(e.target.value))}
                                         />
-                                        <button className="px-3 py-2 bg-gray-200">+</button>
+                                        <button
+                                            onClick={() => setQuantity(quantity + 1)}
+                                            className="px-3 py-2 bg-gray-200">+</button>
                                     </div>
                                 </div>
 
                                 {/* Action Buttons */}
                                 <div className="flex space-x-4 mt-4">
-                                    <button className="bg-blue-500 text-white px-6 py-2 rounded-md">Add to Cart</button>
+                                    <button
+                                        className="bg-blue-500 text-white px-6 py-2 rounded-md"
+                                        onClick={() => addToCart()}
+                                    >Add to Cart</button>
                                     <button className="bg-green-500 text-white px-6 py-2 rounded-md">Buy Now</button>
                                 </div>
 
@@ -203,6 +251,7 @@ const ProductPage = () => {
                     </div>
                 </section>
                 <TabbedSection />
+                <RelatedProducts />
             </CommonLayout >
         </>
     )

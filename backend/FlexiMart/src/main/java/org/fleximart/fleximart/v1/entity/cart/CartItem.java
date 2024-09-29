@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.PastOrPresent;
 import lombok.*;
 import org.fleximart.fleximart.v1.entity.product.Product;
-import org.fleximart.fleximart.v1.entity.product.ProductVariant;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.math.BigDecimal;
@@ -30,8 +29,8 @@ public class CartItem {
     private String productName;
 
     @ManyToOne
-    @JoinColumn(name = "product_variant_id")
-    private ProductVariant productVariant;
+    @JoinColumn(name = "product_id")
+    private Product product;
 
     @Column(nullable = false)
     private Integer quantity;

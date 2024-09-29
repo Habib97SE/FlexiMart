@@ -116,7 +116,7 @@ public class ProductTypeController {
 
     @GetMapping("/{id}/products")
     public ResponseEntity<Object> getProductsByProductTypeId(@PathVariable Long id) {
-        List<ProductResponse> productResponseList = productService.findByProductTypeId(id);
+        List<ProductResponse> productResponseList = productService.findByProductType(id);
 
         if (productResponseList == null) {
             return ResponseHandler.generateResponse(

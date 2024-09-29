@@ -1,6 +1,7 @@
 package org.fleximart.fleximart;
 
 import org.fleximart.fleximart.v1.DTO.product.request.ProductRequest;
+import org.fleximart.fleximart.v1.service.MediaManagement;
 import org.fleximart.fleximart.v1.utils.validation.ProductValidation;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
@@ -168,8 +169,10 @@ public class ProductValidationTest {
         ));
     }
 
-    // Test case for isProductRequestValid with ProductRequest object
-    public void testIsProductRequestValid_withNullProductRequest() {
-        assertThrows(NullPointerException.class, () -> ProductValidation.isProductRequestValid(null));
+    @Test
+    void downloadImageTest() throws Exception {
+        String imageAddress = "https://www.filippa-k.com/dw/image/v2/BFNP_PRD/on/demandware.static/-/Sites-filippa-k-master-catalog/default/dw7759259b/hi-res/30520-0056-SS24-0115-F-20.jpg?sw=1500&sh=2250&sm=fit&sfrm=jpg";
+        byte[] img = MediaManagement.downloadImageFromUrl(imageAddress);
+
     }
 }

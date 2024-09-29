@@ -22,7 +22,7 @@ public class InventoryResponse {
     private String stockStatus;
     private Boolean inventoryTracking;
     private Integer reOrderLevel;
-    private Long productVariantId;
+    private Long productId;
 
 }
 

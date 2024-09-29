@@ -11,4 +11,6 @@ import lombok.*;
 public class BrandRequest {
     private String name;
     private String description;
+    private String website;
+    private String logo;
 }

@@ -7,6 +7,7 @@ import org.fleximart.fleximart.v1.entity.product.Collection;
 import org.fleximart.fleximart.v1.entity.product.Product;
 import org.fleximart.fleximart.v1.exception.ResourceNotFoundException;
 import org.fleximart.fleximart.v1.repository.product.CollectionRepository;
+import org.fleximart.fleximart.v1.service.MediaManagement;
 import org.fleximart.fleximart.v1.utils.ResponseHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -79,32 +80,21 @@ public class CollectionService {
     }
 
 
-    public ResponseEntity<Object> save(CollectionRequest collectionRequest) {
-        System.out.println(collectionRequest.getSlug());
+    public ResponseEntity<Object> save(CollectionRequest collectionRequest) throws Exception {
         if (collectionRequest.getSlug().isEmpty()) {
             collectionRequest.setSlug(collectionRequest.getName().toLowerCase().replace(" ", "-"));
         }
-
-        try {
-            Collection collection = mapCollectionRequestToCollection(collectionRequest);
-            collection = collectionRepository.save(collection);
-
-            return ResponseHandler.generateResponse(
-                    "Collection saved successfully",
-                    201,
-                    createCollectionResponse(collection),
-                    false
-            );
-
-        } catch (Exception e) {
-            return ResponseHandler.generateResponse(
-                    "Collection not saved",
-                    500,
-                    null,
-                    true
-            );
-        }
-
+        Collection collection = mapCollectionRequestToCollection(collectionRequest);
+        byte[] imageFile = MediaManagement.downloadImageFromUrl(collectionRequest.getCollectionImage());
+        String url = MediaManagement.uploadToGoogleCloudStorage("fleximart_product_media", collectionRequest.getSlug(), imageFile);
+        collection.setCollectionImage(url);
+        collection = collectionRepository.save(collection);
+        return ResponseHandler.generateResponse(
+                "Collection created successfully",
+                201,
+                createCollectionResponse(collection),
+                false
+        );
     }
 
     public ResponseEntity<Object> update(Long id, CollectionRequest collectionRequest) {

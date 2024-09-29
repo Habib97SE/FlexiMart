@@ -6,5 +6,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface ProductMediaRepository extends JpaRepository<ProductMedia, Long> {
-    List<ProductMedia> findByProductVariant_Id(Long productVariantId);
+    List<ProductMedia> findByProduct_Id(Long productId);
 }

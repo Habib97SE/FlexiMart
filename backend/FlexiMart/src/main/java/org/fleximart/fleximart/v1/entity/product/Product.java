@@ -32,6 +32,9 @@ public class Product {
     @Column(nullable = true)
     private String description;
 
+    @OneToOne(mappedBy = "product", cascade = CascadeType.ALL)
+    private Inventory inventory;
+
     @ManyToOne
     @JoinColumn(name = "collection_id", nullable = false)
     private Collection collection;
@@ -52,6 +55,9 @@ public class Product {
 
     @Column(nullable = false, unique = true)
     private String slug;
+
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
+    private List<ProductMedia> productMedia;
 
     @Column(nullable = false)
     @PastOrPresent(message = "Date must be in the past or present")

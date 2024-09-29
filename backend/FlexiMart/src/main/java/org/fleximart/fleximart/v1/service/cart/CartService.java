@@ -4,14 +4,12 @@ import org.fleximart.fleximart.v1.DTO.cart.request.CartItemRequest;
 import org.fleximart.fleximart.v1.DTO.cart.request.CartRequest;
 import org.fleximart.fleximart.v1.DTO.cart.response.CartItemResponse;
 import org.fleximart.fleximart.v1.DTO.cart.response.CartResponse;
-import org.fleximart.fleximart.v1.DTO.product.response.ProductVariantResponse;
 import org.fleximart.fleximart.v1.entity.cart.Cart;
 import org.fleximart.fleximart.v1.entity.cart.CartItem;
 import org.fleximart.fleximart.v1.entity.product.Product;
-import org.fleximart.fleximart.v1.entity.product.ProductVariant;
 import org.fleximart.fleximart.v1.entity.user.User;
 import org.fleximart.fleximart.v1.repository.cart.CartRepository;
-import org.fleximart.fleximart.v1.service.product.ProductVariantService;
+import org.fleximart.fleximart.v1.repository.product.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,37 +21,35 @@ import java.util.stream.Collectors;
 @Service
 public class CartService {
 
-    @Autowired
     private CartRepository cartRepository;
 
-    @Autowired
     private CartItemService cartItemService;
 
-    @Autowired
-    private ProductVariantService productVariantService;
+    private ProductRepository productRepository;
 
-    public CartService(CartRepository cartRepository,
-                       CartItemService cartItemService,
-                       ProductVariantService productVariantService) {
+    @Autowired
+    public CartService(CartRepository cartRepository, CartItemService cartItemService, ProductRepository productRepository) {
         this.cartRepository = cartRepository;
         this.cartItemService = cartItemService;
-        this.productVariantService = productVariantService;
+        this.productRepository = productRepository;
     }
 
     private CartItemResponse toCartItemResponse(CartItem cartItem) {
-        ProductVariantResponse productVariantResponse = productVariantService.createProductVariantResponse(cartItem.getProductVariant());
+
+        Product product = productRepository.findById(cartItem.getProduct().getId()).orElse(null);
+
         return CartItemResponse.builder()
                 .id(cartItem.getId())
-                .productVariant(productVariantResponse.getId())
+                .product(product.getId())
                 .quantity(cartItem.getQuantity())
                 .totalPrice(cartItem.getTotalPrice())
                 .build();
     }
 
     private CartItem toCartItem (CartItemRequest cartItemRequest) {
-        ProductVariant productVariant = ProductVariant.builder().id(cartItemRequest.getProductVariant()).build();
+        Product product = productRepository.findById(cartItemRequest.getProductId()).orElse(null);
         return CartItem.builder()
-                .productVariant(productVariant)
+                .product(product)
                 .quantity(cartItemRequest.getQuantity())
                 .unitPrice(cartItemRequest.getUnitPrice())
                 .totalPrice(cartItemRequest.getUnitPrice().multiply(BigDecimal.valueOf(cartItemRequest.getQuantity())))

@@ -1,7 +1,7 @@
 import { AddressResponse } from "./AddressResponse";
 import { WishlistResponse } from "./WishlistResponse";
 
-interface UserData {
+export interface UserData {
     id: number;
     firstName: string;
     lastName: string;
@@ -15,4 +15,12 @@ export interface UserResponse {
     error: boolean;
     message: string;
     data: UserData;
+}
+
+export interface RegisterData {
+    firstName: string;
+    lastName: string;
+    email: string;
+    password: string;
+    phoneNumber: string;
 }

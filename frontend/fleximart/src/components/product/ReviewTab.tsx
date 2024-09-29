@@ -1,4 +1,14 @@
+"use client";
 import React, { useState } from "react";
+import * as yup from "yup";
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+
+const schema = yup.object().shape({
+    name: yup.string().required(),
+    comment: yup.string().required(),
+    rating: yup.number().required(),
+});
 
 const StarRating = ({ rating, setRating }: { rating: number; setRating: (rating: number) => void }) => {
     const [hoverRating, setHoverRating] = useState(0);
@@ -40,6 +50,11 @@ const StarRating = ({ rating, setRating }: { rating: number; setRating: (rating:
 };
 
 const ReviewTab = () => {
+
+    const { register, handleSubmit, errors } = useForm({
+        resolver: yupResolver(schema)
+    });
+
     const [reviews, setReviews] = useState([
         { id: 1, name: "John Doe", comment: "Great product!", rating: 5 },
         { id: 2, name: "Jane Smith", comment: "Good value.", rating: 4 },

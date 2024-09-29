@@ -1,6 +1,5 @@
 package org.fleximart.fleximart.v1.service.order;
 
-import org.aspectj.weaver.ast.Or;
 import org.fleximart.fleximart.v1.DTO.order.request.OrderItemRequest;
 import org.fleximart.fleximart.v1.DTO.order.request.OrderRequest;
 import org.fleximart.fleximart.v1.DTO.order.request.ShippingRequest;
@@ -9,7 +8,7 @@ import org.fleximart.fleximart.v1.DTO.order.response.OrderResponse;
 import org.fleximart.fleximart.v1.DTO.order.response.ShippingResponse;
 import org.fleximart.fleximart.v1.entity.PaymentMethod;
 import org.fleximart.fleximart.v1.entity.order.*;
-import org.fleximart.fleximart.v1.entity.product.ProductVariant;
+import org.fleximart.fleximart.v1.entity.product.Product;
 import org.fleximart.fleximart.v1.entity.shipping.ShippingMethod;
 import org.fleximart.fleximart.v1.entity.user.Address;
 import org.fleximart.fleximart.v1.entity.user.User;
@@ -46,7 +45,7 @@ public class OrderService {
         return OrderItemResponse.builder()
                 .id(orderItem.getId())
                 .productName(orderItem.getProductName())
-                .productVariant(orderItem.getProductVariant().getId())
+                .product(orderItem.getProduct().getId())
                 .quantity(orderItem.getQuantity())
                 .unitPrice(orderItem.getUnitPrice())
                 .totalPrice(orderItem.getTotalPrice())
@@ -88,7 +87,7 @@ public class OrderService {
     private OrderItem toOrderItem (OrderItemRequest orderItemRequest) {
         return OrderItem.builder()
                 .productName(orderItemRequest.getProductName())
-                .productVariant(ProductVariant.builder().id(orderItemRequest.getProductVariant()).build())
+                .product(Product.builder().id(orderItemRequest.getProduct()).build())
                 .quantity(orderItemRequest.getQuantity())
                 .unitPrice(orderItemRequest.getUnitPrice())
                 .totalPrice(orderItemRequest.getUnitPrice().multiply(BigDecimal.valueOf(orderItemRequest.getQuantity())))

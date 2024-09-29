@@ -1,17 +1,14 @@
 package org.fleximart.fleximart.v1.service.product;
 
 import org.fleximart.fleximart.v1.DTO.product.response.ProductMediaResponse;
-import org.fleximart.fleximart.v1.DTO.product.request.ProductMediaRequest;
 import org.fleximart.fleximart.v1.entity.product.Product;
 import org.fleximart.fleximart.v1.entity.product.ProductMedia;
-import org.fleximart.fleximart.v1.entity.product.ProductVariant;
 import org.fleximart.fleximart.v1.repository.product.ProductMediaRepository;
 import org.fleximart.fleximart.v1.service.MediaManagement;
 import org.fleximart.fleximart.v1.service.google.storage.CloudStorageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
 
@@ -70,9 +67,9 @@ public class ProductMediaService {
         }
     }
 
-    public Boolean deleteProductMediaByProductId(Long productVariantId) {
+    public Boolean deleteProductMediaByProductId(Long productId) {
         try {
-            List<ProductMedia> productMedia = productMediaRepository.findByProductVariant_Id(productVariantId);
+            List<ProductMedia> productMedia = productMediaRepository.findByProduct_Id(productId);
             if (productMedia.isEmpty()) {
                 return true;
             }
@@ -84,8 +81,8 @@ public class ProductMediaService {
         }
     }
 
-    public List<ProductMediaResponse> getProductMediaByProductVariantId(Long productVariantId) {
-        return productMediaRepository.findByProductVariant_Id(productVariantId)
+    public List<ProductMediaResponse> getProductMediaByProductVariantId(Long productId) {
+        return productMediaRepository.findByProduct_Id(productId)
                 .stream().map(this::createProductMediaResponse).toList();
     }
 
@@ -93,9 +90,15 @@ public class ProductMediaService {
         return createProductMediaResponse(Objects.requireNonNull(productMediaRepository.findById(id).orElse(null)));
     }
 
-    public ProductMedia save(Long productVariantId, ProductMedia productMedia) {
-        productMedia.setProductVariant(ProductVariant.builder().id(productVariantId).build());
-        return productMediaRepository.save(productMedia);
+    public ProductMedia save(Long productId, ProductMedia productMedia) {
+        try {
+            productMedia.setProduct(Product.builder().id(productId).build());
+            productMedia.setMediaUrl(saveToCloudStorage(productMedia.getMediaUrl()));
+            return productMediaRepository.save(productMedia);
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
+            return null;
+        }
     }
 
 

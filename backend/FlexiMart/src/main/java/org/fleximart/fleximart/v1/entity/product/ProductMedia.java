@@ -23,10 +23,10 @@ public class ProductMedia {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "variant_id", nullable = false)
     @JsonBackReference
-    private ProductVariant productVariant;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "product_id", nullable = false)
+    private Product product;
 
     @NotNull(message = "Media URL is required")
     @Size(max = 255, message = "Media URL must not exceed 255 characters")

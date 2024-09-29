@@ -3,7 +3,6 @@ package org.fleximart.fleximart.v1.service.product;
 import org.fleximart.fleximart.v1.DTO.product.request.InventoryRequest;
 import org.fleximart.fleximart.v1.DTO.product.response.InventoryResponse;
 import org.fleximart.fleximart.v1.entity.product.Inventory;
-import org.fleximart.fleximart.v1.entity.product.ProductVariant;
 import org.fleximart.fleximart.v1.repository.product.InventoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

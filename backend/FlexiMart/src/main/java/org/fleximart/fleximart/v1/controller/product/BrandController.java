@@ -51,7 +51,7 @@ public class BrandController {
     }
 
     @PostMapping
-    public ResponseEntity<Object> save (@RequestBody BrandRequest brandRequest) {
+    public ResponseEntity<Object> save (@RequestBody BrandRequest brandRequest) throws Exception {
         System.err.println(brandRequest.toString());
         BrandResponse savedBrandResponse = brandService.save(brandRequest);
         return ResponseHandler.generateResponse(
@@ -86,7 +86,7 @@ public class BrandController {
 
     @GetMapping("/{id}/products")
     public ResponseEntity<Object> getProductsByBrandId(@PathVariable Long id) {
-        List<ProductResponse> productResponseList = productService.findByBrandId(id);
+        List<ProductResponse> productResponseList = productService.findByBrand(id);
 
         if (productResponseList == null) {
             return ResponseHandler.generateResponse(
