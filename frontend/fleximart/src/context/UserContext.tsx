@@ -44,6 +44,7 @@ function UserProvider({ children }: UserProviderProps) {
     useEffect(() => {
         const user = getUser();
         if (user) {
+            console.log(user.data);
             setUser(user);
             setUserLoggedIn(true);
         }
@@ -58,7 +59,6 @@ function UserProvider({ children }: UserProviderProps) {
                 message: user.message
             };
         } else {
-            console.log(user);
             setUser(user);
             setUserLoggedIn(true);
             saveUser(user);
@@ -70,7 +70,7 @@ function UserProvider({ children }: UserProviderProps) {
     };
 
     const registerUser = async (registerData: RegisterData) => {
-        const user: UserResponse = await userModel.register(registerData);
+        const user: UserResponse = await userModel.createUser(registerData);
         if (user.error) {
             console.log(user.message);
             return {
@@ -78,7 +78,6 @@ function UserProvider({ children }: UserProviderProps) {
                 message: user.message
             };
         }
-        console.log(user);
         setUser(user);
         setUserLoggedIn(true);
         saveUser(user);
@@ -89,8 +88,16 @@ function UserProvider({ children }: UserProviderProps) {
     }
 
     const logoutUser = () => {
-        const id = user.id;
-
+        try {
+            const id = user.id;
+            removeUser();
+            setUser(null);
+            setUserLoggedIn(false);
+            return true;
+        } catch (error) {
+            console.error(error);
+            return false;
+        }
     }
 
     const value = useMemo(
@@ -98,7 +105,9 @@ function UserProvider({ children }: UserProviderProps) {
             user,
             userLoggedIn,
             setUser,
-            authorizeUser
+            authorizeUser,
+            registerUser,
+            logoutUser
         }),
         [user, userLoggedIn]
     );

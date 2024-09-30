@@ -3,7 +3,7 @@ import { ProductResponse } from "@/models/ProductModel";
 import { AddressResponse } from "@/models/AddressModel";
 import { LoginRequest } from "@/interface/LoginRequest";
 import { BACKEND_DATA } from "@/constants/backenddata";
-import { UserResponse } from "@/interface/UserResponse";
+import { RegisterData, UserResponse } from "@/interface/UserResponse";
 
 export interface Wishlist {
     id: number;
@@ -25,7 +25,7 @@ class UserModel {
     private baseUrl: string;
 
     constructor() {
-        this.baseUrl = `${BACKEND_DATA.API_URL}/users`;
+        this.baseUrl = "http://localhost:8080/api/v1/users";
     }
 
     getBaseUrl(): string {
@@ -55,12 +55,20 @@ class UserModel {
         await axios.delete(`${this.baseUrl}/${id}`);
     }
 
-    async createUser(user: User): Promise<User> {
-        const response: AxiosResponse<User> = await axios.post(
-            this.baseUrl,
-            user
-        );
-        return response.data;
+    async createUser(user: RegisterData): Promise<User> {
+        try {
+            const response: AxiosResponse<User> = await axios.post(
+                this.baseUrl,
+                user
+            );
+            console.log(response.data);
+            return response.data;
+        } catch (error) {
+            return {
+                error: true,
+                message: "Something went wrong",
+            };
+        }
     }
 
     async authorize(loginRequest: LoginRequest) {

@@ -1,26 +1,37 @@
 "use client";
+import { useState } from "react";
 import CommonLayout from "@/components/CommonLayout";
 import Link from "next/link";
 import HEAD from "next/head";
 import { useUser } from "@/context/UserContext";
 import { useRouter } from "next/router";
+import { useEffect } from "react";
+import Sidebar from "@/components/profile/Sidebar";
 
 const DashboardPage = () => {
     const router = useRouter();
-
+    const [userDetails, setUserDetails] = useState(null);
     const { user, userLoggedIn } = useUser();
 
     const data = {
         title: "My Account",
-        path: [
+        paths: [
             { name: "Home", href: "/" },
             { name: "My Account", href: "/dashboard" },
         ]
     }
 
-    if (!userLoggedIn) {
-        router.push("/login");
-    }
+    useEffect(() => {
+        if (user) {
+            console.log("USerDetails in useEffect");
+            console.log(user.data);
+            setUserDetails(user.data);
+        }
+        if (!userLoggedIn) {
+            router.push("/login");
+        }
+    }, [userLoggedIn]);
+
 
     return (
         <>
@@ -32,80 +43,7 @@ const DashboardPage = () => {
                 <section className="section-b-space py-12">
                     <div className="container mx-auto">
                         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-                            {/* Sidebar Navigation */}
-                            <div className="col-span-1">
-                                <div className="dashboard-left p-6 bg-white shadow-md rounded-lg">
-                                    <div className="block-content">
-                                        <ul className="space-y-4">
-                                            <li className="active">
-                                                <Link
-                                                    href="#"
-                                                    className="text-blue-600 font-bold transition-transform transform hover:translate-x-2 hover:text-blue-800 relative group"
-                                                >
-                                                    Account Info
-                                                </Link>
-                                            </li>
-                                            <li>
-                                                <Link
-                                                    href="#"
-                                                    className="text-gray-600 transition-transform transform hover:translate-x-2 hover:text-blue-800 relative group"
-                                                >
-                                                    Address Book
-                                                </Link>
-                                            </li>
-                                            <li>
-                                                <Link
-                                                    href="#"
-                                                    className="text-gray-600 transition-transform transform hover:translate-x-2 hover:text-blue-800 relative group"
-                                                >
-                                                    My Orders
-                                                </Link>
-                                            </li>
-                                            <li>
-                                                <Link
-                                                    href="#"
-                                                    className="text-gray-600 transition-transform transform hover:translate-x-2 hover:text-blue-800 relative group"
-                                                >
-                                                    My Wishlist
-                                                </Link>
-                                            </li>
-                                            <li>
-                                                <Link
-                                                    href="#"
-                                                    className="text-gray-600 transition-transform transform hover:translate-x-2 hover:text-blue-800 relative group"
-                                                >
-                                                    Newsletter
-                                                </Link>
-                                            </li>
-                                            <li>
-                                                <Link
-                                                    href="#"
-                                                    className="text-gray-600 transition-transform transform hover:translate-x-2 hover:text-blue-800 relative group"
-                                                >
-                                                    My Account
-                                                </Link>
-                                            </li>
-                                            <li>
-                                                <Link
-                                                    href="#"
-                                                    className="text-gray-600 transition-transform transform hover:translate-x-2 hover:text-blue-800 relative group"
-                                                >
-                                                    Change Password
-                                                </Link>
-                                            </li>
-                                            <li className="last">
-                                                <Link
-                                                    href="#"
-                                                    className="text-red-600 transition-transform transform hover:translate-x-2 hover:text-red-800 relative group"
-                                                >
-                                                    Log Out
-
-                                                </Link>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div>
+                            <Sidebar />
 
                             {/* Dashboard Content */}
                             <div className="col-span-3">
@@ -118,7 +56,7 @@ const DashboardPage = () => {
 
                                         {/* Welcome Message */}
                                         <div className="welcome-msg mb-6">
-                                            <p className="text-gray-700">Hello, MARK JECNO!</p>
+                                            <p className="text-gray-700">Hello, <span className="capitalize"> {userDetails.firstName + " " + userDetails.lastName}</span></p>
                                             <p className="text-gray-500">
                                                 From your My Account Dashboard you can view your recent account activity and update your account information. Select a link below to view or edit your information.
                                             </p>
@@ -140,11 +78,9 @@ const DashboardPage = () => {
                                                         </Link>
                                                     </div>
                                                     <div className="box-content">
-                                                        <h6 className="text-gray-700">MARK JECNO</h6>
-                                                        <h6 className="text-gray-500">mark-jecno@gmail.com</h6>
-                                                        <Link href="#" className="text-blue-600">
-                                                            Change Password
-                                                        </Link>
+                                                        <h6 className="text-gray-700 capitalize">{userDetails.firstName + " " + userDetails.lastName}</h6>
+                                                        <h6 className="text-gray-500">{userDetails.email}</h6>
+                                                        <h6 className="text-gray-500">{userDetails.phoneNumber}</h6>
                                                     </div>
                                                 </div>
 

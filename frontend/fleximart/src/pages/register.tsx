@@ -1,5 +1,5 @@
 import CommonLayout from "@/components/CommonLayout";
-import React from "react";
+import React, { useState } from "react";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useForm } from "react-hook-form";
@@ -24,6 +24,11 @@ const schema = yup.object().shape({
 const RegisterPage = () => {
     const { registerUser } = useUser();
 
+    const [error, setError] = useState<boolean>(false);
+    const [message, setMessage] = useState<string>("");
+    const [success, setSuccess] = useState<boolean>(false);
+
+
     const { register, handleSubmit, formState: { errors } } = useForm({
         resolver: yupResolver(schema)
     });
@@ -42,7 +47,7 @@ const RegisterPage = () => {
         ]
     }
 
-    const onsubmit = (data) => {
+    const onsubmit = async (data) => {
         const register: RegisterData = {
             firstName: data.fname,
             lastName: data.lname,
@@ -50,7 +55,18 @@ const RegisterPage = () => {
             password: data.password,
             phoneNumber: data.telnr
         }
-        registerUser(register);
+        const result = await registerUser(register);
+        console.log(result);
+        if (result.error) {
+            setSuccess(false);
+            setError(true);
+            setMessage(result.message);
+            return;
+        }
+        setSuccess(true);
+        setError(false);
+        setMessage(result.message);
+        return;
 
     }
 
@@ -156,6 +172,8 @@ const RegisterPage = () => {
                                             <input type="submit" value={"Create Account"} className="bg-red-500 text-white py-2 px-6 rounded-md hover:bg-red-600" />
 
                                         </div>
+                                        {error && <div className="py-2 px-3 my-2 text-white bg-red-500 rounded-md">{message}</div>}
+                                        {success && <div className="py-2 px-3 my-2 text-white bg-green-500 rounded-md">{message}</div>}
                                     </form>
                                 </div>
                             </div>
