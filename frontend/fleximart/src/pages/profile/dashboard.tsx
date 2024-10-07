@@ -56,7 +56,7 @@ const DashboardPage = () => {
 
                                         {/* Welcome Message */}
                                         <div className="welcome-msg mb-6">
-                                            <p className="text-gray-700">Hello, <span className="capitalize"> {userDetails.firstName + " " + userDetails.lastName}</span></p>
+                                            <p className="text-gray-700">Hello, <span className="capitalize"> {userDetails?.firstName + " " + userDetails?.lastName}</span></p>
                                             <p className="text-gray-500">
                                                 From your My Account Dashboard you can view your recent account activity and update your account information. Select a link below to view or edit your information.
                                             </p>
@@ -78,9 +78,9 @@ const DashboardPage = () => {
                                                         </Link>
                                                     </div>
                                                     <div className="box-content">
-                                                        <h6 className="text-gray-700 capitalize">{userDetails.firstName + " " + userDetails.lastName}</h6>
-                                                        <h6 className="text-gray-500">{userDetails.email}</h6>
-                                                        <h6 className="text-gray-500">{userDetails.phoneNumber}</h6>
+                                                        <h6 className="text-gray-700 capitalize">{userDetails?.firstName + " " + userDetails?.lastName}</h6>
+                                                        <h6 className="text-gray-500">{userDetails?.email}</h6>
+                                                        <h6 className="text-gray-500">{userDetails?.phoneNumber}</h6>
                                                     </div>
                                                 </div>
 
