@@ -1,14 +1,16 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import CommonLayout from "@/components/CommonLayout";
 import Sidebar from "@/components/profile/Sidebar";
 import HEAD from "next/head";
 import { FaEdit, FaHome, FaTrash } from "react-icons/fa";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { useForm } from "react-hook-form";
+import { set, useForm } from "react-hook-form";
 import * as yup from "yup";
 import { FaDeleteLeft } from "react-icons/fa6";
 import { TiDelete } from "react-icons/ti";
+import { useUser } from "@/context/UserContext";
+import { AddressResponse } from "@/interface/AddressResponse";
 
 const schema = yup.object().shape({
     name: yup.string().required("Name is required"),
@@ -26,62 +28,19 @@ const schema = yup.object().shape({
 
 const AddressBookPage = () => {
 
+    const { user, loading } = useUser();
+
+    const [addresses, setAddresses] = useState<AddressResponse[]>([]);
+
     const { register, handleSubmit, formState: { errors } } = useForm({
         resolver: yupResolver(schema),
     });
 
-    const [addresses, setAddresses] = useState([
-        {
-            id: 1,
-            title: "Home",
-            icon: "<FaHome />",
-            name: "John Doe",
-            street: "123 Main St",
-            city: "New York",
-            postalCode: "10001",
-            country: "USA",
-        },
-        {
-            id: 2,
-            title: "Home",
-            name: "Jane Smith",
-            street: "456 Elm St",
-            city: "Los Angeles",
-            postalCode: "90001",
-            country: "USA",
-        },
-        {
-            id: 1,
-            title: "Home",
-            name: "John Doe",
-            street: "123 Main St",
-            city: "New York",
-            postalCode: "10001",
-            country: "USA",
-        },
-        {
-            id: 2,
-            title: "Home",
-            name: "Jane Smith",
-            street: "456 Elm St",
-            city: "Los Angeles",
-            postalCode: "90001",
-            country: "USA",
-        },
-    ]);
 
-    const [newAddress, setNewAddress] = useState({
-        name: "",
-        street: "",
-        city: "",
-        postalCode: "",
-        country: "",
-    });
-
-
-    const handleDeleteAddress = (id: number) => {
-        setAddresses(addresses.filter(address => address.id !== id));
+    const handleDeleteAddress = (id) => {
+        console.log("Delete address with id: ", id);
     };
+
 
     const data = {
         title: "Address Book",
@@ -95,6 +54,20 @@ const AddressBookPage = () => {
     const onSubmit = (data) => {
         console.log(data);
     }
+
+    useEffect(() => {
+        if (user && user.data) {
+            console.log("User data in useEffect");
+            console.log(user.data.addresses);
+            setAddresses(user.data.addresses);
+        }
+    }, [user]);
+
+
+    if (loading) {
+        return <p>Loading...</p>;
+    }
+
 
     return (
         <>
@@ -116,32 +89,31 @@ const AddressBookPage = () => {
                                     </p>
                                     {/* Address List */}
                                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                                        {addresses.map((address) => (
-                                            <div key={address.id} className="p-6 border rounded-lg shadow-md bg-white hover:transition-all">
-                                                <div className="flex flex-row justify-between items-center border-b">
-                                                    <div className="py-3">
-
-                                                        <h3 className="text-xl font-semibold">{address.title}</h3>
+                                        {addresses && addresses.length > 0 ? (
+                                            addresses.map((address) => (
+                                                <div
+                                                    key={address.id}
+                                                    className="p-6 border rounded-lg shadow-md bg-white hover:transition-all"
+                                                >
+                                                    <div className="flex flex-row justify-between items-center border-b">
+                                                        <div className="py-3">
+                                                            <h3 className="text-xl font-semibold">{address.name}</h3>
+                                                        </div>
+                                                        <span onClick={() => handleDeleteAddress(address.id)}>
+                                                            <TiDelete className="hover:text-red-400 hover:cursor-pointer" />
+                                                        </span>
                                                     </div>
-                                                    <span >
-                                                        <TiDelete className="hover:text-red-400 hover:cursor-pointer" />
-                                                    </span>
+                                                    <div className="py-2 my-2 capitalize">
+                                                        <p>{address.houseNumber}, {address.street}</p>
+                                                        <p>{address.city}, {address.postalCode}</p>
+                                                        <p>{address.state}, {address.country}</p>
+                                                        <p>{address.phoneNumber}</p>
+                                                    </div>
                                                 </div>
-                                                <div className="py-2 my-2">
-                                                    <h3 className="text-xl font-semibold">{address.name}</h3>
-                                                    <p>{address.street}</p>
-                                                    <p>{address.city}, {address.postalCode}</p>
-                                                    <p>{address.country}</p>
-                                                </div>
-
-                                            </div>
-                                        ))}
-                                        {/* Card for Showing option to create new address */}
-                                        <div className="flex flex-col justify-center items-center p-6 border rounded-lg shadow-md bg-white hover:transition-all text-blue-400">
-                                            <strong>
-                                                Add New Address
-                                            </strong>
-                                        </div>
+                                            ))
+                                        ) : (
+                                            <p>No addresses found. Please add an address.</p>
+                                        )}
                                     </div>
                                 </div>
 

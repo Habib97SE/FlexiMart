@@ -22,5 +22,4 @@ public class AddressResponse {
     private String postalCode;
     private String phoneNumber;
     private AddressTypeResponse addressType;
-    private UserResponse user;
 }

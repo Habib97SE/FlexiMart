@@ -6,14 +6,25 @@ export interface ErrorResponse {
     statusCode: number;
 }
 
+export interface AddressTypeResponse {
+    id: number;
+    name: string;
+    description: string;
+    icon: string;
+}
+
 export interface AddressResponse {
     id: number;
+    name: string;
+    houseNumber: string;
     street: string;
     streetNumber: string;
-    postalCode: string;
     city: string;
     state: string;
     country: string;
+    postalCode: string;
+    phoneNumber: string;
+    addressType: AddressTypeResponse;
 }
 
 export interface AddressRequest {
@@ -37,6 +48,37 @@ class AddressModel {
         this.baseUrl = "http://localhost:8080/api/v1/addresses";
     }
 
+    async getAddressesByUserId(
+        userId: number
+    ): Promise<AddressResponse[] | ErrorResponse> {
+        try {
+            if (isNaN(userId) || userId < 1) {
+                return {
+                    error: true,
+                    message: "Invalid ID",
+                    statusCode: 400,
+                };
+            }
+            const response = await axios.get(`${this.baseUrl}/user/${userId}`);
+
+            if (response.data.status == 200) {
+                return response.data.data;
+            } else {
+                return {
+                    error: response.data.error,
+                    message: response.data.message,
+                    statusCode: response.data.status,
+                };
+            }
+        } catch (error) {
+            return {
+                error: true,
+                message: "Something went wrong",
+                statusCode: 500,
+            };
+        }
+    }
+
     async getAddress(id: number): Promise<AddressResponse | ErrorResponse> {
         try {
             if (isNaN(id) || id < 1) {
@@ -47,7 +89,6 @@ class AddressModel {
                 };
             }
             const response = await axios.get(`${this.baseUrl}/${id}`);
-            console.log(response.data);
             if (response.data.status == 200) {
                 return response.data.data;
             } else {

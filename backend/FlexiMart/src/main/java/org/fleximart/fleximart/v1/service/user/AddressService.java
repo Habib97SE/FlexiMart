@@ -55,15 +55,6 @@ public class AddressService {
                 .country(address.getCountry())
                 .name(address.getName())
                 .phoneNumber(address.getPhoneNumber())
-                .user(
-                        UserResponse.builder()
-                                .id(address.getUser().getId())
-                                .firstName(address.getUser().getFirstName())
-                                .lastName(address.getUser().getLastName())
-                                .email(address.getUser().getEmail())
-                                .phoneNumber(address.getUser().getPhoneNumber())
-                                .build()
-                )
                 .addressType(
                         AddressTypeResponse.builder()
                                 .id(address.getAddressType().getId())
