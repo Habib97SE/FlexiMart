@@ -1,0 +1,46 @@
+name: CI for FlexiMart
+
+on:
+  push:
+    branches:
+      - test  # Trigger the workflow on commits to the "test" branch
+
+jobs:
+  frontend-tests:
+    runs-on: ubuntu-latest
+    name: Run Frontend Tests
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install Frontend Dependencies
+        working-directory: ./frontend
+        run: npm install
+
+      - name: Run Frontend Tests
+        working-directory: ./frontend/fleximart
+        run: npm run test
+
+  backend-tests:
+    runs-on: ubuntu-latest
+    name: Run Backend Tests
+    needs: frontend-tests
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+
+      - name: Install Backend Dependencies and Run Tests
+        working-directory: ./backend/FlexiMart
+        run: ./mvnw clean test
