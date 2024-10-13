@@ -17,11 +17,15 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '18'
+          node-version: '20'  # Update to Node.js 20
 
       - name: Install Frontend Dependencies
-        working-directory: ./frontend
+        working-directory: ./frontend/fleximart  # Adjust if necessary
         run: npm install
+
+      - name: List frontend directory contents  # Debug step to verify correct path
+        working-directory: ./frontend/fleximart
+        run: ls -R
 
       - name: Run Frontend Tests
         working-directory: ./frontend/fleximart
@@ -42,5 +46,9 @@ jobs:
           java-version: '17'
 
       - name: Install Backend Dependencies and Run Tests
-        working-directory: ./backend/FlexiMart
+        working-directory: ./backend/FlexiMart  # Adjust if necessary
         run: ./mvnw clean test
+
+      - name: List backend directory contents  # Debug step to verify correct path
+        working-directory: ./backend/FlexiMart
+        run: ls -R
