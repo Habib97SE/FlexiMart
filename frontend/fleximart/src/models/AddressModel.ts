@@ -138,7 +138,6 @@ class AddressModel {
             return new Error("Something went wrong");
         }
     }
-
     async createAddress(address: AddressRequest): Promise<AddressResponse> {
         const response = await axios.post(this.baseUrl, address);
         return response.data;

@@ -52,8 +52,6 @@ function UserProvider({ children }: UserProviderProps) {
 
     useEffect(() => {
         let user = getUser();
-        console.log("User above if statement");
-        console.log(user);
         const fetchUserData = async (id: number): void => {
             const data = await userModel.getUser(user.id);
             console.log("User inside fetchUserData()");
@@ -142,7 +140,7 @@ function UserProvider({ children }: UserProviderProps) {
             user,
             addresses,
             userLoggedIn,
-            loading,  // <-- Pass the loading state down
+            loading,
             setUser,
             authorizeUser,
             registerUser,
