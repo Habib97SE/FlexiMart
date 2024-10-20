@@ -13,6 +13,20 @@ export interface AddressTypeResponse {
     icon: string;
 }
 
+/**
+ * Response body for an address, and it's properties are:
+ * - id: number
+ * - name: string
+ * - houseNumber: string
+ * - street: string
+ * - streetNumber: string
+ * - city: string
+ * - state: string
+ * - country: string
+ * - postalCode: string
+ * - phoneNumber: string
+ * - addressType: AddressTypeResponse
+ */
 export interface AddressResponse {
     id: number;
     name: string;
@@ -27,6 +41,20 @@ export interface AddressResponse {
     addressType: AddressTypeResponse;
 }
 
+/**
+ * Request body for creating an address, and it's properties are:
+ * - name: string
+ * - houseNumber: string
+ * - street: string
+ * - streetNumber: string
+ * - city: string
+ * - state: string
+ * - country: string
+ * - postalCode: string
+ * - phoneNumber: string
+ * - addressTypeId: number (address type id)
+ * - userId: number (user id)
+ */
 export interface AddressRequest {
     name: string;
     houseNumber: string;
@@ -41,6 +69,9 @@ export interface AddressRequest {
     userId: number;
 }
 
+/**
+ * Model for handling address related operations
+ */
 class AddressModel {
     private baseUrl: string;
 
@@ -48,62 +79,42 @@ class AddressModel {
         this.baseUrl = "http://localhost:8080/api/v1/addresses";
     }
 
+    /**
+     *
+     * @param userId :
+     * @returns
+     */
     async getAddressesByUserId(
         userId: number
-    ): Promise<AddressResponse[] | ErrorResponse> {
+    ): Promise<AddressResponse[] | Error> {
         try {
             if (isNaN(userId) || userId < 1) {
-                return {
-                    error: true,
-                    message: "Invalid ID",
-                    statusCode: 400,
-                };
+                return new Error("Invalid user ID");
             }
             const response = await axios.get(`${this.baseUrl}/user/${userId}`);
 
             if (response.data.status == 200) {
                 return response.data.data;
-            } else {
-                return {
-                    error: response.data.error,
-                    message: response.data.message,
-                    statusCode: response.data.status,
-                };
             }
+            return new Error(response.data.message);
         } catch (error) {
-            return {
-                error: true,
-                message: "Something went wrong",
-                statusCode: 500,
-            };
+            return new Error("Something went wrong");
         }
     }
 
-    async getAddress(id: number): Promise<AddressResponse | ErrorResponse> {
+    async getAddress(id: number): Promise<AddressResponse | Error> {
         try {
             if (isNaN(id) || id < 1) {
-                return {
-                    error: true,
-                    message: "Invalid ID",
-                    statusCode: 400,
-                };
+                return new Error("Invalid address ID");
             }
             const response = await axios.get(`${this.baseUrl}/${id}`);
             if (response.data.status == 200) {
                 return response.data.data;
             } else {
-                return {
-                    error: response.data.error,
-                    message: response.data.message,
-                    statusCode: response.data.status,
-                };
+                return new Error(response.data.message);
             }
         } catch (error) {
-            return {
-                error: true,
-                message: "Something went wrong",
-                statusCode: 500,
-            };
+            return new Error("Something went wrong");
         }
     }
 
@@ -115,13 +126,46 @@ class AddressModel {
         return response.data;
     }
 
-    async deleteAddress(id: number): Promise<void> {
-        await axios.delete(`${this.baseUrl}/${id}`);
+    async deleteAddress(id: number): Promise<boolean | Error> {
+        try {
+            const response = await axios.delete(`${this.baseUrl}/${id}`);
+            console.log(response.data);
+            if (response.data.status != 200) {
+                return new Error(response.data.message);
+            }
+            return true;
+        } catch (error) {
+            return new Error("Something went wrong");
+        }
     }
 
     async createAddress(address: AddressRequest): Promise<AddressResponse> {
         const response = await axios.post(this.baseUrl, address);
         return response.data;
+    }
+
+    async getAddressTypes(): Promise<AddressTypeResponse[] | Error> {
+        try {
+            const response = await axios.get(this.baseUrl + "/types");
+            if (response.data.status != 200) {
+                return new Error("Error fetching address types");
+            }
+            return response.data.data;
+        } catch (error) {
+            return new Error("Something went wrong");
+        }
+    }
+
+    async getAddressType(id: number): Promise<AddressTypeResponse | Error> {
+        try {
+            const response = await axios.get(this.baseUrl + "/types/" + id);
+            if (response.data.status != 200) {
+                return new Error("Error fetching address type");
+            }
+            return response.data.data;
+        } catch (error) {
+            return new Error("Something went wrong");
+        }
     }
 }
 

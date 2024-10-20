@@ -1,6 +1,6 @@
 "use client";
-import React, { createContext, useContext, useEffect, useMemo, useState, ReactNode } from "react";
-import { UserModel } from "../models/UserModel";
+import React, { createContext, useContext, useEffect, useMemo, useState, ReactNode, use } from "react";
+import { UserModel, UserRequest } from "../models/UserModel";
 import { AddressModel, AddressRequest } from "@/models/AddressModel";
 import { LoginRequest } from "@/interface/LoginRequest";
 import { UserData, UserResponse } from "@/interface/UserResponse";
@@ -51,27 +51,20 @@ function UserProvider({ children }: UserProviderProps) {
     const [loading, setLoading] = useState(true);  // <-- Add loading state
 
     useEffect(() => {
-        const fetchAddressData = async (userId: number) => {
-            try {
-                const addresses = await addressModel.getAddressesByUserId(userId);
-                console.log("Addresses:", addresses);
-                setAddresses(addresses);
-            } catch (error) {
-                console.error("Error fetching addresses:", error);
-            } finally {
-                setLoading(false);  // <-- Set loading to false when data is fetched
-            }
-        };
-
-        const user = getUser();
+        let user = getUser();
+        console.log("User above if statement");
+        console.log(user);
+        const fetchUserData = async (id: number): void => {
+            const data = await userModel.getUser(user.id);
+            console.log("User inside fetchUserData()");
+            console.log(data.data);
+            setUser(data.data);
+        }
         if (user) {
-            setUser(user);
-            console.log("User:", user);
-            // const userId = user.data.id;
-            // fetchAddressData(userId);
+            fetchUserData(user.id);
             setUserLoggedIn(true);
         } else {
-            setLoading(false);  // <-- Set loading to false if no user is found
+            setUserLoggedIn(false);
         }
     }, []);
 
@@ -90,12 +83,57 @@ function UserProvider({ children }: UserProviderProps) {
         removeUser();
         setUser(null);
         setUserLoggedIn(false);
-        setUserInLocalStorage(null);
+        removeUser();
     }
 
-    const registerUser = () => {
+    const registerUser = async (user: UserRequest): UserResponse | Error => {
         // Implement user registration here
+        const response = await userModel.createUser(user);
+        if (response instanceof Error) {
+            return response;
+        }
+        setUser(response);
+        setUserLoggedIn(true);
+        addUserToLocalStorage(response);
+        return {
+            error: false,
+            message: "User registered successfully",
+        }
+    }
 
+    const createAddress = async (address: AddressRequest) => {
+        const response = await addressModel.createAddress(address);
+        console.log("createAddress() response: ", response);
+        if (response.error) {
+            return {
+                error: true,
+                message: "Something went wrong",
+            }
+        }
+        user?.addresses.push(response);
+        setAddresses([...addresses, response]);
+        return {
+            error: false,
+            message: "Address created successfully",
+        }
+    }
+
+    const deleteAddress = async (id: number) => {
+        console.log("deleteAddress() gets called with ID: " + id);
+        const response = await addressModel.deleteAddress(id);
+        console.log("deleteAddress() response: ", response);
+        if (response.error) {
+            return {
+                error: true,
+                message: "Something went wrong",
+            }
+        }
+        user.addresses = user?.addresses.filter((address) => address.id !== id);
+        setAddresses(addresses.filter((address) => address.id !== id));
+        return {
+            error: false,
+            message: "Address deleted successfully",
+        }
     }
 
 
@@ -106,7 +144,11 @@ function UserProvider({ children }: UserProviderProps) {
             userLoggedIn,
             loading,  // <-- Pass the loading state down
             setUser,
-            authorizeUser
+            authorizeUser,
+            registerUser,
+            logoutUser,
+            createAddress,
+            deleteAddress,
         }),
         [user, addresses, userLoggedIn, loading]
     );

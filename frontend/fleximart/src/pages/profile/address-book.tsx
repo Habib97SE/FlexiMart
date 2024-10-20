@@ -7,6 +7,7 @@ import { FaEdit, FaHome, FaTrash } from "react-icons/fa";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { set, useForm } from "react-hook-form";
 import * as yup from "yup";
+import { InferType } from "yup";
 import { FaDeleteLeft } from "react-icons/fa6";
 import { TiDelete } from "react-icons/ti";
 import { useUser } from "@/context/UserContext";
@@ -24,23 +25,21 @@ const schema = yup.object().shape({
     addressType: yup.string().required("Address Type is required"),
 });
 
-
+type FormData = yup.InferType<typeof schema>;
 
 const AddressBookPage = () => {
 
-    const { user, loading } = useUser();
+    const [error, setError] = useState<boolean>(false);
+    const [message, setMessage] = useState<string>("");
+    const [success, setSuccess] = useState<boolean>(false);
+
+    const { user, loading, createAddress, deleteAddress } = useUser();
 
     const [addresses, setAddresses] = useState<AddressResponse[]>([]);
 
     const { register, handleSubmit, formState: { errors } } = useForm({
         resolver: yupResolver(schema),
     });
-
-
-    const handleDeleteAddress = (id) => {
-        console.log("Delete address with id: ", id);
-    };
-
 
     const data = {
         title: "Address Book",
@@ -51,23 +50,64 @@ const AddressBookPage = () => {
         ],
     };
 
-    const onSubmit = (data) => {
-        console.log(data);
+    const handleDeleteAddress = async (id) => {
+        console.log("Delete address with id: ", id);
+        const response = await deleteAddress(id);
+        if (response.error) {
+            console.log("Error deleting address");
+        } else {
+            console.log("Address deleted successfully");
+            addresses.filter((address) => address.id !== id);
+        }
+    }
+
+    const extractStreetNumber = (street: string) => {
+        const streetParts = street.split(" ");
+        return streetParts[streetParts.length - 1];;
+    }
+
+    const onSubmit = async (data: FormData) => {
+        const address: AddressRequest = {
+            name: data.name,
+            houseNumber: data.houseNumber,
+            street: data.street,
+            streetNumber: extractStreetNumber(data.street),
+            city: data.city,
+            state: data.state,
+            country: data.country,
+            postalCode: data.postalCode,
+            phoneNumber: data.phone,
+            addressTypeId: 1,
+            userId: user.id,
+        }
+        if (!user) {
+            console.log("User is not logged in");
+            setError(true);
+            setMessage("User is not logged in");
+            setSuccess(false);
+            return;
+        }
+        console.log(address);
+        const res = await createAddress(address);
+        if (res instanceof Error) {
+            console.log("Error adding address");
+            setError(true);
+            setMessage(res.message);
+            setSuccess(false);
+            return;
+        }
+        console.log("Address added successfully");
+        setError(false);
+        setMessage("Address added successfully");
+        setSuccess(true);
+
     }
 
     useEffect(() => {
-        if (user && user.data) {
-            console.log("User data in useEffect");
-            console.log(user.data.addresses);
-            setAddresses(user.data.addresses);
+        if (user) {
+            setAddresses(user.addresses);
         }
     }, [user]);
-
-
-    if (loading) {
-        return <p>Loading...</p>;
-    }
-
 
     return (
         <>
@@ -104,7 +144,7 @@ const AddressBookPage = () => {
                                                         </span>
                                                     </div>
                                                     <div className="py-2 my-2 capitalize">
-                                                        <p>{address.houseNumber}, {address.street}</p>
+                                                        <p>{address.street} {address.streetNumber} <span className="uppercase">{address.houseNumber}</span></p>
                                                         <p>{address.city}, {address.postalCode}</p>
                                                         <p>{address.state}, {address.country}</p>
                                                         <p>{address.phoneNumber}</p>
@@ -112,7 +152,9 @@ const AddressBookPage = () => {
                                                 </div>
                                             ))
                                         ) : (
-                                            <p>No addresses found. Please add an address.</p>
+                                            <div className="flex flex-row justify-center items-center">
+                                                <p>No addresses found. Please add an address.</p>
+                                            </div>
                                         )}
                                     </div>
                                 </div>
@@ -136,6 +178,7 @@ const AddressBookPage = () => {
                                             <div>
                                                 <label htmlFor="houseNumber" className="block text-sm font-medium text-gray-700">House Number <span className="text-red-500">*</span></label>
                                                 <input
+                                                    {...register("houseNumber")}
                                                     type="text"
                                                     id="houseNumber"
                                                     name="houseNumber"
@@ -146,6 +189,7 @@ const AddressBookPage = () => {
                                             <div>
                                                 <label htmlFor="street" className="block text-sm font-medium text-gray-700">Street Address <span className="text-red-500">*</span></label>
                                                 <input
+                                                    {...register("street")}
                                                     type="text"
                                                     id="street"
                                                     name="street"
@@ -156,6 +200,7 @@ const AddressBookPage = () => {
                                             <div>
                                                 <label htmlFor="city" className="block text-sm font-medium text-gray-700">City <span className="text-red-500">*</span></label>
                                                 <input
+                                                    {...register("city")}
                                                     type="text"
                                                     id="city"
                                                     name="city"
@@ -166,6 +211,7 @@ const AddressBookPage = () => {
                                             <div>
                                                 <label htmlFor="postalCode" className="block text-sm font-medium text-gray-700">Postal Code <span className="text-red-500">*</span></label>
                                                 <input
+                                                    {...register("postalCode")}
                                                     type="text"
                                                     id="postalCode"
                                                     name="postalCode"
@@ -176,6 +222,7 @@ const AddressBookPage = () => {
                                             <div>
                                                 <label htmlFor="state" className="block text-sm font-medium text-gray-700">State</label>
                                                 <input
+                                                    {...register("state")}
                                                     type="text"
                                                     id="state"
                                                     name="state"
@@ -185,6 +232,7 @@ const AddressBookPage = () => {
                                             <div>
                                                 <label htmlFor="country" className="block text-sm font-medium text-gray-700">Country <span className="text-red-500">*</span></label>
                                                 <input
+                                                    {...register("country")}
                                                     type="text"
                                                     id="country"
                                                     name="country"
@@ -195,6 +243,7 @@ const AddressBookPage = () => {
                                             <div>
                                                 <label htmlFor="Phone" className="block text-sm font-medium text-gray-700">Phone</label>
                                                 <input
+                                                    {...register("phone")}
                                                     type="text"
                                                     id="phone"
                                                     name="phone"
@@ -205,6 +254,7 @@ const AddressBookPage = () => {
                                             <div>
                                                 <label htmlFor="addressType" className="block text-sm font-medium text-gray-700">Address Type <span className="text-red-500">*</span></label>
                                                 <select
+                                                    {...register("addressType")}
                                                     id="addressType"
                                                     name="addressType"
                                                     className={`mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm ${errors.addressType ? "border-red-500" : ""}`}
@@ -218,6 +268,10 @@ const AddressBookPage = () => {
                                             <div className="col-span-2">
                                                 <input type="submit" value="Add Address" className="mt-2 w-full bg-indigo-600 text-white p-2 rounded-md cursor-pointer" />
                                             </div>
+                                        </div>
+                                        <div className="mt-4">
+                                            {error && <div className="bg-red-500 text-white rounded text-sm py-3 px-4">{message}</div>}
+                                            {success && <div className="bg-green-500 text-white rounded text-sm py-3 px-4">{message}</div>}
                                         </div>
                                     </form>
                                 </div>

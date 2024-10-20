@@ -13,6 +13,10 @@ export default function TopBar() {
             href: "/profile/dashboard",
         },
         {
+            name: "Address Book",
+            href: "/profile/address-book"
+        },
+        {
             name: "Orders",
             href: "/profile/orders",
         },
@@ -23,11 +27,7 @@ export default function TopBar() {
         {
             name: "Settings",
             href: "/profile/settings",
-        },
-        {
-            name: "Logout",
-            href: "/logout",
-        },
+        }
     ];
 
     const MyAccountDropdown = () => {
@@ -40,7 +40,11 @@ export default function TopBar() {
                     >
                         <Link href={item.href}>{item.name}</Link>
                     </li>
+
                 ))}
+                <li className="py-2 px-4 text-red-500 hover:bg-gray-500 hover:text-white font-bold whitespace-nowrap">
+                    <Link href="/logout">Logout</Link>
+                </li>
             </ul>
         );
     };

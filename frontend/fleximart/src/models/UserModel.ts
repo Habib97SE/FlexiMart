@@ -10,6 +10,14 @@ export interface Wishlist {
     items: ProductResponse[];
 }
 
+export interface UserRequest {
+    firstName: string;
+    lastName: string;
+    email: string;
+    password: string;
+    phoneNumber: string;
+}
+
 export interface User {
     id: number;
     firstName: string;
@@ -48,14 +56,14 @@ class UserModel {
             `${this.baseUrl}/${user.id}`,
             user
         );
-        return response.data;
+        return response.data.data;
     }
 
     async deleteUser(id: number): Promise<void> {
         await axios.delete(`${this.baseUrl}/${id}`);
     }
 
-    async createUser(user: RegisterData): Promise<User> {
+    async createUser(user: RegisterData): Promise<User | Error> {
         try {
             const response: AxiosResponse<User> = await axios.post(
                 this.baseUrl,
