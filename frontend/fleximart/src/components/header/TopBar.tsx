@@ -10,7 +10,7 @@ export default function TopBar() {
     const navItems = [
         {
             name: "Dashboard",
-            href: "/profile/dashboard",
+            href: "/profile/",
         },
         {
             name: "Address Book",

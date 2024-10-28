@@ -16,7 +16,7 @@ export interface AddressTypeResponse {
 /**
  * Response body for an address, and it's properties are:
  * - id: number
- * - name: string
+ * - name: stringnp
  * - houseNumber: string
  * - street: string
  * - streetNumber: string
